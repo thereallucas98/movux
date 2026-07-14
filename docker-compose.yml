@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  movux-postgres:
+    image: postgres:15
+    container_name: movux-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: movux
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - '5442:5432'
+    volumes:
+      - movux_pgdata:/var/lib/postgresql/data
+
+  movux-test-postgres:
+    image: postgres:15
+    container_name: movux-test-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: movux_test
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - '5443:5432'
+    volumes:
+      - movux_test_pgdata:/var/lib/postgresql/data
+
+volumes:
+  movux_pgdata:
+    name: movux_pgdata
+  movux_test_pgdata:
+    name: movux_test_pgdata

@@ -1,0 +1,28 @@
+{
+  "name": "@movux/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "next.js",
+  "files": ["library.js", "next.js", "node.js", "react.js"],
+  "devDependencies": {
+    "@movux/prettier": "workspace:*",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-n": "^17.14.0",
+    "eslint-plugin-prettier": "^5.4.1",
+    "eslint-plugin-promise": "^7.2.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier-plugin-tailwindcss": "^0.7.2"
+  },
+  "prettier": "@movux/prettier",
+  "eslintConfig": {
+    "extends": ["./library.js"]
+  }
+}

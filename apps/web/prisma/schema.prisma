@@ -1,0 +1,686 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum PlanTier {
+  FREE
+  SMALL_TEAM
+  BUSINESS
+  CORPORATE
+}
+
+enum TenantRole {
+  SUPER_ADMIN
+}
+
+enum WorkspaceRole {
+  ADMIN
+  COORDENADOR
+  COLABORADOR
+}
+
+enum WorkspaceVertical {
+  HOSPITAL
+  CLINIC
+  GYM
+  OTHER
+}
+
+enum CategoryScope {
+  GLOBAL
+  TENANT
+  WORKSPACE
+}
+
+enum SpecialtyScope {
+  GLOBAL
+  TENANT
+  WORKSPACE
+}
+
+enum ScheduleStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum ShiftStatus {
+  OPEN
+  FILLED
+  CANCELLED
+  COMPLETED
+}
+
+enum AssignmentStatus {
+  PENDING_ACCEPT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CANCELLED
+  TRANSFERRED
+  PENDING_CLOSURE
+  COMPLETED
+}
+
+enum TransferRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum ShiftAssignmentMode {
+  DIRECT_ASSIGN
+  OPEN_FOR_APPLY
+}
+
+enum ShiftCandidateStatus {
+  QUEUED
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+enum RequestType {
+  SWAP
+  OFFER
+  TIME_OFF
+}
+
+enum RequestStatus {
+  PENDING_PEER
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum NotificationType {
+  SCHEDULE_PUBLISHED
+  SCHEDULE_CLOSED
+  SHIFT_CANCELLED
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_ACCEPTED
+  ASSIGNMENT_REJECTED
+  TRANSFER_REQUESTED
+  TRANSFER_APPROVED
+  TRANSFER_REJECTED
+  CANDIDATE_QUEUED
+  CANDIDATE_APPROVED
+  CANDIDATE_REJECTED
+  CANDIDATE_WITHDRAWN
+  REQUEST_SUBMITTED
+  REQUEST_RESOLVED
+  REQUEST_PEER_DECISION
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+  WHATSAPP
+}
+
+model User {
+  id                    String    @id @default(uuid())
+  fullName              String    @map("full_name")
+  email                 String    @unique
+  passwordHash          String    @map("password_hash")
+  role                  UserRole  @default(USER)
+  phone                 String?
+  isActive              Boolean   @default(true) @map("is_active")
+  emailVerified         Boolean   @default(false) @map("email_verified")
+  resetToken            String?   @map("reset_token")
+  resetTokenExpires     DateTime? @map("reset_token_expires")
+  avatarUrl             String?   @map("avatar_url")
+  dateOfBirth           DateTime? @map("date_of_birth") @db.Date
+  bio                   String?
+  whatsappOptIn         Boolean   @default(false) @map("whatsapp_opt_in")
+  emergencyContactName  String?   @map("emergency_contact_name")
+  emergencyContactPhone String?   @map("emergency_contact_phone")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  tenantMemberships    TenantMembership[]
+  workspaceMemberships WorkspaceMembership[]
+  userSpecialties      UserSpecialty[]
+  auditLogs            AuditLog[]
+  shiftAssignments     ShiftAssignment[]     @relation("UserAssignments")
+  assignmentsCreated   ShiftAssignment[]     @relation("UserAssignmentsCreated")
+  transferRequestsAsTarget    TransferRequest[] @relation("TransferTarget")
+  transferRequestsAsRequester TransferRequest[] @relation("TransferRequester")
+  transferRequestsAsDecider   TransferRequest[] @relation("TransferDecider")
+  shiftCandidates             ShiftCandidate[]  @relation("ShiftCandidates")
+  shiftCandidateDecisions     ShiftCandidate[]  @relation("ShiftCandidateDecisions")
+  requestsAsRequester         Request[]         @relation("RequestRequester")
+  requestsAsResolver          Request[]         @relation("RequestResolver")
+  requestsAsSwapTarget        Request[]         @relation("RequestSwapTarget")
+  timeEntries                 TimeEntry[]       @relation("TimeEntryUser")
+  timeEntriesClosed           TimeEntry[]       @relation("TimeEntryCloser")
+  shiftTimelineNotes          ShiftTimelineNote[] @relation("ShiftTimelineNoteAuthor")
+  notifications               Notification[]
+  notificationPreferences     NotificationPreference[]
+
+  @@map("user")
+}
+
+model Tenant {
+  id                String    @id @default(uuid())
+  name              String
+  timezone          String    @default("America/Sao_Paulo")
+  plan              PlanTier  @default(FREE) @map("plan")
+  gracePeriodUntil  DateTime? @map("grace_period_until")
+  isActive          Boolean   @default(true) @map("is_active")
+  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  memberships TenantMembership[]
+  workspaces  Workspace[]
+  categories  Category[]
+  specialties Specialty[]
+
+  @@index([isActive])
+  @@map("tenant")
+}
+
+model TenantMembership {
+  id        String     @id @default(uuid())
+  tenantId  String     @map("tenant_id")
+  userId    String     @map("user_id")
+  role      TenantRole
+  isActive  Boolean    @default(true) @map("is_active")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+  @@index([tenantId, isActive])
+  @@map("tenantMembership")
+}
+
+model Workspace {
+  id                    String            @id @default(uuid())
+  tenantId              String            @map("tenant_id")
+  name                  String
+  timezone              String            @default("America/Sao_Paulo")
+  vertical              WorkspaceVertical
+  clockToleranceMinutes Int               @default(15) @map("clock_tolerance_minutes")
+  isActive              Boolean           @default(true) @map("is_active")
+  deletedAt             DateTime?         @map("deleted_at")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @updatedAt @map("updated_at")
+
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  memberships     WorkspaceMembership[]
+  categories      Category[]
+  specialties     Specialty[]
+  userSpecialties UserSpecialty[]
+  schedules       Schedule[]
+  requests        Request[]
+  notifications   Notification[]
+
+  @@index([tenantId, isActive])
+  @@map("workspace")
+}
+
+model WorkspaceMembership {
+  id          String        @id @default(uuid())
+  workspaceId String        @map("workspace_id")
+  userId      String        @map("user_id")
+  role        WorkspaceRole
+  isActive    Boolean       @default(true) @map("is_active")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId, isActive])
+  @@map("workspaceMembership")
+}
+
+model Category {
+  id          String             @id @default(uuid())
+  scope       CategoryScope
+  vertical    WorkspaceVertical?
+  tenantId    String?            @map("tenant_id")
+  workspaceId String?            @map("workspace_id")
+  slug        String
+  name        String
+  description String?
+  isActive    Boolean            @default(true) @map("is_active")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  tenant         Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workspace      Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  schedules      Schedule[]
+  shifts         Shift[]
+  shiftPatterns  ShiftPattern[]
+
+  @@unique([workspaceId, slug], map: "category_workspace_slug_unique")
+  @@index([scope, vertical])
+  @@index([scope, tenantId])
+  @@index([scope, workspaceId])
+  @@map("category")
+}
+
+model Specialty {
+  id          String             @id @default(uuid())
+  scope       SpecialtyScope
+  vertical    WorkspaceVertical?
+  tenantId    String?            @map("tenant_id")
+  workspaceId String?            @map("workspace_id")
+  slug        String
+  name        String
+  description String?
+  isActive    Boolean            @default(true) @map("is_active")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  tenant            Tenant?                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workspace         Workspace?                 @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userSpecialties   UserSpecialty[]
+  shiftCompositions ShiftExpectedComposition[]
+
+  @@unique([workspaceId, slug], map: "specialty_workspace_slug_unique")
+  @@index([scope, vertical])
+  @@index([scope, tenantId])
+  @@index([scope, workspaceId])
+  @@map("specialty")
+}
+
+model UserSpecialty {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  workspaceId String   @map("workspace_id")
+  specialtyId String   @map("specialty_id")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, isActive])
+  @@index([specialtyId, isActive])
+  @@index([userId, isActive])
+  @@map("userSpecialty")
+}
+
+model Schedule {
+  id          String         @id @default(uuid())
+  workspaceId String         @map("workspace_id")
+  categoryId  String         @map("category_id")
+  name        String?
+  periodStart DateTime       @map("period_start")
+  periodEnd   DateTime       @map("period_end")
+  status      ScheduleStatus @default(DRAFT)
+  publishedAt DateTime?      @map("published_at")
+  closedAt    DateTime?      @map("closed_at")
+  deletedAt   DateTime?      @map("deleted_at")
+  isActive    Boolean        @default(true) @map("is_active")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  shifts        Shift[]
+  shiftPatterns ShiftPattern[]
+
+  @@index([workspaceId, status, isActive])
+  @@index([workspaceId, categoryId, periodStart, periodEnd])
+  @@map("schedule")
+}
+
+// FK cascade graph (Task 08 research §5):
+// - Shift.scheduleId  -> Cascade (Schedule DRAFT hard-delete wipes child shifts)
+// - Shift.categoryId  -> Restrict (category soft-delete should fail loudly)
+// - Shift.patternId   -> SetNull (pattern delete keeps manually-edited shifts)
+model Shift {
+  id                  String              @id @default(uuid())
+  scheduleId          String              @map("schedule_id")
+  categoryId          String              @map("category_id")
+  patternId           String?             @map("pattern_id")
+  startAt             DateTime            @map("start_at")
+  endAt               DateTime            @map("end_at")
+  headcount           Int                 @default(1)
+  status              ShiftStatus         @default(OPEN)
+  assignmentMode      ShiftAssignmentMode @default(DIRECT_ASSIGN) @map("assignment_mode")
+  decisionWindowHours Int                 @default(48) @map("decision_window_hours")
+  notes               String?
+  cancelledAt         DateTime?           @map("cancelled_at")
+  cancelReason        String?             @map("cancel_reason")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  schedule            Schedule                   @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  category            Category                   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  pattern             ShiftPattern?              @relation(fields: [patternId], references: [id], onDelete: SetNull)
+  expectedComposition ShiftExpectedComposition[]
+  assignments         ShiftAssignment[]
+  candidates          ShiftCandidate[]
+  timelineNotes       ShiftTimelineNote[]
+
+  @@unique([patternId, startAt], name: "shift_pattern_start_unique")
+  @@index([scheduleId, status])
+  @@index([scheduleId, startAt])
+  @@index([categoryId, startAt])
+  @@map("shift")
+}
+
+// FK cascade graph (Task 09 research §6):
+// - ShiftAssignment.shiftId           -> Cascade (Shift hard-delete wipes assignments)
+// - ShiftAssignment.userId            -> Restrict (block user delete with active assignments)
+// - ShiftAssignment.assignedByUserId  -> Restrict (preserve audit trail)
+// userId is nullable to allow Task 12 atomic SWAP via 3-step nulling window inside a tx.
+// Postgres treats NULLs as distinct in unique indexes, so @@unique([shiftId, userId]) still holds.
+model ShiftAssignment {
+  id               String           @id @default(uuid())
+  shiftId          String           @map("shift_id")
+  userId           String?          @map("user_id")
+  assignedByUserId String           @map("assigned_by_user_id")
+  status           AssignmentStatus @default(PENDING_ACCEPT)
+  decisionDeadline DateTime         @map("decision_deadline")
+  decidedAt        DateTime?        @map("decided_at")
+  rejectionReason  String?          @map("rejection_reason")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  shift      Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  user       User?  @relation("UserAssignments", fields: [userId], references: [id], onDelete: Restrict)
+  assignedBy User   @relation("UserAssignmentsCreated", fields: [assignedByUserId], references: [id], onDelete: Restrict)
+
+  transferRequestsAsOriginal TransferRequest[] @relation("TransferOriginal")
+  transferRequestsAsNew      TransferRequest[] @relation("TransferNew")
+  resultedFromCandidate      ShiftCandidate?   @relation("ShiftCandidateResult")
+  swapSourceRequests         Request[]         @relation("RequestSwapSource")
+  swapTargetRequests         Request[]         @relation("RequestSwapTargetAssignment")
+  offerSourceRequests        Request[]         @relation("RequestOfferSource")
+  timeEntry                  TimeEntry?
+
+  @@unique([shiftId, userId])
+  @@index([userId, status])
+  @@index([shiftId, status])
+  @@index([decisionDeadline])
+  @@map("shiftAssignment")
+}
+
+// FK cascade graph (Task 10 research):
+// - originalAssignmentId -> Restrict (preserve transferred assignment history)
+// - newAssignmentId      -> SetNull (loses link gracefully if new assignment is hard-deleted)
+// - targetUserId         -> Restrict
+// - requestedByUserId    -> Restrict
+// - decidedByUserId      -> SetNull (matches AuditLog.actorUserId pattern)
+model TransferRequest {
+  id                   String                @id @default(uuid())
+  originalAssignmentId String                @map("original_assignment_id")
+  targetUserId         String                @map("target_user_id")
+  requestedByUserId    String                @map("requested_by_user_id")
+  reason               String
+  status               TransferRequestStatus @default(PENDING)
+  decidedByUserId      String?               @map("decided_by_user_id")
+  decidedAt            DateTime?             @map("decided_at")
+  decisionReason       String?               @map("decision_reason")
+  newAssignmentId      String?               @unique @map("new_assignment_id")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+
+  originalAssignment ShiftAssignment  @relation("TransferOriginal", fields: [originalAssignmentId], references: [id], onDelete: Restrict)
+  newAssignment      ShiftAssignment? @relation("TransferNew", fields: [newAssignmentId], references: [id], onDelete: SetNull)
+  targetUser         User             @relation("TransferTarget", fields: [targetUserId], references: [id], onDelete: Restrict)
+  requestedBy        User             @relation("TransferRequester", fields: [requestedByUserId], references: [id], onDelete: Restrict)
+  decidedBy          User?            @relation("TransferDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([originalAssignmentId, status])
+  @@index([targetUserId, status])
+  @@index([status, createdAt])
+  @@map("transferRequest")
+}
+
+// FK cascade graph (Task 11 research §1):
+// - shiftId               -> Cascade (Shift hard-delete wipes candidates)
+// - userId                -> Restrict (preserve candidate history)
+// - decidedByUserId       -> SetNull (matches AuditLog pattern)
+// - resultingAssignmentId -> SetNull (assignment hard-delete leaves candidate intact)
+model ShiftCandidate {
+  id                    String               @id @default(uuid())
+  shiftId               String               @map("shift_id")
+  userId                String               @map("user_id")
+  queuePosition         Int                  @map("queue_position")
+  status                ShiftCandidateStatus @default(QUEUED)
+  decidedByUserId       String?              @map("decided_by_user_id")
+  decidedAt             DateTime?            @map("decided_at")
+  decisionReason        String?              @map("decision_reason")
+  resultingAssignmentId String?              @unique @map("resulting_assignment_id")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+
+  shift               Shift            @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  user                User             @relation("ShiftCandidates", fields: [userId], references: [id], onDelete: Restrict)
+  decidedBy           User?            @relation("ShiftCandidateDecisions", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+  resultingAssignment ShiftAssignment? @relation("ShiftCandidateResult", fields: [resultingAssignmentId], references: [id], onDelete: SetNull)
+
+  @@unique([shiftId, userId])
+  @@unique([shiftId, queuePosition])
+  @@index([userId, status])
+  @@index([shiftId, status])
+  @@map("shiftCandidate")
+}
+
+model ShiftPattern {
+  id               String   @id @default(uuid())
+  scheduleId       String   @map("schedule_id")
+  categoryId       String   @map("category_id")
+  name             String?
+  daysOfWeek       Int[]    @map("days_of_week")
+  startTimeMinutes Int      @map("start_time_minutes")
+  endTimeMinutes   Int      @map("end_time_minutes")
+  crossesMidnight  Boolean  @default(false) @map("crosses_midnight")
+  headcount        Int      @default(1)
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  shifts   Shift[]
+
+  @@index([scheduleId])
+  @@map("shiftPattern")
+}
+
+model ShiftExpectedComposition {
+  id          String   @id @default(uuid())
+  shiftId     String   @map("shift_id")
+  specialtyId String   @map("specialty_id")
+  count       Int      @default(1)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  shift     Shift     @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+
+  @@unique([shiftId, specialtyId])
+  @@index([specialtyId])
+  @@map("shiftExpectedComposition")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorUserId String?  @map("actor_user_id")
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorUserId])
+  @@index([createdAt])
+  @@map("auditLog")
+}
+
+// FK cascade graph (Task 12 research §1):
+// - workspaceId               -> Cascade   (workspace delete wipes its requests)
+// - requestedById             -> Restrict  (block user delete with active requests)
+// - resolvedById              -> SetNull   (matches AuditLog.actorUserId pattern)
+// - swapTargetUserId          -> Restrict
+// - *AssignmentId (3 cols)    -> SetNull   (assignment delete preserves audit trail)
+//
+// Type-specific column integrity is enforced via CHECK constraints emitted in the
+// migration SQL (Prisma does not model checks). See migration file.
+model Request {
+  id                      String        @id @default(uuid())
+  workspaceId             String        @map("workspace_id")
+  type                    RequestType
+  status                  RequestStatus @default(PENDING)
+
+  requestedById           String        @map("requested_by_id")
+  resolvedById            String?       @map("resolved_by_id")
+  reason                  String
+  resolutionReason        String?       @map("resolution_reason")
+
+  attachmentUrl           String?       @map("attachment_url")
+  attachmentMimeType      String?       @map("attachment_mime_type")
+  attachmentSizeBytes     Int?          @map("attachment_size_bytes")
+
+  // SWAP-only
+  swapSourceAssignmentId  String?       @map("swap_source_assignment_id")
+  swapTargetUserId        String?       @map("swap_target_user_id")
+  swapTargetAssignmentId  String?       @map("swap_target_assignment_id")
+  peerAcceptedAt          DateTime?     @map("peer_accepted_at")
+  peerRejectedAt          DateTime?     @map("peer_rejected_at")
+
+  // OFFER-only
+  offerSourceAssignmentId String?       @map("offer_source_assignment_id")
+
+  // TIME_OFF-only
+  timeOffStart            DateTime?     @map("time_off_start")
+  timeOffEnd              DateTime?     @map("time_off_end")
+
+  resolvedAt              DateTime?     @map("resolved_at")
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime      @updatedAt        @map("updated_at")
+
+  workspace             Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  requestedBy           User             @relation("RequestRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+  resolvedBy            User?            @relation("RequestResolver",  fields: [resolvedById],  references: [id], onDelete: SetNull)
+  swapTargetUser        User?            @relation("RequestSwapTarget", fields: [swapTargetUserId], references: [id], onDelete: Restrict)
+  swapSourceAssignment  ShiftAssignment? @relation("RequestSwapSource", fields: [swapSourceAssignmentId], references: [id], onDelete: SetNull)
+  swapTargetAssignment  ShiftAssignment? @relation("RequestSwapTargetAssignment", fields: [swapTargetAssignmentId], references: [id], onDelete: SetNull)
+  offerSourceAssignment ShiftAssignment? @relation("RequestOfferSource", fields: [offerSourceAssignmentId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@index([requestedById, status])
+  @@index([swapTargetUserId, status])
+  @@index([type, status])
+  @@map("request")
+}
+
+// FK cascade graph (Task 13 research §1.4):
+// - shiftAssignmentId   -> Cascade  (assignment delete wipes time entry)
+// - userId              -> Restrict (block user delete with active time entries)
+// - closedByUserId      -> SetNull  (matches AuditLog.actorUserId pattern)
+//
+// One row per assignment (UNIQUE on shift_assignment_id) — second clock-in
+// on the same assignment is rejected at the DB level (idempotency).
+model TimeEntry {
+  id                       String    @id @default(uuid())
+  shiftAssignmentId        String    @unique @map("shift_assignment_id")
+  userId                   String    @map("user_id")
+  clockInAt                DateTime  @map("clock_in_at")
+  clockInLocation          Json?     @map("clock_in_location")
+  clockInWithinTolerance   Boolean   @map("clock_in_within_tolerance")
+  clockOutAt               DateTime? @map("clock_out_at")
+  clockOutLocation         Json?     @map("clock_out_location")
+  clockOutWithinTolerance  Boolean?  @map("clock_out_within_tolerance")
+  overtimeMinutes          Int       @default(0) @map("overtime_minutes")
+  closedByUserId           String?   @map("closed_by_user_id")
+  closedAt                 DateTime? @map("closed_at")
+  notes                    String?
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
+
+  shiftAssignment ShiftAssignment @relation(fields: [shiftAssignmentId], references: [id], onDelete: Cascade)
+  user            User            @relation("TimeEntryUser",   fields: [userId], references: [id], onDelete: Restrict)
+  closedBy        User?           @relation("TimeEntryCloser", fields: [closedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId, clockInAt])
+  @@map("timeEntry")
+}
+
+// Public per-shift notes (Task 14). Append-only in v1; soft-delete deferred
+// to Phase 2. Authored by participants or workspace Coord/Admin (BF §7.12).
+model ShiftTimelineNote {
+  id           String   @id @default(uuid())
+  shiftId      String   @map("shift_id")
+  authorUserId String   @map("author_user_id")
+  note         String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  shift  Shift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  author User  @relation("ShiftTimelineNoteAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+
+  @@index([shiftId, createdAt])
+  @@map("shiftTimelineNote")
+}
+
+// Per-recipient in-app inbox row (Task 16). One row per (recipient × event).
+// Channels other than IN_APP are filtered at dispatch time and persist no row
+// in v1. Cascade decisions: workspaceId Cascade (delete wipes scoped notifs);
+// userId Restrict (project convention; users are soft-deleted via isActive).
+model Notification {
+  id          String           @id @default(uuid())
+  userId      String           @map("user_id")
+  workspaceId String           @map("workspace_id")
+  type        NotificationType
+  payload     Json
+  readAt      DateTime?        @map("read_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notification")
+}
+
+// Per-user opt-in matrix (Task 16). Rows are lazily upserted on PATCH; missing
+// rows fall back to DEFAULT_ENABLED_BY_CHANNEL in code.
+model NotificationPreference {
+  id        String              @id @default(uuid())
+  userId    String              @map("user_id")
+  type      NotificationType
+  channel   NotificationChannel
+  enabled   Boolean             @default(true)
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, channel])
+  @@index([userId])
+  @@map("notificationPreference")
+}

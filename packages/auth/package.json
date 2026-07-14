@@ -1,0 +1,22 @@
+{
+  "name": "@movux/auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "devDependencies": {
+    "@movux/eslint-config": "workspace:*",
+    "@movux/prettier": "workspace:*",
+    "@movux/tsconfig": "workspace:*"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@movux/eslint-config/library"
+    ]
+  },
+  "prettier": "@movux/prettier",
+  "dependencies": {
+    "@casl/ability": "^6.8.0",
+    "zod": "4.3.6"
+  }
+}

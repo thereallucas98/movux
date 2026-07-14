@@ -1,0 +1,239 @@
+'use client'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff, Lock, LogIn, Mail, UserRound } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { AuthField, authInputCls } from '~/components/features/auth/auth-field'
+import { t } from '~/i18n/t'
+import { cn } from '~/lib/utils'
+
+const registerSchema = z
+  .object({
+    fullName: z.string().min(2, { message: t('auth.register.fullName.min') }),
+    email: z.email({ message: t('auth.email.invalid') }),
+    password: z.string().min(8, { message: t('auth.password.min') }),
+    confirmPassword: z.string().min(8, { message: t('auth.password.min') }),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: t('auth.register.confirmPassword.mismatch'),
+    path: ['confirmPassword'],
+  })
+
+type RegisterFormValues = z.infer<typeof registerSchema>
+
+export function RegisterForm() {
+  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    trigger,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
+
+  // Re-validate confirmPassword whenever password changes so the match error
+  // clears/reappears in real time (zod `.refine` runs on the object, so this
+  // ensures the second field's error tracks the first).
+  const passwordValue = watch('password')
+  const confirmValue = watch('confirmPassword')
+  useEffect(() => {
+    if (confirmValue !== '' || passwordValue !== '') {
+      trigger('confirmPassword').catch(() => undefined)
+    }
+  }, [passwordValue, confirmValue, trigger])
+
+  async function onSubmit(values: RegisterFormValues) {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: values.fullName,
+        email: values.email,
+        password: values.password,
+        role: 'USER',
+      }),
+    })
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      setError('root', {
+        message: body?.message ?? t('auth.register.error'),
+      })
+      return
+    }
+
+    router.push('/dashboard')
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-6"
+      noValidate
+    >
+      <div className="flex flex-col gap-4">
+        <AuthField
+          label={t('auth.register.fullName.label')}
+          error={errors.fullName?.message}
+        >
+          <div className="relative">
+            <UserRound
+              className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              aria-hidden
+            />
+            <input
+              {...register('fullName')}
+              type="text"
+              placeholder={t('auth.register.fullName.placeholder')}
+              autoComplete="name"
+              aria-invalid={errors.fullName ? true : undefined}
+              className={cn(authInputCls, 'pl-10')}
+            />
+          </div>
+        </AuthField>
+
+        <AuthField label={t('auth.email.label')} error={errors.email?.message}>
+          <div className="relative">
+            <Mail
+              className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              aria-hidden
+            />
+            <input
+              {...register('email')}
+              type="email"
+              placeholder={t('auth.email.placeholder')}
+              autoComplete="email"
+              aria-invalid={errors.email ? true : undefined}
+              className={cn(authInputCls, 'pl-10')}
+            />
+          </div>
+        </AuthField>
+
+        <AuthField
+          label={t('auth.password.label')}
+          error={errors.password?.message}
+          hint="A senha deve ter no mínimo 8 caracteres"
+        >
+          <div className="relative">
+            <Lock
+              className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              aria-hidden
+            />
+            <input
+              {...register('password')}
+              type={showPassword ? 'text' : 'password'}
+              placeholder={t('auth.password.placeholder')}
+              autoComplete="new-password"
+              aria-invalid={errors.password ? true : undefined}
+              className={cn(authInputCls, 'pr-10 pl-10')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={
+                showPassword ? t('auth.password.hide') : t('auth.password.show')
+              }
+              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 focus-visible:outline-none"
+            >
+              {showPassword ? (
+                <Eye className="size-4" aria-hidden />
+              ) : (
+                <EyeOff className="size-4" aria-hidden />
+              )}
+            </button>
+          </div>
+        </AuthField>
+
+        <AuthField
+          label={t('auth.register.confirmPassword.label')}
+          error={errors.confirmPassword?.message}
+        >
+          <div className="relative">
+            <Lock
+              className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+              aria-hidden
+            />
+            <input
+              {...register('confirmPassword')}
+              type={showConfirm ? 'text' : 'password'}
+              placeholder={t('auth.password.placeholder')}
+              autoComplete="new-password"
+              aria-invalid={errors.confirmPassword ? true : undefined}
+              className={cn(authInputCls, 'pr-10 pl-10')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((v) => !v)}
+              aria-label={
+                showConfirm ? t('auth.password.hide') : t('auth.password.show')
+              }
+              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 focus-visible:outline-none"
+            >
+              {showConfirm ? (
+                <Eye className="size-4" aria-hidden />
+              ) : (
+                <EyeOff className="size-4" aria-hidden />
+              )}
+            </button>
+          </div>
+        </AuthField>
+      </div>
+
+      {errors.root && (
+        <p className="text-destructive text-center text-[14px] font-medium">
+          {errors.root.message}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="bg-primary text-primary-foreground flex h-12 w-full cursor-pointer items-center justify-center rounded-[8px] px-4 py-3 text-[16px] font-medium transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none disabled:opacity-60"
+      >
+        {isSubmitting
+          ? t('auth.register.submitting')
+          : t('auth.register.submit')}
+      </button>
+
+      <div className="flex items-center justify-center gap-3">
+        <span className="bg-border h-px flex-1" />
+        <span className="text-muted-foreground text-[14px] leading-[20px]">
+          ou
+        </span>
+        <span className="bg-border h-px flex-1" />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <p className="text-muted-foreground text-center text-[14px] leading-[20px]">
+          Já tem uma conta?
+        </p>
+        <Link
+          href="/login"
+          className="border-input bg-background text-foreground hover:bg-accent focus-visible:ring-ring flex h-12 w-full items-center justify-center gap-2 rounded-[8px] border px-4 py-3 text-[16px] font-medium transition-colors focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <LogIn className="size-[18px]" aria-hidden />
+          Fazer login
+        </Link>
+      </div>
+    </form>
+  )
+}

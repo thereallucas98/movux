@@ -1,0 +1,23 @@
+{
+  "name": "movux",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Movux — multi-tenant shift scheduling platform for hospitals, clinics, and gyms",
+  "scripts": {
+    "prepare": "husky",
+    "dev": "turbo run dev --filter=web",
+    "build": "turbo run build --filter=web",
+    "lint": "turbo run lint --filter=web",
+    "test:lint": "./scripts/test-lint.sh",
+    "test:lint:ci": "pnpm install --frozen-lockfile && pnpm --filter web lint && pnpm --filter web typecheck"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7",
+    "turbo": "^2.8.8"
+  },
+  "packageManager": "pnpm@9.14.4",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

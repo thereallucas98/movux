@@ -1,0 +1,23 @@
+{
+  // ESLint como formatador padrão para este projeto
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  // Formata automaticamente ao salvar
+  "editor.formatOnSave": true,
+  // Corrige tudo que o ESLint conseguir (imports, variáveis, etc.)
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  // Garante que o ESLint valide seus arquivos TS e JS
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  // Usa o ESLint para formatar (e não o Prettier)
+  "eslint.format.enable": true,
+  // Evita conflito com formatação global do VSCode ou Prettier
+  "prettier.enable": false,
+  // (opcional) desativa o auto save global pra evitar conflito se quiser controlar manualmente
+  "files.autoSave": "off"
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "@movux/tsconfig/library.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["index.ts"]
+}

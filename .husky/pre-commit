@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Check if any web app files are staged
+STAGED_WEB=$(git diff --cached --name-only --diff-filter=ACMR | grep "^apps/web/" || true)
+
+if [ -n "$STAGED_WEB" ]; then
+  echo "🔍 Running lint-staged on web app files..."
+  cd apps/web && pnpm exec lint-staged
+
+  echo "🔍 Running TypeScript check..."
+  pnpm run typecheck
+
+  echo "🔍 Running Vitest..."
+  pnpm run test:unit
+
+  echo "✅ Pre-commit checks passed!"
+fi

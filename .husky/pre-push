@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Check if any web app files changed in commits being pushed
+CHANGED_WEB=$(git diff --name-only @{push}.. 2>/dev/null | grep "^apps/web/" || git diff --name-only HEAD~1 2>/dev/null | grep "^apps/web/" || true)
+
+if [ -n "$CHANGED_WEB" ]; then
+  cd apps/web
+
+  echo "🔍 Running full lint..."
+  pnpm run lint
+
+  echo "🔍 Running Vitest..."
+  pnpm run test:unit
+
+  echo "🔍 Running build..."
+  pnpm run build
+
+  echo "✅ Pre-push checks passed!"
+fi

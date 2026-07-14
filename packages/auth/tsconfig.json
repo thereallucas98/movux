@@ -1,0 +1,6 @@
+{
+  "extends": "@movux/tsconfig/library.json",
+  "include": [
+    "src/**/*"
+  ]
+}
