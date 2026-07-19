@@ -97,6 +97,7 @@ export interface ShipmentRepository {
     id: string,
     customerId: string,
   ): Promise<{ id: string; status: ShipmentStatus } | null>
+  findStatusById(id: string): Promise<{ id: string; status: ShipmentStatus } | null>
   updateStatus(id: string, status: ShipmentStatus): Promise<void>
   listForCustomer(
     customerId: string,
@@ -164,6 +165,13 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
     async findStatusForOwner(id, customerId) {
       return prisma.shipment.findFirst({
         where: { id, customerId },
+        select: { id: true, status: true },
+      })
+    },
+
+    async findStatusById(id) {
+      return prisma.shipment.findUnique({
+        where: { id },
         select: { id: true, status: true },
       })
     },

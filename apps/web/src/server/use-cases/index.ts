@@ -39,6 +39,17 @@ export type {
   BrowseOpenShipmentsResult,
 } from './shipments/browse-open-shipments.use-case'
 
+// ─── Proposal Queue (S2-T1) ────────────────────────────────────────────────
+
+export { joinProposalQueue } from './shipments/queue/join-proposal-queue.use-case'
+export type { JoinProposalQueueResult } from './shipments/queue/join-proposal-queue.use-case'
+
+export { withdrawProposalQueue } from './shipments/queue/withdraw-proposal-queue.use-case'
+export type { WithdrawProposalQueueResult } from './shipments/queue/withdraw-proposal-queue.use-case'
+
+export { getMyQueueEntry } from './shipments/queue/get-my-queue-entry.use-case'
+export type { GetMyQueueEntryResult } from './shipments/queue/get-my-queue-entry.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

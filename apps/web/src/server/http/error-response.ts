@@ -59,6 +59,7 @@ export type ErrorCode =
   | 'CUSTOMER_PROFILE_NOT_FOUND'
   | 'INVALID_ADDRESS'
   | 'NO_PRICING_AVAILABLE'
+  | 'ALREADY_IN_QUEUE'
 
 interface ErrorShape {
   status: number
@@ -169,6 +170,10 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   NO_PRICING_AVAILABLE: {
     status: 422,
     message: 'No pricing template available for this corridor and shipment type',
+  },
+  ALREADY_IN_QUEUE: {
+    status: 409,
+    message: 'Carrier already has a queue entry for this shipment',
   },
 }
 

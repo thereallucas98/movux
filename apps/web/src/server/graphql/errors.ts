@@ -34,6 +34,11 @@ const CODE_TO_MESSAGE: Record<ErrorCode, string> = {
   TIME_OFF_TOO_LARGE: 'TIME_OFF cascade exceeds the per-request cap',
   ALREADY_CLOCKED_IN: 'Assignment already has a time entry',
   EXPORT_TOO_LARGE: 'Export row count exceeds the cap',
+  CUSTOMER_PROFILE_NOT_FOUND: 'Customer profile not found',
+  INVALID_ADDRESS: 'Address neighborhood is not in the known catalog',
+  NO_PRICING_AVAILABLE:
+    'No pricing template available for this corridor and shipment type',
+  ALREADY_IN_QUEUE: 'Carrier already has a queue entry for this shipment',
 }
 
 /**

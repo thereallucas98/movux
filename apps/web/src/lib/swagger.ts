@@ -21,6 +21,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Freight/moving shipments — create, publish, get, list (customer)',
       },
       {
+        name: 'Proposal Queue',
+        description: 'Carrier queue per shipment — join, withdraw, own status',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

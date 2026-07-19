@@ -7,6 +7,7 @@ import { createCustomerProfileRepository } from './customer-profile.repository'
 import { createNotificationRepository } from './notification.repository'
 import { createNotificationPreferenceRepository } from './notification-preference.repository'
 import { createPricingRepository } from './pricing.repository'
+import { createProposalQueueRepository } from './proposal-queue.repository'
 import { createScheduleRepository } from './schedule.repository'
 import { createShipmentRepository } from './shipment.repository'
 import { createShiftRepository } from './shift.repository'
@@ -28,6 +29,7 @@ export const userRepository = createUserRepository(prisma)
 export const customerProfileRepository = createCustomerProfileRepository(prisma)
 export const pricingRepository = createPricingRepository(prisma)
 export const shipmentRepository = createShipmentRepository(prisma)
+export const proposalQueueRepository = createProposalQueueRepository(prisma)
 export const tenantRepository = createTenantRepository(prisma)
 export const tenantMembershipRepository =
   createTenantMembershipRepository(prisma)

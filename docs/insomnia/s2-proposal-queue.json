@@ -1,0 +1,59 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-19T00:00:00.000Z",
+  "__export_source": "movux.docs:s2-t1-proposal-queue",
+  "resources": [
+    {
+      "_id": "wrk_movux_s2_queue",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S2 Proposal Queue",
+      "description": "S2-T1: join, withdraw, get my queue entry (carrier)"
+    },
+    {
+      "_id": "env_movux_s2_queue_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s2_queue",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s2_carrier1",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s2_queue",
+      "name": "Carrier 1 Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_join_queue",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_queue",
+      "name": "Join Queue",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/queue/join",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_carrier1"
+    },
+    {
+      "_id": "req_get_my_queue_entry",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_queue",
+      "name": "Get My Queue Entry",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/queue/me",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_carrier1"
+    },
+    {
+      "_id": "req_withdraw_queue",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_queue",
+      "name": "Withdraw From Queue",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/queue/withdraw",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_carrier1"
+    }
+  ]
+}
