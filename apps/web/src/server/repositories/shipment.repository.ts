@@ -98,6 +98,9 @@ export interface ShipmentRepository {
     customerId: string,
   ): Promise<{ id: string; status: ShipmentStatus } | null>
   findStatusById(id: string): Promise<{ id: string; status: ShipmentStatus } | null>
+  findForProposal(
+    id: string,
+  ): Promise<{ status: ShipmentStatus; customerSlaHours: number } | null>
   updateStatus(id: string, status: ShipmentStatus): Promise<void>
   listForCustomer(
     customerId: string,
@@ -173,6 +176,13 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
       return prisma.shipment.findUnique({
         where: { id },
         select: { id: true, status: true },
+      })
+    },
+
+    async findForProposal(id) {
+      return prisma.shipment.findUnique({
+        where: { id },
+        select: { status: true, customerSlaHours: true },
       })
     },
 

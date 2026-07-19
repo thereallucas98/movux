@@ -60,6 +60,9 @@ export type ErrorCode =
   | 'INVALID_ADDRESS'
   | 'NO_PRICING_AVAILABLE'
   | 'ALREADY_IN_QUEUE'
+  | 'NOT_CALLED'
+  | 'ALREADY_PROPOSED'
+  | 'TOO_MANY_ATTEMPTS'
 
 interface ErrorShape {
   status: number
@@ -174,6 +177,18 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   ALREADY_IN_QUEUE: {
     status: 409,
     message: 'Carrier already has a queue entry for this shipment',
+  },
+  NOT_CALLED: {
+    status: 409,
+    message: 'Carrier must be CALLED in the queue to submit a proposal',
+  },
+  ALREADY_PROPOSED: {
+    status: 409,
+    message: 'Carrier already has a proposal for this shipment',
+  },
+  TOO_MANY_ATTEMPTS: {
+    status: 409,
+    message: 'Proposal already has the maximum of 5 attempts',
   },
 }
 

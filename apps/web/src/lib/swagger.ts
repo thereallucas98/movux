@@ -25,6 +25,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Carrier queue per shipment — join, withdraw, own status',
       },
       {
+        name: 'Proposals',
+        description: 'Carrier price proposals per shipment — submit, counter-offer, withdraw',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

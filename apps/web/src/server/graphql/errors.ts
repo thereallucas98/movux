@@ -39,6 +39,9 @@ const CODE_TO_MESSAGE: Record<ErrorCode, string> = {
   NO_PRICING_AVAILABLE:
     'No pricing template available for this corridor and shipment type',
   ALREADY_IN_QUEUE: 'Carrier already has a queue entry for this shipment',
+  NOT_CALLED: 'Carrier must be CALLED in the queue to submit a proposal',
+  ALREADY_PROPOSED: 'Carrier already has a proposal for this shipment',
+  TOO_MANY_ATTEMPTS: 'Proposal already has the maximum of 5 attempts',
 }
 
 /**

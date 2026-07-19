@@ -1,0 +1,77 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-19T00:00:00.000Z",
+  "__export_source": "movux.docs:s2-t2-proposal-attempt",
+  "resources": [
+    {
+      "_id": "wrk_movux_s2_proposal",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S2 Proposal Attempt",
+      "description": "S2-T2: submit, counter-offer, withdraw, get my proposal (carrier)"
+    },
+    {
+      "_id": "env_movux_s2_proposal_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s2_proposal",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s2_proposal_carrier",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s2_proposal",
+      "name": "Carrier Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_submit_proposal",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_proposal",
+      "name": "Submit Proposal",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposal",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "cookieJar": "jar_movux_s2_proposal_carrier",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"priceInCents\": 22000,\n  \"carrierSlaHours\": 6,\n  \"message\": \"Posso ir hoje\"\n}"
+      }
+    },
+    {
+      "_id": "req_add_attempt",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_proposal",
+      "name": "Add Attempt (Counter-offer)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposal/attempts",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "cookieJar": "jar_movux_s2_proposal_carrier",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"priceInCents\": 19000,\n  \"message\": \"Baixei um pouco\"\n}"
+      }
+    },
+    {
+      "_id": "req_get_my_proposal",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_proposal",
+      "name": "Get My Proposal",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposal",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_proposal_carrier"
+    },
+    {
+      "_id": "req_withdraw_proposal",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_proposal",
+      "name": "Withdraw Proposal",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposal/withdraw",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_proposal_carrier"
+    }
+  ]
+}

@@ -50,6 +50,26 @@ export type { WithdrawProposalQueueResult } from './shipments/queue/withdraw-pro
 export { getMyQueueEntry } from './shipments/queue/get-my-queue-entry.use-case'
 export type { GetMyQueueEntryResult } from './shipments/queue/get-my-queue-entry.use-case'
 
+// ─── Proposals (S2-T2) ──────────────────────────────────────────────────────
+
+export { submitProposal } from './shipments/proposals/submit-proposal.use-case'
+export type {
+  SubmitProposalInput,
+  SubmitProposalResult,
+} from './shipments/proposals/submit-proposal.use-case'
+
+export { addProposalAttempt } from './shipments/proposals/add-proposal-attempt.use-case'
+export type {
+  AddProposalAttemptInput,
+  AddProposalAttemptResult,
+} from './shipments/proposals/add-proposal-attempt.use-case'
+
+export { withdrawProposal } from './shipments/proposals/withdraw-proposal.use-case'
+export type { WithdrawProposalResult } from './shipments/proposals/withdraw-proposal.use-case'
+
+export { getMyProposal } from './shipments/proposals/get-my-proposal.use-case'
+export type { GetMyProposalResult } from './shipments/proposals/get-my-proposal.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 
