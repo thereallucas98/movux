@@ -33,6 +33,12 @@ export type {
   ListShipmentsForCustomerResult,
 } from './shipments/list-shipments-for-customer.use-case'
 
+export { browseOpenShipments } from './shipments/browse-open-shipments.use-case'
+export type {
+  BrowseOpenShipmentsInput,
+  BrowseOpenShipmentsResult,
+} from './shipments/browse-open-shipments.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

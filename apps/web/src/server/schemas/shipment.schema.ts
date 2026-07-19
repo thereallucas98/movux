@@ -87,3 +87,10 @@ export const ListShipmentsQuerySchema = z.object({
 export const ShipmentIdParamSchema = z.object({
   shipmentId: z.uuid(),
 })
+
+export const BrowseShipmentsQuerySchema = z.object({
+  cityId: z.uuid().optional(),
+  type: shipmentTypeSchema.optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(100).optional(),
+})

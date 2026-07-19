@@ -59,6 +59,37 @@ export interface ListShipmentsFilter {
   limit?: number
 }
 
+export interface BrowseFilter {
+  cityId?: string
+  type?: ShipmentType
+  cursor?: string
+  limit?: number
+}
+
+/** Redacted address — never includes street/number/complement/zipCode/lat/lng/floor/hasElevator. */
+export interface BrowseAddressItem {
+  type: 'ORIGIN' | 'DESTINATION'
+  neighborhoodName: string
+  cityId: string
+  state: string
+}
+
+export type BrowseShipmentItem = Pick<
+  Shipment,
+  | 'id'
+  | 'type'
+  | 'description'
+  | 'estimatedWeightKg'
+  | 'estimatedVolumeM3'
+  | 'vehicleTypeRequired'
+  | 'scheduledDate'
+  | 'timeWindow'
+  | 'specificTime'
+  | 'suggestedPriceInCents'
+  | 'customerSlaHours'
+  | 'createdAt'
+> & { addresses: BrowseAddressItem[] }
+
 export interface ShipmentRepository {
   createDraft(data: CreateDraftInput): Promise<ShipmentWithDetails>
   findByIdForOwner(id: string, customerId: string): Promise<ShipmentWithDetails | null>
@@ -71,7 +102,28 @@ export interface ShipmentRepository {
     customerId: string,
     filter: ListShipmentsFilter,
   ): Promise<{ data: Shipment[]; nextCursor: string | null }>
+  listOpenForBrowse(
+    filter: BrowseFilter,
+  ): Promise<{ data: BrowseShipmentItem[]; nextCursor: string | null }>
 }
+
+const BROWSE_SELECT = {
+  id: true,
+  type: true,
+  description: true,
+  estimatedWeightKg: true,
+  estimatedVolumeM3: true,
+  vehicleTypeRequired: true,
+  scheduledDate: true,
+  timeWindow: true,
+  specificTime: true,
+  suggestedPriceInCents: true,
+  customerSlaHours: true,
+  createdAt: true,
+  addresses: {
+    select: { type: true, neighborhoodName: true, cityId: true, state: true },
+  },
+} as const
 
 export function createShipmentRepository(prisma: PrismaClient): ShipmentRepository {
   return {
@@ -129,6 +181,29 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
         ...(filter.cursor
           ? { cursor: { id: filter.cursor }, skip: 1 }
           : {}),
+      })
+
+      const hasMore = data.length > limit
+      const page = hasMore ? data.slice(0, limit) : data
+      const nextCursor = hasMore ? page[page.length - 1].id : null
+
+      return { data: page, nextCursor }
+    },
+
+    async listOpenForBrowse(filter) {
+      const limit = filter.limit ?? 20
+      const data = await prisma.shipment.findMany({
+        where: {
+          status: 'OPEN',
+          ...(filter.type ? { type: filter.type } : {}),
+          ...(filter.cityId
+            ? { addresses: { some: { type: 'ORIGIN', cityId: filter.cityId } } }
+            : {}),
+        },
+        select: BROWSE_SELECT,
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        take: limit + 1,
+        ...(filter.cursor ? { cursor: { id: filter.cursor }, skip: 1 } : {}),
       })
 
       const hasMore = data.length > limit

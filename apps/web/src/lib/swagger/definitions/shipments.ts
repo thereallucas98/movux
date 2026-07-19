@@ -92,6 +92,39 @@
 
 /**
  * @swagger
+ * /api/shipments/browse:
+ *   get:
+ *     summary: Browse open shipments (carrier)
+ *     description: >
+ *       Lists shipments with status OPEN. Addresses are redacted — only
+ *       neighborhoodName/cityId/state are returned, never street/number/
+ *       zipCode/lat/lng, until the carrier is selected.
+ *     tags: [Shipments]
+ *     parameters:
+ *       - in: query
+ *         name: cityId
+ *         schema: { type: string, format: uuid }
+ *         description: Filters by the ORIGIN address city
+ *       - in: query
+ *         name: type
+ *         schema: { type: string, enum: [RESIDENTIAL_MOVING, COMMERCIAL_FREIGHT, DELIVERY, OTHER] }
+ *       - in: query
+ *         name: cursor
+ *         schema: { type: string }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer }
+ *     responses:
+ *       '200':
+ *         description: Paginated list of open shipments with redacted addresses
+ *       '401':
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       '403':
+ *         description: Only carriers can browse
+ */
+
+/**
+ * @swagger
  * /api/shipments/{shipmentId}/publish:
  *   post:
  *     summary: Publish a shipment (DRAFT -> OPEN)

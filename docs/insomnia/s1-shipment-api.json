@@ -9,7 +9,7 @@
       "_type": "workspace",
       "parentId": null,
       "name": "Movux — S1 Shipment API",
-      "description": "S1-T3: create, publish, get, list (customer)"
+      "description": "S1-T3: create, publish, get, list (customer). S1-T4: browse (carrier)"
     },
     {
       "_id": "env_movux_s1_shipments_base",
@@ -27,7 +27,14 @@
       "_id": "jar_movux_s1_shipments",
       "_type": "cookie_jar",
       "parentId": "wrk_movux_s1_shipments",
-      "name": "Default Jar",
+      "name": "Customer Jar",
+      "cookies": []
+    },
+    {
+      "_id": "jar_movux_s1_carrier",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Carrier Jar",
       "cookies": []
     },
     {
@@ -87,6 +94,40 @@
       "url": "{{ _.base_url }}/api/shipments",
       "headers": [],
       "cookieJar": "jar_movux_s1_shipments"
+    },
+    {
+      "_id": "req_register_carrier",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Register Carrier (for browse)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/register",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "cookieJar": "jar_movux_s1_carrier",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Carrier Insomnia\",\n  \"email\": \"insomnia.s1t4@carrier.dev\",\n  \"password\": \"Senha@123\",\n  \"role\": \"CARRIER\",\n  \"phone\": \"83999990000\"\n}"
+      }
+    },
+    {
+      "_id": "req_browse_shipments",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Browse Open Shipments",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/browse",
+      "headers": [],
+      "cookieJar": "jar_movux_s1_carrier"
+    },
+    {
+      "_id": "req_browse_shipments_filtered",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Browse Open Shipments — filtered",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/browse?type=DELIVERY&cityId={{ _.city_id }}",
+      "headers": [],
+      "cookieJar": "jar_movux_s1_carrier"
     }
   ]
 }

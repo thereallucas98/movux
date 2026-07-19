@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 0 ✅ concluído — próximo: Sprint 1 (Shipment API)
+**Status:** Sprint 1 ✅ concluído — próximo: Sprint 2 (Proposals & Queue)
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -43,7 +43,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | S1-T1 | Geography seed — state, city, neighborhood, cluster (João Pessoa) | ✅ | [→](tasks/s1-t1-geography-seed/) |
 | S1-T2 | Pricing seed — templates, modifiers, snapshot inicial | ✅ | [→](tasks/s1-t2-pricing-seed/) |
 | S1-T3 | Shipment API — create, get, list (customer) | ✅ | [→](tasks/s1-t3-shipment-api/) |
-| S1-T4 | Shipment browse API — list open (carrier), filter por cidade/tipo | ○ | [→](tasks/s1-t4-shipment-browse/) |
+| S1-T4 | Shipment browse API — list open (carrier), filter por cidade/tipo | ✅ | [→](tasks/s1-t4-shipment-browse/) |
 
 ---
 
