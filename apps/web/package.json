@@ -9,7 +9,7 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed/categories.ts && tsx prisma/seed/specialties.ts",
+    "db:seed": "dotenv -e .env -- tsx prisma/seed/geography.ts",
     "dev": "next dev --port 3001",
     "build": "prisma generate && next build",
     "start": "next start",

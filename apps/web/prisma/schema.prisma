@@ -217,7 +217,7 @@ enum NotificationDeliveryStatus {
 model State {
   id       String @id @default(uuid())
   name     String
-  uf       String @db.Char(2)
+  uf       String @unique @db.Char(2)
   ibgeCode String @map("ibge_code")
 
   cities City[]
@@ -229,7 +229,7 @@ model City {
   id       String  @id @default(uuid())
   stateId  String  @map("state_id")
   name     String
-  ibgeCode String  @map("ibge_code")
+  ibgeCode String  @unique @map("ibge_code")
   isActive Boolean @default(true) @map("is_active")
 
   state                State                 @relation(fields: [stateId], references: [id], onDelete: Restrict)
@@ -252,6 +252,7 @@ model Neighborhood {
   clusterMemberships ClusterNeighborhood[]
   shipmentAddresses  ShipmentAddress[]
 
+  @@unique([cityId, name])
   @@map("neighborhood")
 }
 
