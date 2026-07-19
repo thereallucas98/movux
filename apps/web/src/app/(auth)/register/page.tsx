@@ -1,6 +1,24 @@
-import { RegisterForm } from '~/components/features/auth/register-form'
+import { redirect } from 'next/navigation'
 
-export default function RegisterPage() {
+import { RegisterForm } from '~/components/features/auth/register-form'
+import { getServerPrincipal } from '~/lib/get-server-principal'
+
+export default async function RegisterPage() {
+  const principal = await getServerPrincipal()
+
+  if (principal) {
+    switch (principal.role) {
+      case 'ADMIN':
+        redirect('/admin/dashboard')
+        break
+      case 'CARRIER':
+        redirect('/carrier/dashboard')
+        break
+      default:
+        redirect('/customer/dashboard')
+    }
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col items-center gap-1 text-center">
@@ -8,7 +26,7 @@ export default function RegisterPage() {
           Criar conta
         </h1>
         <p className="text-muted-foreground text-[16px] leading-[24px]">
-          Comece a organizar suas escalas ainda hoje
+          Chama um Movux — cadastre-se para começar
         </p>
       </header>
 

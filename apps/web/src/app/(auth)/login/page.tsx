@@ -10,11 +10,13 @@ export default async function LoginPage() {
   if (principal) {
     switch (principal.role) {
       case 'ADMIN':
-      case 'SUPER_ADMIN':
         redirect('/admin/dashboard')
         break
+      case 'CARRIER':
+        redirect('/carrier/dashboard')
+        break
       default:
-        redirect('/dashboard')
+        redirect('/customer/dashboard')
     }
   }
 

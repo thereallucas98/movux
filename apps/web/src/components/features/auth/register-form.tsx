@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff, Lock, LogIn, Mail, UserRound } from 'lucide-react'
+import { Eye, EyeOff, Lock, LogIn, Mail, Phone, UserRound } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -10,6 +10,7 @@ import { z } from 'zod'
 
 import { AuthField, authInputCls } from '~/components/features/auth/auth-field'
 import { t } from '~/i18n/t'
+import { api, ApiClientError } from '~/lib/api-client'
 import { cn } from '~/lib/utils'
 
 const registerSchema = z
@@ -18,13 +19,28 @@ const registerSchema = z
     email: z.email({ message: t('auth.email.invalid') }),
     password: z.string().min(8, { message: t('auth.password.min') }),
     confirmPassword: z.string().min(8, { message: t('auth.password.min') }),
+    role: z.enum(['CUSTOMER', 'CARRIER']),
+    phone: z.string().optional(),
   })
   .refine((d) => d.password === d.confirmPassword, {
     message: t('auth.register.confirmPassword.mismatch'),
     path: ['confirmPassword'],
   })
+  .refine((d) => d.role !== 'CARRIER' || !!d.phone?.trim(), {
+    message: t('auth.register.phone.required'),
+    path: ['phone'],
+  })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
+
+interface RegisterResponse {
+  user: { id: string; email: string; fullName: string; role: string }
+}
+
+const ROLE_OPTIONS: { value: 'CUSTOMER' | 'CARRIER'; label: string }[] = [
+  { value: 'CUSTOMER', label: t('auth.register.role.customer') },
+  { value: 'CARRIER', label: t('auth.register.role.carrier') },
+]
 
 export function RegisterForm() {
   const router = useRouter()
@@ -35,6 +51,7 @@ export function RegisterForm() {
     register,
     handleSubmit,
     setError,
+    setValue,
     trigger,
     watch,
     formState: { errors, isSubmitting },
@@ -47,14 +64,18 @@ export function RegisterForm() {
       email: '',
       password: '',
       confirmPassword: '',
+      role: 'CUSTOMER',
+      phone: '',
     },
   })
+
+  const role = watch('role')
+  const passwordValue = watch('password')
+  const confirmValue = watch('confirmPassword')
 
   // Re-validate confirmPassword whenever password changes so the match error
   // clears/reappears in real time (zod `.refine` runs on the object, so this
   // ensures the second field's error tracks the first).
-  const passwordValue = watch('password')
-  const confirmValue = watch('confirmPassword')
   useEffect(() => {
     if (confirmValue !== '' || passwordValue !== '') {
       trigger('confirmPassword').catch(() => undefined)
@@ -62,26 +83,20 @@ export function RegisterForm() {
   }, [passwordValue, confirmValue, trigger])
 
   async function onSubmit(values: RegisterFormValues) {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      const { user } = await api.post<RegisterResponse>('/api/auth/register', {
         fullName: values.fullName,
         email: values.email,
         password: values.password,
-        role: 'USER',
-      }),
-    })
-
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}))
-      setError('root', {
-        message: body?.message ?? t('auth.register.error'),
+        role: values.role,
+        phone: values.phone?.trim() || undefined,
       })
-      return
+      router.push(user.role === 'CARRIER' ? '/carrier/dashboard' : '/customer/dashboard')
+    } catch (err) {
+      const message =
+        err instanceof ApiClientError ? err.message : t('auth.register.error')
+      setError('root', { message })
     }
-
-    router.push('/dashboard')
   }
 
   return (
@@ -91,6 +106,31 @@ export function RegisterForm() {
       noValidate
     >
       <div className="flex flex-col gap-4">
+        <AuthField label={t('auth.register.role.label')}>
+          <div className="grid grid-cols-2 gap-2">
+            {ROLE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  setValue('role', option.value)
+                  trigger('phone').catch(() => undefined)
+                }}
+                aria-pressed={role === option.value}
+                className={cn(
+                  'flex h-12 w-full items-center justify-center rounded-[8px] border px-4 text-[16px] font-medium transition-colors',
+                  'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
+                  role === option.value
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-input bg-background text-foreground hover:bg-accent',
+                )}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </AuthField>
+
         <AuthField
           label={t('auth.register.fullName.label')}
           error={errors.fullName?.message}
@@ -127,6 +167,28 @@ export function RegisterForm() {
             />
           </div>
         </AuthField>
+
+        {role === 'CARRIER' && (
+          <AuthField
+            label={t('auth.register.phone.label')}
+            error={errors.phone?.message}
+          >
+            <div className="relative">
+              <Phone
+                className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2"
+                aria-hidden
+              />
+              <input
+                {...register('phone')}
+                type="tel"
+                placeholder={t('auth.register.phone.placeholder')}
+                autoComplete="tel"
+                aria-invalid={errors.phone ? true : undefined}
+                className={cn(authInputCls, 'pl-10')}
+              />
+            </div>
+          </AuthField>
+        )}
 
         <AuthField
           label={t('auth.password.label')}

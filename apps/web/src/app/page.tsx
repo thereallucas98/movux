@@ -13,9 +13,11 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 import { Button } from '~/components/ui/button'
 import { Logo } from '~/components/ui/logo'
+import { getServerPrincipal } from '~/lib/get-server-principal'
 
 import { LandingFAQ } from './_landing/landing-faq'
 import { LandingHeroPreview } from './_landing/landing-hero-preview'
@@ -51,7 +53,22 @@ const PARALLAX_BLOCKS = [
   },
 ] as const
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const principal = await getServerPrincipal()
+
+  if (principal) {
+    switch (principal.role) {
+      case 'ADMIN':
+        redirect('/admin/dashboard')
+        break
+      case 'CARRIER':
+        redirect('/carrier/dashboard')
+        break
+      default:
+        redirect('/customer/dashboard')
+    }
+  }
+
   return (
     <div className="bg-background text-foreground">
       <SiteHeader />

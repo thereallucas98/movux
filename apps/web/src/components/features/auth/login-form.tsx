@@ -10,6 +10,7 @@ import { z } from 'zod'
 
 import { AuthField, authInputCls } from '~/components/features/auth/auth-field'
 import { t } from '~/i18n/t'
+import { api, ApiClientError } from '~/lib/api-client'
 import { cn } from '~/lib/utils'
 
 const loginSchema = z.object({
@@ -19,6 +20,16 @@ const loginSchema = z.object({
 })
 
 type LoginFormValues = z.infer<typeof loginSchema>
+
+interface LoginResponse {
+  user: { id: string; email: string; fullName: string; role: string }
+}
+
+function destinationForRole(role: string): string {
+  if (role === 'CARRIER') return '/carrier/dashboard'
+  if (role === 'ADMIN') return '/admin/dashboard'
+  return '/customer/dashboard'
+}
 
 export function LoginForm() {
   const searchParams = useSearchParams()
@@ -38,27 +49,19 @@ export function LoginForm() {
   })
 
   async function onSubmit(values: LoginFormValues) {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: values.email, password: values.password }),
-    })
-
-    if (!res.ok) {
-      setError('root', { message: t('auth.login.invalidCredentials') })
-      return
+    try {
+      const { user } = await api.post<LoginResponse>('/api/auth/login', {
+        email: values.email,
+        password: values.password,
+      })
+      window.location.href = redirectTo || destinationForRole(user.role)
+    } catch (err) {
+      const message =
+        err instanceof ApiClientError
+          ? err.message
+          : t('auth.login.invalidCredentials')
+      setError('root', { message })
     }
-
-    const { user } = await res.json()
-
-    let destination = '/dashboard'
-    if (redirectTo) {
-      destination = redirectTo
-    } else if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
-      destination = '/admin/dashboard'
-    }
-
-    window.location.href = destination
   }
 
   return (
@@ -119,22 +122,14 @@ export function LoginForm() {
           </div>
         </AuthField>
 
-        <div className="flex items-center justify-between">
-          <label className="text-foreground inline-flex cursor-pointer items-center gap-2 text-[14px] leading-[20px]">
-            <input
-              type="checkbox"
-              {...register('remember')}
-              className="border-input text-primary focus-visible:ring-ring size-4 rounded-[4px] border focus-visible:ring-2 focus-visible:outline-none"
-            />
-            <span>Lembrar-me</span>
-          </label>
-          <Link
-            href="/forgot-password"
-            className="text-primary text-[14px] leading-[20px] font-medium hover:underline"
-          >
-            {t('auth.login.forgotLink')}
-          </Link>
-        </div>
+        <label className="text-foreground inline-flex cursor-pointer items-center gap-2 text-[14px] leading-[20px]">
+          <input
+            type="checkbox"
+            {...register('remember')}
+            className="border-input text-primary focus-visible:ring-ring size-4 rounded-[4px] border focus-visible:ring-2 focus-visible:outline-none"
+          />
+          <span>Lembrar-me</span>
+        </label>
       </div>
 
       {errors.root && (
@@ -148,7 +143,7 @@ export function LoginForm() {
         disabled={isSubmitting}
         className="bg-primary text-primary-foreground flex h-12 w-full cursor-pointer items-center justify-center rounded-[8px] px-4 py-3 text-[16px] font-medium transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none disabled:opacity-60"
       >
-        {isSubmitting ? t('auth.login.submitting') : 'Entrar'}
+        {isSubmitting ? t('auth.login.submitting') : t('auth.login.submit')}
       </button>
 
       <div className="flex items-center justify-center gap-3">

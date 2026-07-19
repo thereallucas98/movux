@@ -35,38 +35,12 @@ export const dict: Record<string, string> = {
   'auth.register.submitting': 'Criando conta…',
   'auth.register.error': 'Erro ao criar conta. Tente novamente.',
   'auth.register.loginCta': 'Já tem conta? Entrar',
-
-  // Auth — forgot password
-  'auth.forgot.title': 'Recuperar senha',
-  'auth.forgot.description':
-    'Informe seu email e enviaremos um link para redefinir sua senha.',
-  'auth.forgot.submit': 'Enviar link',
-  'auth.forgot.submitting': 'Enviando…',
-  'auth.forgot.success':
-    'Se o email estiver cadastrado, você receberá um link em instantes.',
-  'auth.forgot.backToLogin': 'Voltar para login',
-
-  // Auth — reset password
-  'auth.reset.title': 'Nova senha',
-  'auth.reset.description': 'Escolha uma nova senha para sua conta.',
-  'auth.reset.newPassword.label': 'Nova senha',
-  'auth.reset.confirmPassword.label': 'Confirmar nova senha',
-  'auth.reset.submit': 'Redefinir senha',
-  'auth.reset.submitting': 'Redefinindo…',
-  'auth.reset.success': 'Senha redefinida com sucesso.',
-  'auth.reset.tokenExpired': 'Link inválido ou expirado.',
-  'auth.reset.invalidToken': 'Token inválido.',
-  'auth.reset.backToLogin': 'Ir para login',
-
-  // Auth — verify email
-  'auth.verify.title': 'Verificar email',
-  'auth.verify.verifying': 'Verificando seu email…',
-  'auth.verify.success': 'Email verificado com sucesso.',
-  'auth.verify.alreadyVerified': 'Email já estava verificado.',
-  'auth.verify.invalidToken': 'Token inválido ou expirado.',
-  'auth.verify.resendCta': 'Reenviar email de verificação',
-  'auth.verify.resending': 'Reenviando…',
-  'auth.verify.resent': 'Email reenviado. Verifique sua caixa de entrada.',
+  'auth.register.role.label': 'Eu sou',
+  'auth.register.role.customer': 'Cliente',
+  'auth.register.role.carrier': 'Transportador',
+  'auth.register.phone.label': 'Telefone / WhatsApp',
+  'auth.register.phone.placeholder': '(83) 99999-0000',
+  'auth.register.phone.required': 'Telefone obrigatório para transportador',
 
   // Auth — logout
   'auth.logout.submit': 'Sair',

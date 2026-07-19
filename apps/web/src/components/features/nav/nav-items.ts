@@ -1,43 +1,41 @@
 import {
-  Bell,
-  CalendarDays,
-  Clock,
-  Inbox,
+  ClipboardList,
   LayoutDashboard,
-  Settings,
-  Timer,
+  PackagePlus,
+  ShieldCheck,
+  Truck,
   type LucideIcon,
 } from 'lucide-react'
-
-export type BadgeKind = 'notifications-unread'
 
 export interface NavItem {
   href: string
   label: string
   icon: LucideIcon
-  /** Optional dynamic badge source. Renders count to the right of the label. */
-  badge?: BadgeKind
 }
 
-export const PRIMARY_NAV_ITEMS: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/schedules', label: 'Escalas', icon: CalendarDays },
-  { href: '/shifts', label: 'Turnos', icon: Clock },
-  { href: '/requests', label: 'Solicitações', icon: Inbox },
-  {
-    href: '/notifications',
-    label: 'Notificações',
-    icon: Bell,
-    badge: 'notifications-unread',
-  },
-  { href: '/time-tracking', label: 'Ponto', icon: Timer },
-  { href: '/settings', label: 'Configurações', icon: Settings },
+export const CUSTOMER_NAV_ITEMS: NavItem[] = [
+  { href: '/customer/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/customer/shipments', label: 'Meus fretes', icon: Truck },
+  { href: '/customer/shipments/new', label: 'Novo frete', icon: PackagePlus },
 ]
 
-/** Bottom-tab subset (mobile); Settings/Requests live behind "Mais". */
-export const MOBILE_TAB_ITEMS: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/schedules', label: 'Escalas', icon: CalendarDays },
-  { href: '/shifts', label: 'Turnos', icon: Clock },
-  { href: '/time-tracking', label: 'Ponto', icon: Timer },
+export const CARRIER_NAV_ITEMS: NavItem[] = [
+  { href: '/carrier/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/carrier/shipments', label: 'Fretes abertos', icon: Truck },
+  { href: '/carrier/proposals', label: 'Minhas propostas', icon: ClipboardList },
 ]
+
+export const ADMIN_NAV_ITEMS: NavItem[] = [
+  { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  {
+    href: '/admin/verifications',
+    label: 'Verificações',
+    icon: ShieldCheck,
+  },
+]
+
+export const NAV_ITEMS_BY_ROLE: Record<string, NavItem[]> = {
+  CUSTOMER: CUSTOMER_NAV_ITEMS,
+  CARRIER: CARRIER_NAV_ITEMS,
+  ADMIN: ADMIN_NAV_ITEMS,
+}

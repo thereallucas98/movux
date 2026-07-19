@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const ADMIN_ROLES = ['ADMIN', 'SUPER_ADMIN']
+const ROLE_PREFIXES: Record<string, string> = {
+  '/customer': 'CUSTOMER',
+  '/carrier': 'CARRIER',
+  '/admin': 'ADMIN',
+}
+
+function dashboardForRole(role: string): string {
+  if (role === 'CARRIER') return '/carrier/dashboard'
+  if (role === 'ADMIN') return '/admin/dashboard'
+  return '/customer/dashboard'
+}
 
 /**
  * Decode JWT payload without verification (Edge-compatible).
- * Full verification happens server-side in API routes / context.
+ * Full verification happens server-side in API routes / server components.
  * Middleware only needs role for route gating.
  */
 function decodeJwtPayload(token: string): { sub: string; role: string } | null {
@@ -38,24 +48,18 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  if (pathname.startsWith('/admin')) {
-    if (!ADMIN_ROLES.includes(payload.role)) {
-      return NextResponse.redirect(new URL('/', req.url))
-    }
+  const matchedPrefix = Object.keys(ROLE_PREFIXES).find((prefix) =>
+    pathname.startsWith(prefix),
+  )
+  if (matchedPrefix && payload.role !== ROLE_PREFIXES[matchedPrefix]) {
+    return NextResponse.redirect(
+      new URL(dashboardForRole(payload.role), req.url),
+    )
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: [
-    '/admin/:path*',
-    '/dashboard/:path*',
-    '/schedules/:path*',
-    '/shifts/:path*',
-    '/requests/:path*',
-    '/time-tracking/:path*',
-    '/settings/:path*',
-    '/onboarding/:path*',
-  ],
+  matcher: ['/customer/:path*', '/carrier/:path*', '/admin/:path*'],
 }
