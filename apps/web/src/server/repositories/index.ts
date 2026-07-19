@@ -3,9 +3,12 @@ import { createAssignmentRepository } from './assignment.repository'
 import { createAuditLogRepository } from './audit-log.repository'
 import { createShiftCandidateRepository } from './candidate.repository'
 import { createCategoryRepository } from './category.repository'
+import { createCustomerProfileRepository } from './customer-profile.repository'
 import { createNotificationRepository } from './notification.repository'
 import { createNotificationPreferenceRepository } from './notification-preference.repository'
+import { createPricingRepository } from './pricing.repository'
 import { createScheduleRepository } from './schedule.repository'
+import { createShipmentRepository } from './shipment.repository'
 import { createShiftRepository } from './shift.repository'
 import { createShiftPatternRepository } from './shift-pattern.repository'
 import { createShiftExpectedCompositionRepository } from './shift-expected-composition.repository'
@@ -22,6 +25,9 @@ import { createWorkspaceMembershipRepository } from './workspace-membership.repo
 import { createWorkspaceRepository } from './workspace.repository'
 
 export const userRepository = createUserRepository(prisma)
+export const customerProfileRepository = createCustomerProfileRepository(prisma)
+export const pricingRepository = createPricingRepository(prisma)
+export const shipmentRepository = createShipmentRepository(prisma)
 export const tenantRepository = createTenantRepository(prisma)
 export const tenantMembershipRepository =
   createTenantMembershipRepository(prisma)

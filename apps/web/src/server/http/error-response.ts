@@ -55,6 +55,10 @@ export type ErrorCode =
   // Time tracking (Task 13)
   | 'ALREADY_CLOCKED_IN'
   | 'EXPORT_TOO_LARGE'
+  // Shipments (S1-T3)
+  | 'CUSTOMER_PROFILE_NOT_FOUND'
+  | 'INVALID_ADDRESS'
+  | 'NO_PRICING_AVAILABLE'
 
 interface ErrorShape {
   status: number
@@ -153,6 +157,18 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   EXPORT_TOO_LARGE: {
     status: 409,
     message: 'Export row count exceeds the cap',
+  },
+  CUSTOMER_PROFILE_NOT_FOUND: {
+    status: 404,
+    message: 'Customer profile not found',
+  },
+  INVALID_ADDRESS: {
+    status: 400,
+    message: 'Address neighborhood is not in the known catalog',
+  },
+  NO_PRICING_AVAILABLE: {
+    status: 422,
+    message: 'No pricing template available for this corridor and shipment type',
   },
 }
 

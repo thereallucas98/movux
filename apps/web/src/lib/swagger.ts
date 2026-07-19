@@ -17,6 +17,10 @@ const options: swaggerJsdoc.Options = {
       },
       { name: 'Me', description: 'Authenticated user — profile and password' },
       {
+        name: 'Shipments',
+        description: 'Freight/moving shipments — create, publish, get, list (customer)',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',
@@ -89,6 +93,23 @@ const options: swaggerJsdoc.Options = {
             message: { type: 'string' },
             code: { type: 'string' },
             details: { type: 'array', items: { type: 'object' } },
+          },
+        },
+        ShipmentAddressInput: {
+          type: 'object',
+          required: ['street', 'number', 'neighborhoodId', 'cityId', 'state', 'zipCode'],
+          properties: {
+            street: { type: 'string' },
+            number: { type: 'string' },
+            complement: { type: 'string' },
+            neighborhoodId: { type: 'string', format: 'uuid' },
+            cityId: { type: 'string', format: 'uuid' },
+            state: { type: 'string', minLength: 2, maxLength: 2 },
+            zipCode: { type: 'string' },
+            lat: { type: 'number' },
+            lng: { type: 'number' },
+            floor: { type: 'integer' },
+            hasElevator: { type: 'boolean' },
           },
         },
       },

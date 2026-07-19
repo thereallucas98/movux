@@ -1,0 +1,92 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-19T00:00:00.000Z",
+  "__export_source": "movux.docs:s1-t3-shipment-api",
+  "resources": [
+    {
+      "_id": "wrk_movux_s1_shipments",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S1 Shipment API",
+      "description": "S1-T3: create, publish, get, list (customer)"
+    },
+    {
+      "_id": "env_movux_s1_shipments_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3001",
+        "origin_neighborhood_id": "",
+        "destination_neighborhood_id": "",
+        "city_id": ""
+      }
+    },
+    {
+      "_id": "jar_movux_s1_shipments",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Default Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_create_shipment",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Create Shipment",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "cookieJar": "jar_movux_s1_shipments",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"type\": \"RESIDENTIAL_MOVING\",\n  \"description\": \"Mudança de apartamento, 2 quartos\",\n  \"vehicleTypeRequired\": \"VAN\",\n  \"scheduledDate\": \"2026-08-01\",\n  \"timeWindow\": \"MORNING\",\n  \"customerSlaHours\": 8,\n  \"origin\": {\n    \"street\": \"Av. Rui Carneiro\", \"number\": \"500\",\n    \"neighborhoodId\": \"{{ _.origin_neighborhood_id }}\", \"cityId\": \"{{ _.city_id }}\",\n    \"state\": \"PB\", \"zipCode\": \"58037000\", \"floor\": 3, \"hasElevator\": true\n  },\n  \"destination\": {\n    \"street\": \"Av. Almirante Tamandaré\", \"number\": \"100\",\n    \"neighborhoodId\": \"{{ _.destination_neighborhood_id }}\", \"cityId\": \"{{ _.city_id }}\",\n    \"state\": \"PB\", \"zipCode\": \"58039000\"\n  },\n  \"modifiers\": [{ \"modifierCode\": \"HELPER\", \"quantity\": 2 }]\n}"
+      }
+    },
+    {
+      "_id": "req_create_shipment_no_neighborhood",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Create Shipment — no neighborhoodId (400)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "cookieJar": "jar_movux_s1_shipments",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"type\": \"DELIVERY\", \"description\": \"x\", \"vehicleTypeRequired\": \"ANY\",\n  \"scheduledDate\": \"2026-08-01\", \"timeWindow\": \"MORNING\", \"customerSlaHours\": 4,\n  \"origin\": { \"street\": \"x\", \"number\": \"1\", \"cityId\": \"{{ _.city_id }}\", \"state\": \"PB\", \"zipCode\": \"58000000\" },\n  \"destination\": { \"street\": \"y\", \"number\": \"2\", \"cityId\": \"{{ _.city_id }}\", \"state\": \"PB\", \"zipCode\": \"58000000\" }\n}"
+      }
+    },
+    {
+      "_id": "req_publish_shipment",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Publish Shipment",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/SHIPMENT_ID/publish",
+      "headers": [],
+      "cookieJar": "jar_movux_s1_shipments"
+    },
+    {
+      "_id": "req_get_shipment",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "Get Shipment",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/SHIPMENT_ID",
+      "headers": [],
+      "cookieJar": "jar_movux_s1_shipments"
+    },
+    {
+      "_id": "req_list_shipments",
+      "_type": "request",
+      "parentId": "wrk_movux_s1_shipments",
+      "name": "List My Shipments",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments",
+      "headers": [],
+      "cookieJar": "jar_movux_s1_shipments"
+    }
+  ]
+}

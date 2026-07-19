@@ -13,6 +13,26 @@ export type {
 export { getCurrentUser } from './auth/get-current-user.use-case'
 export type { GetCurrentUserResult } from './auth/get-current-user.use-case'
 
+// ─── Shipments ───────────────────────────────────────────────────────────────
+
+export { createShipment } from './shipments/create-shipment.use-case'
+export type {
+  CreateShipmentInput,
+  CreateShipmentResult,
+} from './shipments/create-shipment.use-case'
+
+export { publishShipment } from './shipments/publish-shipment.use-case'
+export type { PublishShipmentResult } from './shipments/publish-shipment.use-case'
+
+export { getShipment } from './shipments/get-shipment.use-case'
+export type { GetShipmentResult } from './shipments/get-shipment.use-case'
+
+export { listShipmentsForCustomer } from './shipments/list-shipments-for-customer.use-case'
+export type {
+  ListShipmentsForCustomerInput,
+  ListShipmentsForCustomerResult,
+} from './shipments/list-shipments-for-customer.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 
