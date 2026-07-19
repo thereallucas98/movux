@@ -70,6 +70,15 @@ export type { WithdrawProposalResult } from './shipments/proposals/withdraw-prop
 export { getMyProposal } from './shipments/proposals/get-my-proposal.use-case'
 export type { GetMyProposalResult } from './shipments/proposals/get-my-proposal.use-case'
 
+export { listProposalsForShipment } from './shipments/proposals/list-proposals-for-shipment.use-case'
+export type { ListProposalsForShipmentResult } from './shipments/proposals/list-proposals-for-shipment.use-case'
+
+export { acceptProposal } from './shipments/proposals/accept-proposal.use-case'
+export type { AcceptProposalResult } from './shipments/proposals/accept-proposal.use-case'
+
+export { rejectProposal } from './shipments/proposals/reject-proposal.use-case'
+export type { RejectProposalResult } from './shipments/proposals/reject-proposal.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

@@ -1,0 +1,59 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-19T00:00:00.000Z",
+  "__export_source": "movux.docs:s2-t4-customer-accept",
+  "resources": [
+    {
+      "_id": "wrk_movux_s2_accept",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S2 Customer Accept",
+      "description": "S2-T4: list, accept, reject proposals (customer)"
+    },
+    {
+      "_id": "env_movux_s2_accept_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s2_accept",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "", "proposal_id": "" }
+    },
+    {
+      "_id": "jar_movux_s2_accept_customer",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s2_accept",
+      "name": "Customer Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_list_proposals",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_accept",
+      "name": "List Proposals",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposals",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_accept_customer"
+    },
+    {
+      "_id": "req_accept_proposal",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_accept",
+      "name": "Accept Proposal",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposals/{{ _.proposal_id }}/accept",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_accept_customer"
+    },
+    {
+      "_id": "req_reject_proposal",
+      "_type": "request",
+      "parentId": "wrk_movux_s2_accept",
+      "name": "Reject Proposal",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/proposals/{{ _.proposal_id }}/reject",
+      "headers": [],
+      "cookieJar": "jar_movux_s2_accept_customer"
+    }
+  ]
+}

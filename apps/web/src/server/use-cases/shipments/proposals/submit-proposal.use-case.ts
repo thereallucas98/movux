@@ -15,7 +15,10 @@ export interface SubmitProposalInput {
 
 export type SubmitProposalResult =
   | { success: true; proposal: ProposalWithAttempts }
-  | { success: false; code: 'NOT_FOUND' | 'NOT_CALLED' | 'ALREADY_PROPOSED' }
+  | {
+      success: false
+      code: 'NOT_FOUND' | 'NOT_CALLED' | 'ALREADY_PROPOSED' | 'INVALID_STATE_TRANSITION'
+    }
 
 interface SubmitProposalRepos {
   shipmentRepo: ShipmentRepository
@@ -34,6 +37,9 @@ export async function submitProposal(
   const shipment = await repos.shipmentRepo.findForProposal(shipmentId)
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
+  }
+  if (shipment.status !== 'OPEN' && shipment.status !== 'PROPOSALS_RECEIVED') {
+    return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
   const queueEntry = await repos.queueRepo.findByShipmentAndCarrier(shipmentId, carrierId)
@@ -63,6 +69,10 @@ export async function submitProposal(
 
   await repos.queueRepo.updateStatus(queueEntry.id, 'ACTIVE')
   await refillCalledGroup(repos.queueRepo, shipmentId)
+
+  if (shipment.status === 'OPEN') {
+    await repos.shipmentRepo.updateStatus(shipmentId, 'PROPOSALS_RECEIVED')
+  }
 
   return { success: true, proposal }
 }

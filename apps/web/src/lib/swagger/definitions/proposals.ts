@@ -82,6 +82,84 @@
 
 /**
  * @swagger
+ * /api/shipments/{shipmentId}/proposals:
+ *   get:
+ *     summary: List all proposals (customer)
+ *     description: Returns every proposal (any status) with attempts for a shipment the authenticated customer owns.
+ *     tags: [Proposals]
+ *     parameters:
+ *       - in: path
+ *         name: shipmentId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: List of proposals with attempts
+ *       '404':
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @swagger
+ * /api/shipments/{shipmentId}/proposals/{proposalId}/accept:
+ *   post:
+ *     summary: Accept a proposal (select the carrier)
+ *     description: >
+ *       Only valid while the shipment is PROPOSALS_RECEIVED and the proposal
+ *       is ACTIVE. Accepts the proposal's current attempt, moves the
+ *       shipment to CARRIER_SELECTED with finalPriceInCents set, rejects
+ *       every other ACTIVE proposal for the shipment, and exhausts any
+ *       remaining non-terminal queue entries.
+ *     tags: [Proposals]
+ *     parameters:
+ *       - in: path
+ *         name: shipmentId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: path
+ *         name: proposalId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Proposal accepted, shipment CARRIER_SELECTED
+ *       '404':
+ *         $ref: '#/components/responses/NotFoundError'
+ *       '409':
+ *         description: Shipment is not PROPOSALS_RECEIVED, or proposal is not ACTIVE
+ */
+
+/**
+ * @swagger
+ * /api/shipments/{shipmentId}/proposals/{proposalId}/reject:
+ *   post:
+ *     summary: Reject a proposal's current attempt
+ *     description: >
+ *       Rejects the current attempt. If it was the 5th attempt, the whole
+ *       proposal becomes REJECTED and the queue entry EXHAUSTED (advancing
+ *       the call group); otherwise the proposal stays ACTIVE and the
+ *       carrier may submit another attempt.
+ *     tags: [Proposals]
+ *     parameters:
+ *       - in: path
+ *         name: shipmentId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *       - in: path
+ *         name: proposalId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     responses:
+ *       '200':
+ *         description: Attempt rejected
+ *       '404':
+ *         $ref: '#/components/responses/NotFoundError'
+ *       '409':
+ *         description: Shipment is not PROPOSALS_RECEIVED, or proposal is not ACTIVE
+ */
+
+/**
+ * @swagger
  * /api/shipments/{shipmentId}/proposal/withdraw:
  *   post:
  *     summary: Withdraw the proposal

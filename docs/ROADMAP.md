@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 1 ✅ concluído — próximo: Sprint 2 (Proposals & Queue)
+**Status:** Sprint 2 ✅ concluído — próximo: Sprint 3 (Transit Flow)
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -56,7 +56,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | S2-T1 | Proposal queue API — join, status, hybrid call group | ✅ | [→](tasks/s2-t1-proposal-queue/) |
 | S2-T2 | Proposal attempt API — submit (até 5), counter-offer, withdraw | ✅ | [→](tasks/s2-t2-proposal-attempt/) |
 | S2-T3 | SLA engine — cálculo `(customer + carrier) / 2`, expiração automática | ✅ | [→](tasks/s2-t3-sla-engine/) |
-| S2-T4 | Customer accept API — aceitar proposta, atualizar status do shipment | ○ | [→](tasks/s2-t4-customer-accept/) |
+| S2-T4 | Customer accept API — aceitar proposta, atualizar status do shipment | ✅ | [→](tasks/s2-t4-customer-accept/) |
 
 ---
 

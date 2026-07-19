@@ -3,6 +3,7 @@ import type {
   Proposal,
   ProposalAttempt,
   ProposalStatus,
+  ResponseType,
 } from '~/generated/prisma/client'
 
 export type ProposalWithAttempts = Proposal & { attempts: ProposalAttempt[] }
@@ -36,6 +37,20 @@ export interface ProposalRepository {
   findExpiredActiveByShipment(
     shipmentId: string,
   ): Promise<{ id: string; queueEntryId: string }[]>
+  listByShipment(shipmentId: string): Promise<ProposalWithAttempts[]>
+  findByIdForShipment(
+    proposalId: string,
+    shipmentId: string,
+  ): Promise<ProposalWithAttempts | null>
+  respondToAttempt(
+    proposalId: string,
+    attemptNumber: number,
+    responseType: ResponseType,
+  ): Promise<void>
+  findOtherActiveByShipment(
+    shipmentId: string,
+    exceptProposalId: string,
+  ): Promise<{ id: string; currentAttempt: number; queueEntryId: string }[]>
 }
 
 export function createProposalRepository(prisma: PrismaClient): ProposalRepository {
@@ -95,6 +110,35 @@ export function createProposalRepository(prisma: PrismaClient): ProposalReposito
       return prisma.proposal.findMany({
         where: { shipmentId, status: 'ACTIVE', expiresAt: { lt: new Date() } },
         select: { id: true, queueEntryId: true },
+      })
+    },
+
+    async listByShipment(shipmentId) {
+      return prisma.proposal.findMany({
+        where: { shipmentId },
+        include: { attempts: { orderBy: { attemptNumber: 'asc' } } },
+        orderBy: { createdAt: 'asc' },
+      })
+    },
+
+    async findByIdForShipment(proposalId, shipmentId) {
+      return prisma.proposal.findFirst({
+        where: { id: proposalId, shipmentId },
+        include: { attempts: { orderBy: { attemptNumber: 'asc' } } },
+      })
+    },
+
+    async respondToAttempt(proposalId, attemptNumber, responseType) {
+      await prisma.proposalAttempt.updateMany({
+        where: { proposalId, attemptNumber },
+        data: { responseType, respondedAt: new Date() },
+      })
+    },
+
+    async findOtherActiveByShipment(shipmentId, exceptProposalId) {
+      return prisma.proposal.findMany({
+        where: { shipmentId, status: 'ACTIVE', id: { not: exceptProposalId } },
+        select: { id: true, currentAttempt: true, queueEntryId: true },
       })
     },
   }

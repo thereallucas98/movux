@@ -102,6 +102,7 @@ export interface ShipmentRepository {
     id: string,
   ): Promise<{ status: ShipmentStatus; customerSlaHours: number } | null>
   updateStatus(id: string, status: ShipmentStatus): Promise<void>
+  markCarrierSelected(id: string, finalPriceInCents: number): Promise<void>
   listForCustomer(
     customerId: string,
     filter: ListShipmentsFilter,
@@ -190,6 +191,13 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
       await prisma.shipment.update({ where: { id }, data: { status } })
     },
 
+    async markCarrierSelected(id, finalPriceInCents) {
+      await prisma.shipment.update({
+        where: { id },
+        data: { status: 'CARRIER_SELECTED', finalPriceInCents },
+      })
+    },
+
     async listForCustomer(customerId, filter) {
       const limit = filter.limit ?? 20
       const data = await prisma.shipment.findMany({
@@ -212,7 +220,7 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
       const limit = filter.limit ?? 20
       const data = await prisma.shipment.findMany({
         where: {
-          status: 'OPEN',
+          status: { in: ['OPEN', 'PROPOSALS_RECEIVED'] },
           ...(filter.type ? { type: filter.type } : {}),
           ...(filter.cityId
             ? { addresses: { some: { type: 'ORIGIN', cityId: filter.cityId } } }

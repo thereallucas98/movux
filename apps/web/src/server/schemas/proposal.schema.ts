@@ -18,3 +18,8 @@ export const AddProposalAttemptSchema = z.object({
   priceInCents: z.number().int().positive(),
   message: z.string().optional(),
 })
+
+export const ProposalIdParamSchema = z.object({
+  shipmentId: z.uuid(),
+  proposalId: z.uuid(),
+})

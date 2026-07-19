@@ -18,6 +18,7 @@ export interface ProposalQueueRepository {
   create(shipmentId: string, carrierId: string, position: number): Promise<QueueEntry>
   updateStatus(id: string, status: QueueEntryStatus, calledAt?: Date): Promise<void>
   markManyCalled(ids: string[]): Promise<void>
+  exhaustOthers(shipmentId: string, exceptQueueEntryId: string): Promise<void>
 }
 
 export function createProposalQueueRepository(
@@ -65,6 +66,17 @@ export function createProposalQueueRepository(
       await prisma.proposalQueueEntry.updateMany({
         where: { id: { in: ids } },
         data: { status: 'CALLED', calledAt: new Date() },
+      })
+    },
+
+    async exhaustOthers(shipmentId, exceptQueueEntryId) {
+      await prisma.proposalQueueEntry.updateMany({
+        where: {
+          shipmentId,
+          id: { not: exceptQueueEntryId },
+          status: { in: ['WAITING', 'CALLED', 'ACTIVE'] },
+        },
+        data: { status: 'EXHAUSTED', exhaustedAt: new Date() },
       })
     },
   }

@@ -1,0 +1,21 @@
+# S2-T4 — Todo
+
+- [x] Fix `submit-proposal.use-case.ts` — guard de status + transição `OPEN → PROPOSALS_RECEIVED`
+- [x] `proposalRepository.listByShipment`
+- [x] `proposalRepository.findByIdForShipment`
+- [x] `proposalRepository.respondToAttempt`
+- [x] `proposalRepository.findOtherActiveByShipment`
+- [x] `proposalQueueRepository.exhaustOthers`
+- [x] `shipmentRepository.markCarrierSelected`
+- [x] `ProposalIdParamSchema` em `proposal.schema.ts`
+- [x] `use-cases/shipments/proposals/list-proposals-for-shipment.use-case.ts`
+- [x] `use-cases/shipments/proposals/accept-proposal.use-case.ts`
+- [x] `use-cases/shipments/proposals/reject-proposal.use-case.ts`
+- [x] Registrar nos barrels
+- [x] `app/api/shipments/[shipmentId]/proposals/route.ts` — GET
+- [x] `app/api/shipments/[shipmentId]/proposals/[proposalId]/accept/route.ts` — POST
+- [x] `app/api/shipments/[shipmentId]/proposals/[proposalId]/reject/route.ts` — POST
+- [x] Swagger — 3 endpoints em `proposals.ts`
+- [x] `docs/insomnia/s2-customer-accept.json`
+- [x] QA via curl: list, accept (cascata: outras propostas REJECTED, fila EXHAUSTED, shipment CARRIER_SELECTED), reject < 5 (continua ACTIVE), reject na 5ª (REJECTED + fila avança)
+- [x] `pnpm exec tsc --noEmit` sem filtro, diff contra a baseline

@@ -25,7 +25,7 @@ export async function joinProposalQueue(
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
   }
-  if (shipment.status !== 'OPEN') {
+  if (shipment.status !== 'OPEN' && shipment.status !== 'PROPOSALS_RECEIVED') {
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
