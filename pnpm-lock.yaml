@@ -23,6 +23,12 @@ importers:
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.71.1(react@19.2.4))
+      '@movux/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@movux/env':
+        specifier: workspace:*
+        version: link:../../packages/env
       '@pothos/core':
         specifier: ^4.12.0
         version: 4.12.0(graphql@16.12.0)
@@ -107,12 +113,6 @@ importers:
       '@tanstack/react-query':
         specifier: 5.90.21
         version: 5.90.21(react@19.2.4)
-      '@turnora/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
-      '@turnora/env':
-        specifier: workspace:*
-        version: link:../../packages/env
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -207,21 +207,21 @@ importers:
       '@graphql-codegen/typescript-operations':
         specifier: ^5.0.9
         version: 5.0.9(graphql@16.12.0)
+      '@movux/eslint-config':
+        specifier: workspace:*
+        version: link:../../config/eslint-config
+      '@movux/prettier':
+        specifier: workspace:*
+        version: link:../../config/prettier
+      '@movux/tsconfig':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
       '@playwright/test':
         specifier: 1.59.1
         version: 1.59.1
       '@tailwindcss/postcss':
         specifier: ^4.1.18
         version: 4.1.18
-      '@turnora/eslint-config':
-        specifier: workspace:*
-        version: link:../../config/eslint-config
-      '@turnora/prettier':
-        specifier: workspace:*
-        version: link:../../config/prettier
-      '@turnora/tsconfig':
-        specifier: workspace:*
-        version: link:../../config/typescript-config
       '@types/bcryptjs':
         specifier: ^3.0.0
         version: 3.0.0
@@ -282,7 +282,7 @@ importers:
 
   config/eslint-config:
     devDependencies:
-      '@turnora/prettier':
+      '@movux/prettier':
         specifier: workspace:*
         version: link:../prettier
       '@typescript-eslint/eslint-plugin':
@@ -348,13 +348,13 @@ importers:
         specifier: 4.3.6
         version: 4.3.6
     devDependencies:
-      '@turnora/eslint-config':
+      '@movux/eslint-config':
         specifier: workspace:*
         version: link:../../config/eslint-config
-      '@turnora/prettier':
+      '@movux/prettier':
         specifier: workspace:*
         version: link:../../config/prettier
-      '@turnora/tsconfig':
+      '@movux/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript-config
 
@@ -367,13 +367,13 @@ importers:
         specifier: 4.3.6
         version: 4.3.6
     devDependencies:
-      '@turnora/eslint-config':
+      '@movux/eslint-config':
         specifier: workspace:*
         version: link:../../config/eslint-config
-      '@turnora/prettier':
+      '@movux/prettier':
         specifier: workspace:*
         version: link:../../config/prettier
-      '@turnora/tsconfig':
+      '@movux/tsconfig':
         specifier: workspace:*
         version: link:../../config/typescript-config
       '@types/node':

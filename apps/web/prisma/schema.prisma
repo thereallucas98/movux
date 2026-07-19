@@ -7,680 +7,916 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
-  SUPER_ADMIN
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum Role {
+  CUSTOMER
+  CARRIER
   ADMIN
-  USER
 }
 
-enum PlanTier {
-  FREE
-  SMALL_TEAM
-  BUSINESS
-  CORPORATE
+// Shared by carrierProfile, company and carrierDocument. Not every value
+// applies to every model (e.g. company never uses SUSPENDED) — that's fine,
+// unused enum members cost nothing.
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
 }
 
-enum TenantRole {
-  SUPER_ADMIN
+enum ShipmentStatus {
+  DRAFT
+  OPEN
+  PROPOSALS_RECEIVED
+  CARRIER_SELECTED
+  COLLECTED
+  IN_TRANSIT
+  DELIVERED
+  REVIEWED
+  CANCELLED
+  EXPIRED
 }
 
-enum WorkspaceRole {
-  ADMIN
-  COORDENADOR
-  COLABORADOR
-}
-
-enum WorkspaceVertical {
-  HOSPITAL
-  CLINIC
-  GYM
+enum ShipmentType {
+  RESIDENTIAL_MOVING
+  COMMERCIAL_FREIGHT
+  DELIVERY
   OTHER
 }
 
-enum CategoryScope {
-  GLOBAL
-  TENANT
-  WORKSPACE
+// Includes ANY for "required" fields (shipment.vehicleTypeRequired,
+// pricingTemplate.vehicleType); vehicle.type never uses ANY.
+enum VehicleType {
+  ANY
+  MOTORCYCLE
+  VAN
+  TRUCK_SMALL
+  TRUCK_LARGE
 }
 
-enum SpecialtyScope {
-  GLOBAL
-  TENANT
-  WORKSPACE
-}
-
-enum ScheduleStatus {
-  DRAFT
-  PUBLISHED
-  CLOSED
-}
-
-enum ShiftStatus {
-  OPEN
-  FILLED
-  CANCELLED
-  COMPLETED
-}
-
-enum AssignmentStatus {
-  PENDING_ACCEPT
+enum ProposalStatus {
+  ACTIVE
   ACCEPTED
   REJECTED
-  EXPIRED
-  CANCELLED
-  TRANSFERRED
-  PENDING_CLOSURE
-  COMPLETED
-}
-
-enum TransferRequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  CANCELLED
-}
-
-enum ShiftAssignmentMode {
-  DIRECT_ASSIGN
-  OPEN_FOR_APPLY
-}
-
-enum ShiftCandidateStatus {
-  QUEUED
-  APPROVED
-  REJECTED
   WITHDRAWN
+  EXPIRED
 }
 
-enum RequestType {
-  SWAP
-  OFFER
-  TIME_OFF
+enum SignalType {
+  COMPLETED
+  CARRIER_REJECTED
+  CUSTOMER_REJECTED
 }
 
-enum RequestStatus {
-  PENDING_PEER
-  PENDING
-  APPROVED
-  REJECTED
+enum PlanCode {
+  FREE
+  PRO_MONTHLY
+  PRO_SEMESTER
+  PRO_ANNUAL
+  BUSINESS
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
   CANCELLED
-}
-
-enum NotificationType {
-  SCHEDULE_PUBLISHED
-  SCHEDULE_CLOSED
-  SHIFT_CANCELLED
-  ASSIGNMENT_CREATED
-  ASSIGNMENT_ACCEPTED
-  ASSIGNMENT_REJECTED
-  TRANSFER_REQUESTED
-  TRANSFER_APPROVED
-  TRANSFER_REJECTED
-  CANDIDATE_QUEUED
-  CANDIDATE_APPROVED
-  CANDIDATE_REJECTED
-  CANDIDATE_WITHDRAWN
-  REQUEST_SUBMITTED
-  REQUEST_RESOLVED
-  REQUEST_PEER_DECISION
+  TRIALING
 }
 
 enum NotificationChannel {
-  IN_APP
   EMAIL
-  PUSH
   WHATSAPP
 }
 
-model User {
-  id                    String    @id @default(uuid())
-  fullName              String    @map("full_name")
-  email                 String    @unique
-  passwordHash          String    @map("password_hash")
-  role                  UserRole  @default(USER)
-  phone                 String?
-  isActive              Boolean   @default(true) @map("is_active")
-  emailVerified         Boolean   @default(false) @map("email_verified")
-  resetToken            String?   @map("reset_token")
-  resetTokenExpires     DateTime? @map("reset_token_expires")
-  avatarUrl             String?   @map("avatar_url")
-  dateOfBirth           DateTime? @map("date_of_birth") @db.Date
-  bio                   String?
-  whatsappOptIn         Boolean   @default(false) @map("whatsapp_opt_in")
-  emergencyContactName  String?   @map("emergency_contact_name")
-  emergencyContactPhone String?   @map("emergency_contact_phone")
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
+// Also reused by safetyCheckIn.role and reviewTag.targetRole (both CUSTOMER|CARRIER only).
+enum ReviewerRole {
+  CUSTOMER
+  CARRIER
+}
 
-  tenantMemberships    TenantMembership[]
-  workspaceMemberships WorkspaceMembership[]
-  userSpecialties      UserSpecialty[]
-  auditLogs            AuditLog[]
-  shiftAssignments     ShiftAssignment[]     @relation("UserAssignments")
-  assignmentsCreated   ShiftAssignment[]     @relation("UserAssignmentsCreated")
-  transferRequestsAsTarget    TransferRequest[] @relation("TransferTarget")
-  transferRequestsAsRequester TransferRequest[] @relation("TransferRequester")
-  transferRequestsAsDecider   TransferRequest[] @relation("TransferDecider")
-  shiftCandidates             ShiftCandidate[]  @relation("ShiftCandidates")
-  shiftCandidateDecisions     ShiftCandidate[]  @relation("ShiftCandidateDecisions")
-  requestsAsRequester         Request[]         @relation("RequestRequester")
-  requestsAsResolver          Request[]         @relation("RequestResolver")
-  requestsAsSwapTarget        Request[]         @relation("RequestSwapTarget")
-  timeEntries                 TimeEntry[]       @relation("TimeEntryUser")
-  timeEntriesClosed           TimeEntry[]       @relation("TimeEntryCloser")
-  shiftTimelineNotes          ShiftTimelineNote[] @relation("ShiftTimelineNoteAuthor")
-  notifications               Notification[]
-  notificationPreferences     NotificationPreference[]
+enum ModifierCode {
+  FLOOR
+  HELPER
+  DISASSEMBLY
+  PACKING
+  DIFFICULT_ACCESS
+  NIGHT_WEEKEND
+}
+
+enum NeighborhoodClassification {
+  POPULAR
+  MIDDLE
+  UPSCALE
+}
+
+enum TimeWindow {
+  MORNING
+  AFTERNOON
+  EVENING
+  SPECIFIC
+}
+
+enum AddressType {
+  ORIGIN
+  DESTINATION
+}
+
+enum ModifierValueType {
+  FIXED
+  PERCENTAGE
+}
+
+enum SubscriberType {
+  CARRIER
+  COMPANY
+}
+
+enum QueueEntryStatus {
+  WAITING
+  CALLED
+  ACTIVE
+  EXHAUSTED
+  WITHDRAWN
+}
+
+enum ResponseType {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum EventType {
+  PUBLISHED
+  CARRIER_CALLED
+  PROPOSAL_RECEIVED
+  CARRIER_SELECTED
+  SAFETY_CONFIRMED
+  COLLECTED
+  IN_TRANSIT
+  DELIVERED
+  WINDOW_ALERT
+  CANCELLED
+  EXPIRED
+}
+
+enum CompanyMemberRole {
+  OWNER
+  MANAGER
+  DRIVER
+}
+
+enum CarrierDocumentType {
+  CPF
+  CNH_FRONT
+  CNH_BACK
+  ADDRESS_PROOF
+  SELFIE
+  CNPJ
+  SOCIAL_CONTRACT
+}
+
+enum BillingCycle {
+  MONTHLY
+  SEMESTER
+  ANNUAL
+  CUSTOM
+}
+
+enum LastTrigger {
+  VOLUME
+  DEVIATION
+  TIME
+  MANUAL
+}
+
+// Not in the original enum list (DATABASE-DESIGN.md §4.3 subscriptionPayment.status)
+// but required to map the field faithfully — PENDING/APPROVED/REJECTED overlap
+// with VerificationStatus, REFUNDED does not, so it needs its own enum.
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REFUNDED
+}
+
+// Not in the original enum list (DATABASE-DESIGN.md §11.1 notificationLog.status).
+enum NotificationDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// ============================================================================
+// Geography (DATABASE-DESIGN.md §5)
+// ============================================================================
+
+model State {
+  id       String @id @default(uuid())
+  name     String
+  uf       String @db.Char(2)
+  ibgeCode String @map("ibge_code")
+
+  cities City[]
+
+  @@map("state")
+}
+
+model City {
+  id       String  @id @default(uuid())
+  stateId  String  @map("state_id")
+  name     String
+  ibgeCode String  @map("ibge_code")
+  isActive Boolean @default(true) @map("is_active")
+
+  state                State                 @relation(fields: [stateId], references: [id], onDelete: Restrict)
+  neighborhoods        Neighborhood[]
+  neighborhoodClusters NeighborhoodCluster[]
+  pricingModifiers     PricingModifier[]
+  shipmentAddresses    ShipmentAddress[]
+
+  @@map("city")
+}
+
+model Neighborhood {
+  id             String                     @id @default(uuid())
+  cityId         String                     @map("city_id")
+  name           String
+  classification NeighborhoodClassification
+  ibgeCode       String?                    @map("ibge_code")
+
+  city               City                  @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  clusterMemberships ClusterNeighborhood[]
+  shipmentAddresses  ShipmentAddress[]
+
+  @@map("neighborhood")
+}
+
+model NeighborhoodCluster {
+  id     String @id @default(uuid())
+  cityId String @map("city_id")
+  name   String
+  slug   String
+
+  city                          City                  @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  neighborhoods                 ClusterNeighborhood[]
+  pricingTemplatesAsOrigin      PricingTemplate[]     @relation("PricingTemplateOrigin")
+  pricingTemplatesAsDestination PricingTemplate[]     @relation("PricingTemplateDestination")
+
+  @@unique([cityId, slug])
+  @@map("neighborhoodCluster")
+}
+
+model ClusterNeighborhood {
+  clusterId      String @map("cluster_id")
+  neighborhoodId String @map("neighborhood_id")
+
+  cluster      NeighborhoodCluster @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  neighborhood Neighborhood        @relation(fields: [neighborhoodId], references: [id], onDelete: Cascade)
+
+  @@id([clusterId, neighborhoodId])
+  @@map("clusterNeighborhood")
+}
+
+// ============================================================================
+// Identity (DATABASE-DESIGN.md §3)
+// ============================================================================
+
+// Email verification required before any action; role is immutable after
+// creation (changing role requires a new account) — both enforced at the
+// use-case layer, not the DB.
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  fullName        String    @map("full_name")
+  passwordHash    String    @map("password_hash")
+  role            Role
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  avatarUrl       String?   @map("avatar_url")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  customerProfile          CustomerProfile?
+  carrierProfile           CarrierProfile?        @relation("CarrierProfileUser")
+  carrierProfilesVerified  CarrierProfile[]       @relation("CarrierProfileVerifier")
+  companiesOwned           Company[]              @relation("CompanyOwner")
+  companiesVerified        Company[]              @relation("CompanyVerifier")
+  companyMemberships       CompanyMembership[]
+  vehicles                 Vehicle[]
+  carrierDocuments         CarrierDocument[]      @relation("CarrierDocumentOwner")
+  carrierDocumentsReviewed CarrierDocument[]      @relation("CarrierDocumentReviewer")
+  carrierPricingConfigs    CarrierPricingConfig[]
+  proposalQueueEntries     ProposalQueueEntry[]
+  proposals                Proposal[]
+  chatMessages             ChatMessage[]
+  safetyCheckIns           SafetyCheckIn[]
+  shipmentEventsTriggered  ShipmentEvent[]
+  reviewsWritten           Review[]               @relation("ReviewAuthor")
+  reviewsReceived          Review[]               @relation("ReviewSubject")
+  notificationLogs         NotificationLog[]
 
   @@map("user")
 }
 
-model Tenant {
-  id                String    @id @default(uuid())
-  name              String
-  timezone          String    @default("America/Sao_Paulo")
-  plan              PlanTier  @default(FREE) @map("plan")
-  gracePeriodUntil  DateTime? @map("grace_period_until")
-  isActive          Boolean   @default(true) @map("is_active")
-  deletedAt         DateTime? @map("deleted_at")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+// 1:1 extension of user where role = CUSTOMER.
+model CustomerProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique @map("user_id")
+  phone          String?
+  avgRating      Decimal? @map("avg_rating") @db.Decimal(3, 2)
+  totalShipments Int      @default(0) @map("total_shipments")
 
-  memberships TenantMembership[]
-  workspaces  Workspace[]
-  categories  Category[]
-  specialties Specialty[]
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipments             Shipment[]
+  deliveryConfirmations DeliveryConfirmation[]
 
-  @@index([isActive])
-  @@map("tenant")
+  @@map("customerProfile")
 }
 
-model TenantMembership {
-  id        String     @id @default(uuid())
-  tenantId  String     @map("tenant_id")
-  userId    String     @map("user_id")
-  role      TenantRole
-  isActive  Boolean    @default(true) @map("is_active")
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt @map("updated_at")
+// 1:1 extension of user where role = CARRIER.
+// avgRating < 4.0 -> admin flag; avgRating < 3.5 -> auto-suspend (isActive = false).
+// Both thresholds enforced at the use-case layer, not the DB.
+model CarrierProfile {
+  id                 String             @id @default(uuid())
+  userId             String             @unique @map("user_id")
+  cpf                String?            @unique
+  phone              String
+  bio                String?
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  verifiedAt         DateTime?          @map("verified_at")
+  verifiedBy         String?            @map("verified_by")
+  avgRating          Decimal?           @map("avg_rating") @db.Decimal(3, 2)
+  totalShipments     Int                @default(0) @map("total_shipments")
+  isActive           Boolean            @default(true) @map("is_active")
+  currentCompanyId   String?            @map("current_company_id")
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation("CarrierProfileUser", fields: [userId], references: [id], onDelete: Cascade)
+  verifier       User?    @relation("CarrierProfileVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
+  currentCompany Company? @relation(fields: [currentCompanyId], references: [id], onDelete: SetNull)
 
-  @@unique([tenantId, userId])
-  @@index([userId])
-  @@index([tenantId, isActive])
-  @@map("tenantMembership")
+  @@index([verificationStatus])
+  @@map("carrierProfile")
 }
 
-model Workspace {
-  id                    String            @id @default(uuid())
-  tenantId              String            @map("tenant_id")
-  name                  String
-  timezone              String            @default("America/Sao_Paulo")
-  vertical              WorkspaceVertical
-  clockToleranceMinutes Int               @default(15) @map("clock_tolerance_minutes")
-  isActive              Boolean           @default(true) @map("is_active")
-  deletedAt             DateTime?         @map("deleted_at")
-  createdAt             DateTime          @default(now()) @map("created_at")
-  updatedAt             DateTime          @updatedAt @map("updated_at")
+// ============================================================================
+// Company & fleet (DATABASE-DESIGN.md §3.4-3.7)
+// ============================================================================
 
-  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  memberships     WorkspaceMembership[]
-  categories      Category[]
-  specialties     Specialty[]
-  userSpecialties UserSpecialty[]
-  schedules       Schedule[]
-  requests        Request[]
-  notifications   Notification[]
+model Company {
+  id                 String             @id @default(uuid())
+  cnpj               String             @unique
+  legalName          String             @map("legal_name")
+  tradeName          String?            @map("trade_name")
+  ownerId            String             @map("owner_id")
+  logoUrl            String?            @map("logo_url")
+  verificationStatus VerificationStatus @default(PENDING) @map("verification_status")
+  verifiedAt         DateTime?          @map("verified_at")
+  verifiedBy         String?            @map("verified_by")
+  isActive           Boolean            @default(true) @map("is_active")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
 
-  @@index([tenantId, isActive])
-  @@map("workspace")
+  owner                 User                   @relation("CompanyOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  verifier              User?                  @relation("CompanyVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
+  memberships           CompanyMembership[]
+  vehicles              Vehicle[]
+  carrierDocuments      CarrierDocument[]
+  carrierPricingConfigs CarrierPricingConfig[]
+  carriersCurrentlyHere CarrierProfile[]
+
+  @@map("company")
 }
 
-model WorkspaceMembership {
-  id          String        @id @default(uuid())
-  workspaceId String        @map("workspace_id")
-  userId      String        @map("user_id")
-  role        WorkspaceRole
-  isActive    Boolean       @default(true) @map("is_active")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
+// Links a carrier user to a company with a role. "Active in one company at a
+// time" (UNIQUE companyId+userId WHERE leftAt IS NULL) needs a partial index
+// Prisma's schema DSL can't express — enforced at the use-case layer, same as
+// the "exactly one OWNER per company" rule (DATABASE-DESIGN.md §3.5).
+model CompanyMembership {
+  id        String            @id @default(uuid())
+  companyId String            @map("company_id")
+  userId    String            @map("user_id")
+  role      CompanyMemberRole
+  joinedAt  DateTime          @default(now()) @map("joined_at")
+  leftAt    DateTime?         @map("left_at")
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([workspaceId, userId])
-  @@index([userId])
-  @@index([workspaceId, isActive])
-  @@map("workspaceMembership")
+  @@map("companyMembership")
 }
 
-model Category {
-  id          String             @id @default(uuid())
-  scope       CategoryScope
-  vertical    WorkspaceVertical?
-  tenantId    String?            @map("tenant_id")
-  workspaceId String?            @map("workspace_id")
-  slug        String
-  name        String
-  description String?
-  isActive    Boolean            @default(true) @map("is_active")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
+// Owned by a carrier (autônomo) or a company (frota) — exactly one of
+// ownerId/companyId must be set, never both; enforced at the use-case layer
+// (no DB CHECK constraint, per DATABASE-DESIGN.md §3.6).
+model Vehicle {
+  id           String      @id @default(uuid())
+  ownerId      String?     @map("owner_id")
+  companyId    String?     @map("company_id")
+  plate        String
+  type         VehicleType
+  brand        String
+  model        String
+  year         Int
+  crlvUrl      String?     @map("crlv_url")
+  crlvApproved Boolean     @default(false) @map("crlv_approved")
+  isActive     Boolean     @default(true) @map("is_active")
+  createdAt    DateTime    @default(now()) @map("created_at")
 
-  tenant         Tenant?        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  workspace      Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  schedules      Schedule[]
-  shifts         Shift[]
-  shiftPatterns  ShiftPattern[]
+  owner   User?    @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@unique([workspaceId, slug], map: "category_workspace_slug_unique")
-  @@index([scope, vertical])
-  @@index([scope, tenantId])
-  @@index([scope, workspaceId])
-  @@map("category")
+  @@map("vehicle")
 }
 
-model Specialty {
-  id          String             @id @default(uuid())
-  scope       SpecialtyScope
-  vertical    WorkspaceVertical?
-  tenantId    String?            @map("tenant_id")
-  workspaceId String?            @map("workspace_id")
-  slug        String
-  name        String
-  description String?
-  isActive    Boolean            @default(true) @map("is_active")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
+model CarrierDocument {
+  id                 String              @id @default(uuid())
+  carrierId          String?             @map("carrier_id")
+  companyId          String?             @map("company_id")
+  type               CarrierDocumentType
+  fileUrl            String              @map("file_url")
+  externalValidation Json?               @map("external_validation")
+  status             VerificationStatus  @default(PENDING)
+  reviewedBy         String?             @map("reviewed_by")
+  reviewedAt         DateTime?           @map("reviewed_at")
+  rejectionReason    String?             @map("rejection_reason")
+  uploadedAt         DateTime            @default(now()) @map("uploaded_at")
 
-  tenant            Tenant?                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  workspace         Workspace?                 @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  userSpecialties   UserSpecialty[]
-  shiftCompositions ShiftExpectedComposition[]
+  carrier  User?    @relation("CarrierDocumentOwner", fields: [carrierId], references: [id], onDelete: Restrict)
+  company  Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  reviewer User?    @relation("CarrierDocumentReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
 
-  @@unique([workspaceId, slug], map: "specialty_workspace_slug_unique")
-  @@index([scope, vertical])
-  @@index([scope, tenantId])
-  @@index([scope, workspaceId])
-  @@map("specialty")
+  @@map("carrierDocument")
 }
 
-model UserSpecialty {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
-  workspaceId String   @map("workspace_id")
-  specialtyId String   @map("specialty_id")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+// ============================================================================
+// Plans & billing (DATABASE-DESIGN.md §4)
+// ============================================================================
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
+// Seeded, not user-created (seed happens in S7-T1).
+model Plan {
+  id                      String       @id @default(uuid())
+  code                    PlanCode
+  name                    String
+  priceInCents            Int          @map("price_in_cents")
+  billingCycle            BillingCycle @map("billing_cycle")
+  maxActiveProposals      Int          @map("max_active_proposals")
+  maxDrivers              Int?         @map("max_drivers")
+  extraDriverPriceInCents Int?         @map("extra_driver_price_in_cents")
+  hasAdvancedAnalytics    Boolean      @default(false) @map("has_advanced_analytics")
+  hasPriorityInSearch     Boolean      @default(false) @map("has_priority_in_search")
+  hasVerifiedBadge        Boolean      @default(false) @map("has_verified_badge")
+  hasFleetManagement      Boolean      @default(false) @map("has_fleet_management")
+  hasMultiBranch          Boolean      @default(false) @map("has_multi_branch")
 
-  @@index([workspaceId, isActive])
-  @@index([specialtyId, isActive])
-  @@index([userId, isActive])
-  @@map("userSpecialty")
+  subscriptions Subscription[]
+
+  @@map("plan")
 }
 
-model Schedule {
-  id          String         @id @default(uuid())
-  workspaceId String         @map("workspace_id")
-  categoryId  String         @map("category_id")
-  name        String?
-  periodStart DateTime       @map("period_start")
-  periodEnd   DateTime       @map("period_end")
-  status      ScheduleStatus @default(DRAFT)
-  publishedAt DateTime?      @map("published_at")
-  closedAt    DateTime?      @map("closed_at")
-  deletedAt   DateTime?      @map("deleted_at")
-  isActive    Boolean        @default(true) @map("is_active")
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime       @updatedAt @map("updated_at")
+// subscriberId is polymorphic (User.id when subscriberType = CARRIER, or
+// Company.id when subscriberType = COMPANY) — no FK constraint, same pattern
+// as Turnora's AuditLog entityType/entityId.
+model Subscription {
+  id                 String             @id @default(uuid())
+  subscriberType     SubscriberType     @map("subscriber_type")
+  subscriberId       String             @map("subscriber_id")
+  planId             String             @map("plan_id")
+  status             SubscriptionStatus @default(ACTIVE)
+  mpPreapprovalId    String?            @map("mp_preapproval_id")
+  currentPeriodStart DateTime           @map("current_period_start")
+  currentPeriodEnd   DateTime           @map("current_period_end")
+  gracePeriodEndsAt  DateTime?          @map("grace_period_ends_at")
+  cancelledAt        DateTime?          @map("cancelled_at")
+  createdAt          DateTime           @default(now()) @map("created_at")
 
-  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  shifts        Shift[]
-  shiftPatterns ShiftPattern[]
+  plan     Plan                  @relation(fields: [planId], references: [id], onDelete: Restrict)
+  payments SubscriptionPayment[]
 
-  @@index([workspaceId, status, isActive])
-  @@index([workspaceId, categoryId, periodStart, periodEnd])
-  @@map("schedule")
+  @@index([status, currentPeriodEnd])
+  @@map("subscription")
 }
 
-// FK cascade graph (Task 08 research §5):
-// - Shift.scheduleId  -> Cascade (Schedule DRAFT hard-delete wipes child shifts)
-// - Shift.categoryId  -> Restrict (category soft-delete should fail loudly)
-// - Shift.patternId   -> SetNull (pattern delete keeps manually-edited shifts)
-model Shift {
-  id                  String              @id @default(uuid())
-  scheduleId          String              @map("schedule_id")
-  categoryId          String              @map("category_id")
-  patternId           String?             @map("pattern_id")
-  startAt             DateTime            @map("start_at")
-  endAt               DateTime            @map("end_at")
-  headcount           Int                 @default(1)
-  status              ShiftStatus         @default(OPEN)
-  assignmentMode      ShiftAssignmentMode @default(DIRECT_ASSIGN) @map("assignment_mode")
-  decisionWindowHours Int                 @default(48) @map("decision_window_hours")
-  notes               String?
-  cancelledAt         DateTime?           @map("cancelled_at")
-  cancelReason        String?             @map("cancel_reason")
-  createdAt           DateTime            @default(now()) @map("created_at")
-  updatedAt           DateTime            @updatedAt @map("updated_at")
+// Individual payment records from Mercado Pago webhooks.
+model SubscriptionPayment {
+  id             String        @id @default(uuid())
+  subscriptionId String        @map("subscription_id")
+  amountInCents  Int           @map("amount_in_cents")
+  status         PaymentStatus @default(PENDING)
+  mpPaymentId    String?       @map("mp_payment_id")
+  paidAt         DateTime?     @map("paid_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
 
-  schedule            Schedule                   @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  category            Category                   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  pattern             ShiftPattern?              @relation(fields: [patternId], references: [id], onDelete: SetNull)
-  expectedComposition ShiftExpectedComposition[]
-  assignments         ShiftAssignment[]
-  candidates          ShiftCandidate[]
-  timelineNotes       ShiftTimelineNote[]
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
-  @@unique([patternId, startAt], name: "shift_pattern_start_unique")
-  @@index([scheduleId, status])
-  @@index([scheduleId, startAt])
-  @@index([categoryId, startAt])
-  @@map("shift")
+  @@map("subscriptionPayment")
 }
 
-// FK cascade graph (Task 09 research §6):
-// - ShiftAssignment.shiftId           -> Cascade (Shift hard-delete wipes assignments)
-// - ShiftAssignment.userId            -> Restrict (block user delete with active assignments)
-// - ShiftAssignment.assignedByUserId  -> Restrict (preserve audit trail)
-// userId is nullable to allow Task 12 atomic SWAP via 3-step nulling window inside a tx.
-// Postgres treats NULLs as distinct in unique indexes, so @@unique([shiftId, userId]) still holds.
-model ShiftAssignment {
-  id               String           @id @default(uuid())
-  shiftId          String           @map("shift_id")
-  userId           String?          @map("user_id")
-  assignedByUserId String           @map("assigned_by_user_id")
-  status           AssignmentStatus @default(PENDING_ACCEPT)
-  decisionDeadline DateTime         @map("decision_deadline")
-  decidedAt        DateTime?        @map("decided_at")
-  rejectionReason  String?          @map("rejection_reason")
-  createdAt        DateTime         @default(now()) @map("created_at")
-  updatedAt        DateTime         @updatedAt @map("updated_at")
+// ============================================================================
+// Pricing engine (DATABASE-DESIGN.md §5.7-5.11)
+// ============================================================================
 
-  shift      Shift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  user       User?  @relation("UserAssignments", fields: [userId], references: [id], onDelete: Restrict)
-  assignedBy User   @relation("UserAssignmentsCreated", fields: [assignedByUserId], references: [id], onDelete: Restrict)
+// Base price for a corridor: origin cluster x destination cluster x shipment
+// type x vehicle type.
+model PricingTemplate {
+  id                   String       @id @default(uuid())
+  originClusterId      String       @map("origin_cluster_id")
+  destinationClusterId String       @map("destination_cluster_id")
+  shipmentType         ShipmentType @map("shipment_type")
+  vehicleType          VehicleType  @map("vehicle_type")
+  basePriceInCents     Int          @map("base_price_in_cents")
+  isActive             Boolean      @default(true) @map("is_active")
+  createdAt            DateTime     @default(now()) @map("created_at")
+  updatedAt            DateTime     @updatedAt @map("updated_at")
 
-  transferRequestsAsOriginal TransferRequest[] @relation("TransferOriginal")
-  transferRequestsAsNew      TransferRequest[] @relation("TransferNew")
-  resultedFromCandidate      ShiftCandidate?   @relation("ShiftCandidateResult")
-  swapSourceRequests         Request[]         @relation("RequestSwapSource")
-  swapTargetRequests         Request[]         @relation("RequestSwapTargetAssignment")
-  offerSourceRequests        Request[]         @relation("RequestOfferSource")
-  timeEntry                  TimeEntry?
+  originCluster      NeighborhoodCluster @relation("PricingTemplateOrigin", fields: [originClusterId], references: [id], onDelete: Restrict)
+  destinationCluster NeighborhoodCluster @relation("PricingTemplateDestination", fields: [destinationClusterId], references: [id], onDelete: Restrict)
+  pricingSignals     PricingSignal[]
+  pricingSnapshot    PricingSnapshot?
 
-  @@unique([shiftId, userId])
-  @@index([userId, status])
-  @@index([shiftId, status])
-  @@index([decisionDeadline])
-  @@map("shiftAssignment")
+  @@unique([originClusterId, destinationClusterId, shipmentType, vehicleType])
+  @@map("pricingTemplate")
 }
 
-// FK cascade graph (Task 10 research):
-// - originalAssignmentId -> Restrict (preserve transferred assignment history)
-// - newAssignmentId      -> SetNull (loses link gracefully if new assignment is hard-deleted)
-// - targetUserId         -> Restrict
-// - requestedByUserId    -> Restrict
-// - decidedByUserId      -> SetNull (matches AuditLog.actorUserId pattern)
-model TransferRequest {
-  id                   String                @id @default(uuid())
-  originalAssignmentId String                @map("original_assignment_id")
-  targetUserId         String                @map("target_user_id")
-  requestedByUserId    String                @map("requested_by_user_id")
-  reason               String
-  status               TransferRequestStatus @default(PENDING)
-  decidedByUserId      String?               @map("decided_by_user_id")
-  decidedAt            DateTime?             @map("decided_at")
-  decisionReason       String?               @map("decision_reason")
-  newAssignmentId      String?               @unique @map("new_assignment_id")
-  createdAt            DateTime              @default(now()) @map("created_at")
-  updatedAt            DateTime              @updatedAt @map("updated_at")
+// Incremental factors on top of base price. cityId = null means a global modifier.
+model PricingModifier {
+  id           String            @id @default(uuid())
+  cityId       String?           @map("city_id")
+  code         ModifierCode
+  name         String
+  valueType    ModifierValueType @map("value_type")
+  valueInCents Int               @map("value_in_cents")
+  isActive     Boolean           @default(true) @map("is_active")
 
-  originalAssignment ShiftAssignment  @relation("TransferOriginal", fields: [originalAssignmentId], references: [id], onDelete: Restrict)
-  newAssignment      ShiftAssignment? @relation("TransferNew", fields: [newAssignmentId], references: [id], onDelete: SetNull)
-  targetUser         User             @relation("TransferTarget", fields: [targetUserId], references: [id], onDelete: Restrict)
-  requestedBy        User             @relation("TransferRequester", fields: [requestedByUserId], references: [id], onDelete: Restrict)
-  decidedBy          User?            @relation("TransferDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+  city City? @relation(fields: [cityId], references: [id], onDelete: Cascade)
 
-  @@index([originalAssignmentId, status])
-  @@index([targetUserId, status])
-  @@index([status, createdAt])
-  @@map("transferRequest")
+  @@map("pricingModifier")
 }
 
-// FK cascade graph (Task 11 research §1):
-// - shiftId               -> Cascade (Shift hard-delete wipes candidates)
-// - userId                -> Restrict (preserve candidate history)
-// - decidedByUserId       -> SetNull (matches AuditLog pattern)
-// - resultingAssignmentId -> SetNull (assignment hard-delete leaves candidate intact)
-model ShiftCandidate {
-  id                    String               @id @default(uuid())
-  shiftId               String               @map("shift_id")
-  userId                String               @map("user_id")
-  queuePosition         Int                  @map("queue_position")
-  status                ShiftCandidateStatus @default(QUEUED)
-  decidedByUserId       String?              @map("decided_by_user_id")
-  decidedAt             DateTime?            @map("decided_at")
-  decisionReason        String?              @map("decision_reason")
-  resultingAssignmentId String?              @unique @map("resulting_assignment_id")
-  createdAt             DateTime             @default(now()) @map("created_at")
-  updatedAt             DateTime             @updatedAt @map("updated_at")
+// Carrier or company's custom multiplier over a platform modifier.
+model CarrierPricingConfig {
+  id           String       @id @default(uuid())
+  carrierId    String?      @map("carrier_id")
+  companyId    String?      @map("company_id")
+  modifierCode ModifierCode @map("modifier_code")
+  multiplier   Decimal      @db.Decimal(4, 2)
 
-  shift               Shift            @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  user                User             @relation("ShiftCandidates", fields: [userId], references: [id], onDelete: Restrict)
-  decidedBy           User?            @relation("ShiftCandidateDecisions", fields: [decidedByUserId], references: [id], onDelete: SetNull)
-  resultingAssignment ShiftAssignment? @relation("ShiftCandidateResult", fields: [resultingAssignmentId], references: [id], onDelete: SetNull)
+  carrier User?    @relation(fields: [carrierId], references: [id], onDelete: Restrict)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@unique([shiftId, userId])
-  @@unique([shiftId, queuePosition])
-  @@index([userId, status])
-  @@index([shiftId, status])
-  @@map("shiftCandidate")
+  @@map("carrierPricingConfig")
 }
 
-model ShiftPattern {
-  id               String   @id @default(uuid())
-  scheduleId       String   @map("schedule_id")
-  categoryId       String   @map("category_id")
-  name             String?
-  daysOfWeek       Int[]    @map("days_of_week")
-  startTimeMinutes Int      @map("start_time_minutes")
-  endTimeMinutes   Int      @map("end_time_minutes")
-  crossesMidnight  Boolean  @default(false) @map("crosses_midnight")
-  headcount        Int      @default(1)
-  isActive         Boolean  @default(true) @map("is_active")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+// Immutable event log — never updated, only appended.
+model PricingSignal {
+  id           String     @id @default(uuid())
+  templateId   String     @map("template_id")
+  shipmentId   String?    @map("shipment_id")
+  signalType   SignalType @map("signal_type")
+  priceInCents Int        @map("price_in_cents")
+  weight       Decimal    @db.Decimal(4, 3)
+  createdAt    DateTime   @default(now()) @map("created_at")
 
-  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  shifts   Shift[]
+  template PricingTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  shipment Shipment?       @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
 
-  @@index([scheduleId])
-  @@map("shiftPattern")
+  @@index([templateId, createdAt])
+  @@map("pricingSignal")
 }
 
-model ShiftExpectedComposition {
-  id          String   @id @default(uuid())
-  shiftId     String   @map("shift_id")
-  specialtyId String   @map("specialty_id")
-  count       Int      @default(1)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+// Current calculated base price for a template corridor — rebuilt by the pricing engine.
+model PricingSnapshot {
+  id               String      @id @default(uuid())
+  templateId       String      @unique @map("template_id")
+  basePriceInCents Int         @map("base_price_in_cents")
+  sampleSize       Int         @map("sample_size")
+  lastTrigger      LastTrigger @map("last_trigger")
+  calculatedAt     DateTime    @default(now()) @map("calculated_at")
 
-  shift     Shift     @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+  template PricingTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  @@unique([shiftId, specialtyId])
-  @@index([specialtyId])
-  @@map("shiftExpectedComposition")
+  @@map("pricingSnapshot")
 }
 
-model AuditLog {
-  id          String   @id @default(uuid())
-  actorUserId String?  @map("actor_user_id")
-  action      String
-  entityType  String   @map("entity_type")
-  entityId    String   @map("entity_id")
-  metadata    Json?
-  createdAt   DateTime @default(now()) @map("created_at")
+// ============================================================================
+// Shipment — the core transaction (DATABASE-DESIGN.md §6)
+// ============================================================================
 
-  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+model Shipment {
+  id                    String         @id @default(uuid())
+  customerId            String         @map("customer_id")
+  status                ShipmentStatus @default(DRAFT)
+  type                  ShipmentType
+  description           String
+  estimatedWeightKg     Decimal?       @map("estimated_weight_kg") @db.Decimal(8, 2)
+  estimatedVolumeM3     Decimal?       @map("estimated_volume_m3") @db.Decimal(8, 2)
+  vehicleTypeRequired   VehicleType    @map("vehicle_type_required")
+  scheduledDate         DateTime       @map("scheduled_date") @db.Date
+  timeWindow            TimeWindow     @map("time_window")
+  specificTime          DateTime?      @map("specific_time") @db.Time
+  suggestedPriceInCents Int            @map("suggested_price_in_cents")
+  finalPriceInCents     Int?           @map("final_price_in_cents")
+  etaMinutes            Int?           @map("eta_minutes")
+  windowExpiresAt       DateTime?      @map("window_expires_at")
+  customerSlaHours      Int            @map("customer_sla_hours")
+  safetyTermCustomerAt  DateTime?      @map("safety_term_customer_at")
+  safetyTermCarrierAt   DateTime?      @map("safety_term_carrier_at")
+  expiresAt             DateTime?      @map("expires_at")
+  cancelledAt           DateTime?      @map("cancelled_at")
+  cancelReason          String?        @map("cancel_reason")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
 
-  @@index([entityType, entityId])
-  @@index([actorUserId])
-  @@index([createdAt])
-  @@map("auditLog")
+  customer CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  addresses            ShipmentAddress[]
+  modifiers            ShipmentModifier[]
+  photos               ShipmentPhoto[]
+  proposalQueueEntries ProposalQueueEntry[]
+  proposals            Proposal[]
+  chatRoom             ChatRoom?
+  safetyCheckIns       SafetyCheckIn[]
+  events               ShipmentEvent[]
+  deliveryConfirmation DeliveryConfirmation?
+  reviews              Review[]
+  pricingSignals       PricingSignal[]
+
+  @@index([customerId, status])
+  @@index([status, scheduledDate])
+  @@map("shipment")
 }
 
-// FK cascade graph (Task 12 research §1):
-// - workspaceId               -> Cascade   (workspace delete wipes its requests)
-// - requestedById             -> Restrict  (block user delete with active requests)
-// - resolvedById              -> SetNull   (matches AuditLog.actorUserId pattern)
-// - swapTargetUserId          -> Restrict
-// - *AssignmentId (3 cols)    -> SetNull   (assignment delete preserves audit trail)
-//
-// Type-specific column integrity is enforced via CHECK constraints emitted in the
-// migration SQL (Prisma does not model checks). See migration file.
-model Request {
-  id                      String        @id @default(uuid())
-  workspaceId             String        @map("workspace_id")
-  type                    RequestType
-  status                  RequestStatus @default(PENDING)
+// One ORIGIN and one DESTINATION per shipment.
+model ShipmentAddress {
+  id               String      @id @default(uuid())
+  shipmentId       String      @map("shipment_id")
+  type             AddressType
+  street           String
+  number           String
+  complement       String?
+  neighborhoodId   String?     @map("neighborhood_id")
+  neighborhoodName String      @map("neighborhood_name")
+  cityId           String      @map("city_id")
+  state            String      @db.Char(2)
+  zipCode          String      @map("zip_code")
+  lat              Decimal?    @db.Decimal(10, 8)
+  lng              Decimal?    @db.Decimal(11, 8)
+  floor            Int?
+  hasElevator      Boolean?    @map("has_elevator")
 
-  requestedById           String        @map("requested_by_id")
-  resolvedById            String?       @map("resolved_by_id")
-  reason                  String
-  resolutionReason        String?       @map("resolution_reason")
+  shipment     Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  neighborhood Neighborhood? @relation(fields: [neighborhoodId], references: [id], onDelete: SetNull)
+  city         City          @relation(fields: [cityId], references: [id], onDelete: Restrict)
 
-  attachmentUrl           String?       @map("attachment_url")
-  attachmentMimeType      String?       @map("attachment_mime_type")
-  attachmentSizeBytes     Int?          @map("attachment_size_bytes")
-
-  // SWAP-only
-  swapSourceAssignmentId  String?       @map("swap_source_assignment_id")
-  swapTargetUserId        String?       @map("swap_target_user_id")
-  swapTargetAssignmentId  String?       @map("swap_target_assignment_id")
-  peerAcceptedAt          DateTime?     @map("peer_accepted_at")
-  peerRejectedAt          DateTime?     @map("peer_rejected_at")
-
-  // OFFER-only
-  offerSourceAssignmentId String?       @map("offer_source_assignment_id")
-
-  // TIME_OFF-only
-  timeOffStart            DateTime?     @map("time_off_start")
-  timeOffEnd              DateTime?     @map("time_off_end")
-
-  resolvedAt              DateTime?     @map("resolved_at")
-  createdAt               DateTime      @default(now()) @map("created_at")
-  updatedAt               DateTime      @updatedAt        @map("updated_at")
-
-  workspace             Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  requestedBy           User             @relation("RequestRequester", fields: [requestedById], references: [id], onDelete: Restrict)
-  resolvedBy            User?            @relation("RequestResolver",  fields: [resolvedById],  references: [id], onDelete: SetNull)
-  swapTargetUser        User?            @relation("RequestSwapTarget", fields: [swapTargetUserId], references: [id], onDelete: Restrict)
-  swapSourceAssignment  ShiftAssignment? @relation("RequestSwapSource", fields: [swapSourceAssignmentId], references: [id], onDelete: SetNull)
-  swapTargetAssignment  ShiftAssignment? @relation("RequestSwapTargetAssignment", fields: [swapTargetAssignmentId], references: [id], onDelete: SetNull)
-  offerSourceAssignment ShiftAssignment? @relation("RequestOfferSource", fields: [offerSourceAssignmentId], references: [id], onDelete: SetNull)
-
-  @@index([workspaceId, status])
-  @@index([requestedById, status])
-  @@index([swapTargetUserId, status])
-  @@index([type, status])
-  @@map("request")
+  @@unique([shipmentId, type])
+  @@map("shipmentAddress")
 }
 
-// FK cascade graph (Task 13 research §1.4):
-// - shiftAssignmentId   -> Cascade  (assignment delete wipes time entry)
-// - userId              -> Restrict (block user delete with active time entries)
-// - closedByUserId      -> SetNull  (matches AuditLog.actorUserId pattern)
-//
-// One row per assignment (UNIQUE on shift_assignment_id) — second clock-in
-// on the same assignment is rejected at the DB level (idempotency).
-model TimeEntry {
-  id                       String    @id @default(uuid())
-  shiftAssignmentId        String    @unique @map("shift_assignment_id")
-  userId                   String    @map("user_id")
-  clockInAt                DateTime  @map("clock_in_at")
-  clockInLocation          Json?     @map("clock_in_location")
-  clockInWithinTolerance   Boolean   @map("clock_in_within_tolerance")
-  clockOutAt               DateTime? @map("clock_out_at")
-  clockOutLocation         Json?     @map("clock_out_location")
-  clockOutWithinTolerance  Boolean?  @map("clock_out_within_tolerance")
-  overtimeMinutes          Int       @default(0) @map("overtime_minutes")
-  closedByUserId           String?   @map("closed_by_user_id")
-  closedAt                 DateTime? @map("closed_at")
-  notes                    String?
-  createdAt                DateTime  @default(now()) @map("created_at")
-  updatedAt                DateTime  @updatedAt @map("updated_at")
+// Selected modifiers for this specific shipment (snapshot of value at creation time).
+model ShipmentModifier {
+  id                  String       @id @default(uuid())
+  shipmentId          String       @map("shipment_id")
+  modifierCode        ModifierCode @map("modifier_code")
+  quantity            Int          @default(1)
+  appliedValueInCents Int          @map("applied_value_in_cents")
 
-  shiftAssignment ShiftAssignment @relation(fields: [shiftAssignmentId], references: [id], onDelete: Cascade)
-  user            User            @relation("TimeEntryUser",   fields: [userId], references: [id], onDelete: Restrict)
-  closedBy        User?           @relation("TimeEntryCloser", fields: [closedByUserId], references: [id], onDelete: SetNull)
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
-  @@index([userId, clockInAt])
-  @@map("timeEntry")
+  @@map("shipmentModifier")
 }
 
-// Public per-shift notes (Task 14). Append-only in v1; soft-delete deferred
-// to Phase 2. Authored by participants or workspace Coord/Admin (BF §7.12).
-model ShiftTimelineNote {
-  id           String   @id @default(uuid())
-  shiftId      String   @map("shift_id")
-  authorUserId String   @map("author_user_id")
-  note         String
-  createdAt    DateTime @default(now()) @map("created_at")
+model ShipmentPhoto {
+  id         String   @id @default(uuid())
+  shipmentId String   @map("shipment_id")
+  url        String
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
 
-  shift  Shift @relation(fields: [shiftId], references: [id], onDelete: Cascade)
-  author User  @relation("ShiftTimelineNoteAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
-  @@index([shiftId, createdAt])
-  @@map("shiftTimelineNote")
+  @@map("shipmentPhoto")
 }
 
-// Per-recipient in-app inbox row (Task 16). One row per (recipient × event).
-// Channels other than IN_APP are filtered at dispatch time and persist no row
-// in v1. Cascade decisions: workspaceId Cascade (delete wipes scoped notifs);
-// userId Restrict (project convention; users are soft-deleted via isActive).
-model Notification {
+// ============================================================================
+// Proposals & queue (DATABASE-DESIGN.md §7)
+// ============================================================================
+
+// Tracks carriers who expressed interest in a shipment (the FIFO queue).
+model ProposalQueueEntry {
   id          String           @id @default(uuid())
-  userId      String           @map("user_id")
-  workspaceId String           @map("workspace_id")
-  type        NotificationType
-  payload     Json
-  readAt      DateTime?        @map("read_at")
+  shipmentId  String           @map("shipment_id")
+  carrierId   String           @map("carrier_id")
+  status      QueueEntryStatus @default(WAITING)
+  position    Int
+  calledAt    DateTime?        @map("called_at")
+  exhaustedAt DateTime?        @map("exhausted_at")
   createdAt   DateTime         @default(now()) @map("created_at")
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  shipment Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  carrier  User      @relation(fields: [carrierId], references: [id], onDelete: Restrict)
+  proposal Proposal?
 
-  @@index([userId, createdAt])
-  @@index([userId, readAt])
-  @@map("notification")
+  @@unique([shipmentId, carrierId])
+  @@index([shipmentId, position])
+  @@map("proposalQueueEntry")
 }
 
-// Per-user opt-in matrix (Task 16). Rows are lazily upserted on PATCH; missing
-// rows fall back to DEFAULT_ENABLED_BY_CHANNEL in code.
-model NotificationPreference {
-  id        String              @id @default(uuid())
-  userId    String              @map("user_id")
-  type      NotificationType
-  channel   NotificationChannel
-  enabled   Boolean             @default(true)
-  createdAt DateTime            @default(now()) @map("created_at")
-  updatedAt DateTime            @updatedAt @map("updated_at")
+// One carrier's negotiation on one shipment. agreedSlaHours =
+// ceil((customerSlaHours + carrierSlaHours) / 2) — calculated at the
+// use-case layer.
+model Proposal {
+  id               String         @id @default(uuid())
+  shipmentId       String         @map("shipment_id")
+  carrierId        String         @map("carrier_id")
+  queueEntryId     String         @unique @map("queue_entry_id")
+  status           ProposalStatus @default(ACTIVE)
+  currentAttempt   Int            @default(1) @map("current_attempt")
+  customerSlaHours Int            @map("customer_sla_hours")
+  carrierSlaHours  Int            @map("carrier_sla_hours")
+  agreedSlaHours   Int            @map("agreed_sla_hours")
+  expiresAt        DateTime       @map("expires_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipment   Shipment           @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  carrier    User               @relation(fields: [carrierId], references: [id], onDelete: Restrict)
+  queueEntry ProposalQueueEntry @relation(fields: [queueEntryId], references: [id], onDelete: Cascade)
+  attempts   ProposalAttempt[]
 
-  @@unique([userId, type, channel])
-  @@index([userId])
-  @@map("notificationPreference")
+  @@unique([shipmentId, carrierId])
+  @@index([carrierId, status])
+  @@map("proposal")
+}
+
+// Each individual attempt within a proposal (up to 5).
+model ProposalAttempt {
+  id            String       @id @default(uuid())
+  proposalId    String       @map("proposal_id")
+  attemptNumber Int          @map("attempt_number")
+  priceInCents  Int          @map("price_in_cents")
+  message       String?
+  proposedAt    DateTime     @default(now()) @map("proposed_at")
+  respondedAt   DateTime?    @map("responded_at")
+  responseType  ResponseType @default(PENDING) @map("response_type")
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@map("proposalAttempt")
+}
+
+// ============================================================================
+// Chat (DATABASE-DESIGN.md §8)
+// ============================================================================
+
+// One room per shipment, created when the first proposal is submitted.
+model ChatRoom {
+  id         String   @id @default(uuid())
+  shipmentId String   @unique @map("shipment_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  shipment Shipment      @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
+
+  @@map("chatRoom")
+}
+
+model ChatMessage {
+  id       String    @id @default(uuid())
+  roomId   String    @map("room_id")
+  senderId String    @map("sender_id")
+  content  String
+  sentAt   DateTime  @default(now()) @map("sent_at")
+  readAt   DateTime? @map("read_at")
+
+  room   ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender User     @relation(fields: [senderId], references: [id], onDelete: Restrict)
+
+  @@index([roomId, sentAt])
+  @@map("chatMessage")
+}
+
+// ============================================================================
+// Safety & transit (DATABASE-DESIGN.md §9)
+// ============================================================================
+
+// Shipment cannot transition to COLLECTED until both roles have confirmed —
+// enforced at the use-case layer.
+model SafetyCheckIn {
+  id          String       @id @default(uuid())
+  shipmentId  String       @map("shipment_id")
+  userId      String       @map("user_id")
+  role        ReviewerRole
+  confirmedAt DateTime     @default(now()) @map("confirmed_at")
+  ipAddress   String?      @map("ip_address") @db.Inet
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([shipmentId, role])
+  @@map("safetyCheckIn")
+}
+
+// Immutable audit log of all events on a shipment. triggeredBy = null means
+// a system event (e.g. auto-confirm after 24h).
+model ShipmentEvent {
+  id          String    @id @default(uuid())
+  shipmentId  String    @map("shipment_id")
+  eventType   EventType @map("event_type")
+  triggeredBy String?   @map("triggered_by")
+  occurredAt  DateTime  @default(now()) @map("occurred_at")
+  metadata    Json?
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  trigger  User?    @relation(fields: [triggeredBy], references: [id], onDelete: SetNull)
+
+  @@map("shipmentEvent")
+}
+
+// Customer's double-confirmation of delivery (Uber-style). If the customer
+// doesn't respond within 24h, the system auto-confirms (use-case layer, via
+// a shipmentEvent with triggeredBy = null).
+model DeliveryConfirmation {
+  id               String   @id @default(uuid())
+  shipmentId       String   @unique @map("shipment_id")
+  customerId       String   @map("customer_id")
+  confirmed        Boolean
+  issueDescription String?  @map("issue_description")
+  confirmedAt      DateTime @default(now()) @map("confirmed_at")
+
+  shipment Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  customer CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  @@map("deliveryConfirmation")
+}
+
+// ============================================================================
+// Reviews (DATABASE-DESIGN.md §10)
+// ============================================================================
+
+// Mutual rating — one review per role per shipment. Tags only, no free text
+// in v1. rating BETWEEN 1 AND 5 validated at the Zod schema layer (no DB CHECK).
+model Review {
+  id           String       @id @default(uuid())
+  shipmentId   String       @map("shipment_id")
+  reviewerId   String       @map("reviewer_id")
+  revieweeId   String       @map("reviewee_id")
+  reviewerRole ReviewerRole @map("reviewer_role")
+  rating       Int
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  shipment      Shipment             @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  reviewer      User                 @relation("ReviewAuthor", fields: [reviewerId], references: [id], onDelete: Restrict)
+  reviewee      User                 @relation("ReviewSubject", fields: [revieweeId], references: [id], onDelete: Restrict)
+  tagSelections ReviewTagSelection[]
+
+  @@unique([shipmentId, reviewerRole])
+  @@map("review")
+}
+
+// Predefined chips for both review directions (seeded in S4-T3).
+model ReviewTag {
+  id         String       @id @default(uuid())
+  code       String       @unique
+  label      String
+  targetRole ReviewerRole @map("target_role")
+  isActive   Boolean      @default(true) @map("is_active")
+
+  selections ReviewTagSelection[]
+
+  @@map("reviewTag")
+}
+
+model ReviewTagSelection {
+  reviewId String @map("review_id")
+  tagId    String @map("tag_id")
+
+  review Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  tag    ReviewTag @relation(fields: [tagId], references: [id], onDelete: Restrict)
+
+  @@id([reviewId, tagId])
+  @@map("reviewTagSelection")
+}
+
+// ============================================================================
+// Notifications (DATABASE-DESIGN.md §11)
+// ============================================================================
+
+// Record of every notification sent (email or WhatsApp).
+model NotificationLog {
+  id                String                     @id @default(uuid())
+  userId            String                     @map("user_id")
+  channel           NotificationChannel
+  templateCode      String                     @map("template_code")
+  status            NotificationDeliveryStatus @default(PENDING)
+  providerMessageId String?                    @map("provider_message_id")
+  metadata          Json?
+  sentAt            DateTime?                  @map("sent_at")
+  createdAt         DateTime                   @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status, createdAt])
+  @@map("notificationLog")
 }

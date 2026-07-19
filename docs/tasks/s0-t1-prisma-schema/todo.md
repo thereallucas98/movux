@@ -1,0 +1,22 @@
+# S0-T1 — Todo
+
+- [x] Docker Compose configurado e `docker compose up -d` sobe o postgres
+- [x] `DATABASE_URL` em `.env` apontando para `postgresql://postgres:docker@localhost:5442/movux?schema=public` (porta/arquivo reais definidos em `docker-compose.yml` — divergem do que este item previa)
+- [x] Datasource e generator configurados no `schema.prisma`
+- [x] 24 enums declarados (+ 2 adicionais: `PaymentStatus`, `NotificationDeliveryStatus` — necessários para mapear `subscriptionPayment.status` e `notificationLog.status` fielmente ao DATABASE-DESIGN.md, não cobertos pela lista original do brief)
+- [x] Modelos sem FK escritos (6 modelos)
+- [x] Modelos com FK simples escritos (4 modelos)
+- [x] Modelos de perfil escritos (4 modelos)
+- [x] Modelos de relacionamento escritos (5 modelos)
+- [x] Modelos core (shipment e addresses) escritos (4 modelos)
+- [x] Modelos de proposal escritos (3 modelos)
+- [x] Modelos de chat escritos (2 modelos)
+- [x] Modelos de safety escritos (3 modelos)
+- [x] Modelos de review escritos (2 modelos)
+- [x] Modelos de pricing signal escritos (2 modelos)
+- [x] Modelo de notificação escrito (1 modelo)
+- [x] `@@map` e `@map` em todos os modelos e campos
+- [x] `@@index` e `@@unique` conforme DATABASE-DESIGN.md §13 (índices parciais/WHERE não suportados pela DSL do Prisma — implementados como índices completos; ver nota em `research.md`/chat)
+- [x] `pnpm prisma migrate dev --name init` — passa sem erros
+- [x] `pnpm prisma generate` — client gerado sem erros de tipo
+- [x] Tabelas verificadas via `psql \dt` — todas as 36 tabelas de domínio presentes (Prisma Studio não aberto por estar em ambiente headless; verificação equivalente via SQL)
