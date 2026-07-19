@@ -46,7 +46,7 @@ export async function GET(req: Request, context: RouteContext) {
   if (!paramParsed.success) return validationErrorResponse(paramParsed.error)
 
   const result = await getMyProposal(
-    proposalRepository,
+    { proposalRepo: proposalRepository, queueRepo: proposalQueueRepository },
     principal.userId,
     paramParsed.data.shipmentId,
   )

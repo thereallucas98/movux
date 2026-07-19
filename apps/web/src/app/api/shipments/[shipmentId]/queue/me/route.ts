@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { proposalQueueRepository } from '~/server/repositories'
+import { proposalQueueRepository, proposalRepository } from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { getMyQueueEntry } from '~/server/use-cases'
 
@@ -17,7 +17,7 @@ export async function GET(req: Request, context: RouteContext) {
   if (!paramParsed.success) return validationErrorResponse(paramParsed.error)
 
   const result = await getMyQueueEntry(
-    proposalQueueRepository,
+    { queueRepo: proposalQueueRepository, proposalRepo: proposalRepository },
     principal.userId,
     paramParsed.data.shipmentId,
   )

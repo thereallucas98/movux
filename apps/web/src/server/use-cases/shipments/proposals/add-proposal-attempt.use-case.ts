@@ -1,7 +1,9 @@
+import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type {
   ProposalRepository,
   ProposalWithAttempts,
 } from '../../../repositories/proposal.repository'
+import { sweepExpiredProposals } from './sweep-expired-proposals'
 
 const MAX_ATTEMPTS = 5
 
@@ -14,13 +16,20 @@ export type AddProposalAttemptResult =
   | { success: true; proposal: ProposalWithAttempts }
   | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'TOO_MANY_ATTEMPTS' }
 
+interface AddProposalAttemptRepos {
+  proposalRepo: ProposalRepository
+  queueRepo: ProposalQueueRepository
+}
+
 export async function addProposalAttempt(
-  proposalRepo: ProposalRepository,
+  repos: AddProposalAttemptRepos,
   carrierId: string,
   shipmentId: string,
   input: AddProposalAttemptInput,
 ): Promise<AddProposalAttemptResult> {
-  const proposal = await proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
+  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+
+  const proposal = await repos.proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
   if (!proposal) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -34,7 +43,7 @@ export async function addProposalAttempt(
   const attemptNumber = proposal.currentAttempt + 1
   const expiresAt = new Date(Date.now() + proposal.agreedSlaHours * 60 * 60 * 1000)
 
-  const updated = await proposalRepo.addAttempt(
+  const updated = await repos.proposalRepo.addAttempt(
     proposal.id,
     attemptNumber,
     input.priceInCents,

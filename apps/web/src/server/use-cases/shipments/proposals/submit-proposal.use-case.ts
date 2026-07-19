@@ -5,6 +5,7 @@ import type {
 } from '../../../repositories/proposal.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
+import { sweepExpiredProposals } from './sweep-expired-proposals'
 
 export interface SubmitProposalInput {
   priceInCents: number
@@ -28,6 +29,8 @@ export async function submitProposal(
   shipmentId: string,
   input: SubmitProposalInput,
 ): Promise<SubmitProposalResult> {
+  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+
   const shipment = await repos.shipmentRepo.findForProposal(shipmentId)
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }

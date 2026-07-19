@@ -33,6 +33,9 @@ export interface ProposalRepository {
     message?: string,
   ): Promise<ProposalWithAttempts>
   updateStatus(id: string, status: ProposalStatus): Promise<void>
+  findExpiredActiveByShipment(
+    shipmentId: string,
+  ): Promise<{ id: string; queueEntryId: string }[]>
 }
 
 export function createProposalRepository(prisma: PrismaClient): ProposalRepository {
@@ -86,6 +89,13 @@ export function createProposalRepository(prisma: PrismaClient): ProposalReposito
 
     async updateStatus(id, status) {
       await prisma.proposal.update({ where: { id }, data: { status } })
+    },
+
+    async findExpiredActiveByShipment(shipmentId) {
+      return prisma.proposal.findMany({
+        where: { shipmentId, status: 'ACTIVE', expiresAt: { lt: new Date() } },
+        select: { id: true, queueEntryId: true },
+      })
     },
   }
 }

@@ -1,5 +1,7 @@
 import type { ProposalQueueRepository, QueueEntry } from '../../../repositories/proposal-queue.repository'
+import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
+import { sweepExpiredProposals } from '../proposals/sweep-expired-proposals'
 import { refillCalledGroup } from './refill-called-group'
 
 export type JoinProposalQueueResult =
@@ -9,6 +11,7 @@ export type JoinProposalQueueResult =
 interface JoinProposalQueueRepos {
   shipmentRepo: ShipmentRepository
   queueRepo: ProposalQueueRepository
+  proposalRepo: ProposalRepository
 }
 
 export async function joinProposalQueue(
@@ -16,6 +19,8 @@ export async function joinProposalQueue(
   carrierId: string,
   shipmentId: string,
 ): Promise<JoinProposalQueueResult> {
+  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+
   const shipment = await repos.shipmentRepo.findStatusById(shipmentId)
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }

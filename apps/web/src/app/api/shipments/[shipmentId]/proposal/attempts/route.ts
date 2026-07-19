@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { proposalRepository } from '~/server/repositories'
+import { proposalQueueRepository, proposalRepository } from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { AddProposalAttemptSchema } from '~/server/schemas/proposal.schema'
 import { addProposalAttempt } from '~/server/use-cases'
@@ -22,7 +22,7 @@ export async function POST(req: Request, context: RouteContext) {
   if (!bodyParsed.success) return validationErrorResponse(bodyParsed.error)
 
   const result = await addProposalAttempt(
-    proposalRepository,
+    { proposalRepo: proposalRepository, queueRepo: proposalQueueRepository },
     principal.userId,
     paramParsed.data.shipmentId,
     bodyParsed.data,
