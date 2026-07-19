@@ -13,8 +13,7 @@ const options: swaggerJsdoc.Options = {
     tags: [
       {
         name: 'Auth',
-        description:
-          'Authentication — register, login, logout, password reset, email verification',
+        description: 'Authentication — register (customer/carrier), login, logout, me',
       },
       { name: 'Me', description: 'Authenticated user — profile and password' },
       {

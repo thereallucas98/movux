@@ -32,21 +32,13 @@ export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 export function defineAbilityFor(user: User) {
   const builder = new AbilityBuilder(createAppAbility)
 
-  if (user.role === 'SUPER_ADMIN') {
+  if (user.role === 'ADMIN') {
     builder.can('manage', 'all')
     return builder.build()
   }
 
-  if (user.role === 'ADMIN') {
-    builder.can('manage', ['User'])
-    return builder.build()
-  }
-
-  if (user.role === 'USER') {
-    builder.can('read', ['User'])
-    return builder.build()
-  }
-
+  // CUSTOMER | CARRIER
+  builder.can('read', ['User'])
   return builder.build()
 }
 

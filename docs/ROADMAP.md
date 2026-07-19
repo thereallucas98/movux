@@ -29,7 +29,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | ID | Task | Status | Doc |
 |---|---|---|---|
 | S0-T1 | Prisma schema — todas as entidades do DATABASE-DESIGN.md | ✅ | [→](tasks/s0-t1-prisma-schema/) |
-| S0-T2 | Auth API — register + login (customer e carrier) + Swagger + Insomnia | ○ | [→](tasks/s0-t2-auth-api/) |
+| S0-T2 | Auth API — register + login (customer e carrier) + Swagger + Insomnia | ✅ | [→](tasks/s0-t2-auth-api/) |
 | S0-T3 | Next.js app shell — layout, rotas por role, middleware de auth | ○ | [→](tasks/s0-t3-app-shell/) |
 
 ---

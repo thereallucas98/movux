@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-export const roleSchema = z.enum(['SUPER_ADMIN', 'ADMIN', 'USER'])
+export const roleSchema = z.enum(['CUSTOMER', 'CARRIER', 'ADMIN'])
 
 export type Role = z.infer<typeof roleSchema>
 
-export const MODERATOR_ROLES: Role[] = ['SUPER_ADMIN', 'ADMIN']
-export const PUBLIC_REGISTRABLE_ROLES: Role[] = ['USER']
+export const MODERATOR_ROLES: Role[] = ['ADMIN']
+export const PUBLIC_REGISTRABLE_ROLES: Role[] = ['CUSTOMER', 'CARRIER']

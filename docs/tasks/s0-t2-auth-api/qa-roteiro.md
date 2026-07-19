@@ -83,10 +83,12 @@ echo "TOKEN: $TOKEN"
 curl -s -o /dev/null -w "HTTP %{http_code}\n" \
   -X POST $BASE/auth/login \
   -H "Content-Type: application/json" \
-  -d '{ "email": "joao@cliente.dev", "password": "errada" }'
+  -d '{ "email": "joao@cliente.dev", "password": "errada123" }'
 ```
 
 **Esperado:** HTTP 401
+
+Nota: a senha de teste precisa ter ≥ 8 caracteres (`LoginSchema` exige `min(8)`) — uma senha mais curta cai em 400 (Zod) antes de chegar na checagem de credenciais. `"errada"` (6 chars) foi trocado por `"errada123"`.
 
 ---
 

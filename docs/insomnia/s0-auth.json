@@ -1,0 +1,116 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-19T00:00:00.000Z",
+  "__export_source": "movux.docs:s0-t2-auth-api",
+  "resources": [
+    {
+      "_id": "wrk_movux_s0_auth",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S0 Auth API",
+      "description": "S0-T2: register, login, me"
+    },
+    {
+      "_id": "env_movux_s0_auth_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3001"
+      }
+    },
+    {
+      "_id": "req_register_customer",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Register — Customer",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/register",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"João Cliente\",\n  \"email\": \"joao@cliente.dev\",\n  \"password\": \"Senha@123\",\n  \"role\": \"CUSTOMER\"\n}"
+      }
+    },
+    {
+      "_id": "req_register_carrier",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Register — Carrier",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/register",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Maria Carrier\",\n  \"email\": \"maria@carrier.dev\",\n  \"password\": \"Senha@123\",\n  \"role\": \"CARRIER\",\n  \"phone\": \"83999990000\"\n}"
+      }
+    },
+    {
+      "_id": "req_register_duplicate",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Register — Duplicate email (409)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/register",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Dup\",\n  \"email\": \"joao@cliente.dev\",\n  \"password\": \"Senha@123\",\n  \"role\": \"CUSTOMER\"\n}"
+      }
+    },
+    {
+      "_id": "req_login",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Login",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/login",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"joao@cliente.dev\",\n  \"password\": \"Senha@123\"\n}"
+      }
+    },
+    {
+      "_id": "req_login_wrong_password",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Login — Wrong password (401)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/login",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"joao@cliente.dev\",\n  \"password\": \"errada\"\n}"
+      }
+    },
+    {
+      "_id": "req_me",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Me",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/auth/me",
+      "headers": [],
+      "cookieJar": "jar_movux_s0_auth"
+    },
+    {
+      "_id": "req_logout",
+      "_type": "request",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Logout",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/logout",
+      "headers": [],
+      "cookieJar": "jar_movux_s0_auth"
+    },
+    {
+      "_id": "jar_movux_s0_auth",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s0_auth",
+      "name": "Default Jar",
+      "cookies": []
+    }
+  ]
+}

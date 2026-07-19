@@ -13,11 +13,11 @@ export async function getPrincipal(req: Request) {
       select: {
         id: true,
         role: true,
-        isActive: true,
+        deletedAt: true,
       },
     })
 
-    if (!user || !user.isActive) return null
+    if (!user || user.deletedAt) return null
 
     return {
       userId: user.id,

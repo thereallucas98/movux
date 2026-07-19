@@ -18,13 +18,10 @@ export async function POST(req: Request) {
   const result = await registerUser(userRepository, parsed.data)
 
   if (!result.success) {
-    if (result.code === 'EMAIL_IN_USE') {
-      return NextResponse.json(
-        { message: 'Email already in use' },
-        { status: 409 },
-      )
-    }
-    return NextResponse.json({ message: 'Not allowed' }, { status: 403 })
+    return NextResponse.json(
+      { message: 'Email already in use' },
+      { status: 409 },
+    )
   }
 
   const res = NextResponse.json({ user: result.user }, { status: 201 })

@@ -1,27 +1,3 @@
-export { forgotPassword } from './auth/forgot-password.use-case'
-export type {
-  ForgotPasswordInput,
-  ForgotPasswordResult,
-} from './auth/forgot-password.use-case'
-
-export { resetPassword } from './auth/reset-password.use-case'
-export type {
-  ResetPasswordInput,
-  ResetPasswordResult,
-} from './auth/reset-password.use-case'
-
-export { verifyEmail } from './auth/verify-email.use-case'
-export type {
-  VerifyEmailInput,
-  VerifyEmailResult,
-} from './auth/verify-email.use-case'
-
-export { resendVerification } from './auth/resend-verification.use-case'
-export type {
-  ResendVerificationInput,
-  ResendVerificationResult,
-} from './auth/resend-verification.use-case'
-
 export { registerUser } from './auth/register-user.use-case'
 export type {
   RegisterUserInput,
@@ -33,6 +9,9 @@ export type {
   LoginUserInput,
   LoginUserResult,
 } from './auth/login-user.use-case'
+
+export { getCurrentUser } from './auth/get-current-user.use-case'
+export type { GetCurrentUserResult } from './auth/get-current-user.use-case'
 
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'

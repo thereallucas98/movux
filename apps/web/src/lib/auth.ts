@@ -1,7 +1,6 @@
 import type { Role } from '@movux/auth'
 import { env } from '@movux/env'
 import bcrypt from 'bcryptjs'
-import { createHash, randomBytes } from 'crypto'
 import jwt from 'jsonwebtoken'
 
 export function hashPassword(password: string) {
@@ -24,34 +23,4 @@ function requireJwtSecret(): string {
 
 export function signAccessToken(payload: JwtPayload) {
   return jwt.sign(payload, requireJwtSecret(), { expiresIn: '7d' })
-}
-
-export function generateToken(): { raw: string; hashed: string } {
-  const raw = randomBytes(32).toString('hex')
-  const hashed = createHash('sha256').update(raw).digest('hex')
-  return { raw, hashed }
-}
-
-export function signEmailVerifyToken(userId: string): string {
-  return jwt.sign(
-    { sub: userId, purpose: 'email_verify' },
-    requireJwtSecret(),
-    { expiresIn: '24h' },
-  )
-}
-
-export function verifyEmailVerifyToken(
-  token: string,
-): { userId: string } | null {
-  try {
-    if (!env.JWT_SECRET) return null
-    const payload = jwt.verify(token, env.JWT_SECRET) as {
-      sub: string
-      purpose: string
-    }
-    if (payload.purpose !== 'email_verify') return null
-    return { userId: payload.sub }
-  } catch {
-    return null
-  }
 }

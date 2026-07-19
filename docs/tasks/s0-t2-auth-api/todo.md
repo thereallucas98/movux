@@ -1,13 +1,11 @@
 # S0-T2 — Todo
 
-- [ ] Par de chaves RS256 gerado e adicionado ao `.env.local`
-- [ ] `lib/jwt.ts` — `signToken` e `verifyToken` implementados
-- [ ] `lib/auth.ts` — `hashPassword` e `comparePassword` implementados
-- [ ] `middleware.ts` — matcher protegendo `/api/` exceto `/api/auth/*` e `/api-docs`
-- [ ] `POST /api/auth/register` — cria user + profile por role
-- [ ] `POST /api/auth/login` — retorna JWT
-- [ ] `GET /api/auth/me` — retorna usuário autenticado
-- [ ] Swagger configurado em `/api-docs`
-- [ ] 3 endpoints documentados com schemas OpenAPI
-- [ ] Todos os casos de QA passando (ver qa-roteiro.md)
-- [ ] Collection Insomnia exportada em `docs/insomnia/s0-auth.json`
+- [x] Reutilizado `JWT_SECRET` (HS256, já existente) — não foi gerado par RS256 (ver `validation.md`, desvio do plan.md)
+- [x] `apps/web/src/lib/auth.ts` — `hashPassword`, `verifyPassword`, `signAccessToken` (já existiam, adaptados)
+- [x] `apps/web/src/lib/get-principal.ts` / `get-server-principal.ts` — adaptados (`isActive` → `deletedAt`, campo que não existe mais em `user`)
+- [x] `apps/web/src/app/api/auth/register/route.ts` — `POST`
+- [x] `apps/web/src/app/api/auth/login/route.ts` — `POST`
+- [x] `apps/web/src/app/api/auth/me/route.ts` — `GET` (novo)
+- [x] Swagger em `/api-docs` — 4 endpoints (`register`, `login`, `logout`, `me`)
+- [x] Documentados com JSDoc/OpenAPI annotations (`lib/swagger/definitions/auth.ts`)
+- [x] Testado via curl e exportado `docs/insomnia/s0-auth.json`

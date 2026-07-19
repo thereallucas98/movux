@@ -25,7 +25,7 @@ export async function loginUser(
 ): Promise<LoginUserResult> {
   const user = await userRepo.findByEmailForLogin(input.email)
 
-  if (!user || !user.isActive) {
+  if (!user || user.deletedAt) {
     return { success: false, code: 'INVALID_CREDENTIALS' }
   }
 
@@ -34,10 +34,7 @@ export async function loginUser(
     return { success: false, code: 'INVALID_CREDENTIALS' }
   }
 
-  const token = signAccessToken({
-    sub: user.id,
-    role: user.role as 'USER' | 'ADMIN' | 'SUPER_ADMIN',
-  })
+  const token = signAccessToken({ sub: user.id, role: user.role })
 
   return {
     success: true,
