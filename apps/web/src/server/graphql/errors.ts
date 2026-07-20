@@ -43,6 +43,7 @@ const CODE_TO_MESSAGE: Record<ErrorCode, string> = {
   ALREADY_PROPOSED: 'Carrier already has a proposal for this shipment',
   TOO_MANY_ATTEMPTS: 'Proposal already has the maximum of 5 attempts',
   ALREADY_CONFIRMED: 'Safety check-in already confirmed for this role',
+  SAFETY_NOT_CONFIRMED: 'Both customer and carrier must confirm the safety check-in first',
 }
 
 /**

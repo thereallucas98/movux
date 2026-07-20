@@ -65,6 +65,8 @@ export type ErrorCode =
   | 'TOO_MANY_ATTEMPTS'
   // Safety check-in (S3-T1)
   | 'ALREADY_CONFIRMED'
+  // Transit status (S3-T2)
+  | 'SAFETY_NOT_CONFIRMED'
 
 interface ErrorShape {
   status: number
@@ -195,6 +197,10 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   ALREADY_CONFIRMED: {
     status: 409,
     message: 'Safety check-in already confirmed for this role',
+  },
+  SAFETY_NOT_CONFIRMED: {
+    status: 409,
+    message: 'Both customer and carrier must confirm the safety check-in first',
   },
 }
 

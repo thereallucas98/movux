@@ -1,0 +1,59 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s3-t2-transit-status",
+  "resources": [
+    {
+      "_id": "wrk_movux_s3_transit",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S3 Transit Status",
+      "description": "S3-T2: carrier marks collected, in transit, delivered"
+    },
+    {
+      "_id": "env_movux_s3_transit_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s3_transit",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s3_transit_carrier",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s3_transit",
+      "name": "Carrier Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_mark_collected",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_transit",
+      "name": "Mark Collected",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/collect",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_transit_carrier"
+    },
+    {
+      "_id": "req_mark_in_transit",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_transit",
+      "name": "Mark In Transit",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/transit",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_transit_carrier"
+    },
+    {
+      "_id": "req_mark_delivered",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_transit",
+      "name": "Mark Delivered",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/deliver",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_transit_carrier"
+    }
+  ]
+}

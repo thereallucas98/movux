@@ -33,6 +33,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Safety term check-in — customer and selected carrier confirm before transit',
       },
       {
+        name: 'Transit',
+        description: 'Carrier-driven lifecycle transitions — collect, in transit, deliver',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

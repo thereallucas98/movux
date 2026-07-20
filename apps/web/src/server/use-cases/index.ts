@@ -85,6 +85,15 @@ export type { ConfirmSafetyCheckInResult } from './shipments/safety/confirm-safe
 export { getSafetyCheckInStatus } from './shipments/safety/get-safety-check-in-status.use-case'
 export type { GetSafetyCheckInStatusResult } from './shipments/safety/get-safety-check-in-status.use-case'
 
+export { markCollected } from './shipments/transit/mark-collected.use-case'
+export type { MarkCollectedResult } from './shipments/transit/mark-collected.use-case'
+
+export { markInTransit } from './shipments/transit/mark-in-transit.use-case'
+export type { MarkInTransitResult } from './shipments/transit/mark-in-transit.use-case'
+
+export { markDelivered } from './shipments/transit/mark-delivered.use-case'
+export type { MarkDeliveredResult } from './shipments/transit/mark-delivered.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 
