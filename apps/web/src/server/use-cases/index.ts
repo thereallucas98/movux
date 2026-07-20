@@ -114,6 +114,14 @@ export type { UploadCarrierDocumentResult } from './carrier-documents/upload-car
 
 export { listCarrierDocuments } from './carrier-documents/list-carrier-documents.use-case'
 
+export { approveCarrierDocument } from './carrier-documents/approve-carrier-document.use-case'
+export type { ApproveCarrierDocumentResult } from './carrier-documents/approve-carrier-document.use-case'
+
+export { rejectCarrierDocument } from './carrier-documents/reject-carrier-document.use-case'
+export type { RejectCarrierDocumentResult } from './carrier-documents/reject-carrier-document.use-case'
+
+export { listCarrierDocumentsForAdmin } from './carrier-documents/list-carrier-documents-for-admin.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

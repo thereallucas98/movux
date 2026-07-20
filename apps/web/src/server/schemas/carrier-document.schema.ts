@@ -31,3 +31,17 @@ export function parseDocumentField(formData: FormData): ParseDocumentResult {
   }
   return { success: true, file: raw }
 }
+
+export const CarrierDocumentIdParamSchema = z.object({
+  documentId: z.uuid(),
+})
+
+export const RejectCarrierDocumentSchema = z.object({
+  rejectionReason: z.string().min(1),
+})
+
+export const ListCarrierDocumentsQuerySchema = z.object({
+  status: z.enum(['PENDING', 'APPROVED', 'REJECTED']).optional(),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().int().positive().max(100).optional(),
+})

@@ -1,0 +1,63 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s5-t2-admin-verify",
+  "resources": [
+    {
+      "_id": "wrk_movux_s5_admin_verify",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S5 Admin Verification",
+      "description": "S5-T2: approve/reject carrier documents, review queue"
+    },
+    {
+      "_id": "env_movux_s5_admin_verify_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s5_admin_verify",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "document_id": "" }
+    },
+    {
+      "_id": "jar_movux_s5_admin_verify_admin",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s5_admin_verify",
+      "name": "Admin Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_list_documents_admin",
+      "_type": "request",
+      "parentId": "wrk_movux_s5_admin_verify",
+      "name": "List Documents (queue)",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/admin/carrier-documents?status=PENDING",
+      "headers": [],
+      "cookieJar": "jar_movux_s5_admin_verify_admin"
+    },
+    {
+      "_id": "req_approve_document",
+      "_type": "request",
+      "parentId": "wrk_movux_s5_admin_verify",
+      "name": "Approve Document",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/admin/carrier-documents/{{ _.document_id }}/approve",
+      "headers": [],
+      "cookieJar": "jar_movux_s5_admin_verify_admin"
+    },
+    {
+      "_id": "req_reject_document",
+      "_type": "request",
+      "parentId": "wrk_movux_s5_admin_verify",
+      "name": "Reject Document",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/admin/carrier-documents/{{ _.document_id }}/reject",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rejectionReason\": \"Foto desfocada\"\n}"
+      },
+      "cookieJar": "jar_movux_s5_admin_verify_admin"
+    }
+  ]
+}
