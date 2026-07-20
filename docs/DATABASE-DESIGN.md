@@ -161,12 +161,13 @@ Global identity. One email = one account across the platform.
 | `avgRating` | decimal(3,2) | nullable | auto-calculated |
 | `totalShipments` | int | default 0 | |
 | `isActive` | boolean | default true | false = suspended |
+| `isFlagged` | boolean | default false | true = flagged for admin review |
 | `currentCompanyId` | uuid | FK → company, nullable | null = autônomo |
 
 **Rules:**
 - Carrier can only propose shipments after `verificationStatus = APPROVED`
-- `avgRating < 4.0` → flagged for admin review
-- `avgRating < 3.5` → `isActive = false` automatically (suspended, pending admin review)
+- `avgRating < 4.0` → `isFlagged = true` (flagged for admin review); reverts to `false` if `avgRating` rises back to `>= 4.0`
+- `avgRating < 3.5` → `isActive = false` automatically (suspended, pending admin review) — one-way, does not auto-reactivate
 - Carrier belongs to at most one company at a time (`currentCompanyId`)
 - If `currentCompanyId` is set, carrier operates under company plan
 
@@ -867,7 +868,7 @@ Record of every notification sent (email or WhatsApp).
 - Max `plan.maxActiveProposals` simultaneous active proposals (3 for FREE)
 - One proposal per shipment; up to 5 attempts
 - Belongs to at most one company at a time
-- `avgRating < 4.0` → admin flag; `avgRating < 3.5` → auto-suspend
+- `avgRating < 4.0` → `isFlagged = true`; `avgRating < 3.5` → auto-suspend (`isActive = false`, one-way)
 
 ### Shipment rules
 - Must have exactly 1 ORIGIN and 1 DESTINATION address

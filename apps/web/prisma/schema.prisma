@@ -339,7 +339,8 @@ model CustomerProfile {
 }
 
 // 1:1 extension of user where role = CARRIER.
-// avgRating < 4.0 -> admin flag; avgRating < 3.5 -> auto-suspend (isActive = false).
+// avgRating < 4.0 -> isFlagged = true (admin flag); avgRating < 3.5 -> auto-suspend
+// (isActive = false, one-way — does not auto-reactivate if avgRating rises back).
 // Both thresholds enforced at the use-case layer, not the DB.
 model CarrierProfile {
   id                 String             @id @default(uuid())
@@ -353,6 +354,7 @@ model CarrierProfile {
   avgRating          Decimal?           @map("avg_rating") @db.Decimal(3, 2)
   totalShipments     Int                @default(0) @map("total_shipments")
   isActive           Boolean            @default(true) @map("is_active")
+  isFlagged          Boolean            @default(false) @map("is_flagged")
   currentCompanyId   String?            @map("current_company_id")
 
   user           User     @relation("CarrierProfileUser", fields: [userId], references: [id], onDelete: Cascade)

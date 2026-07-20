@@ -23,6 +23,7 @@ export interface ReviewRepository {
     reviewerRole: ReviewerRole,
   ): Promise<Review | null>
   create(data: CreateReviewInput): Promise<ReviewWithTags>
+  getAverageRatingByReviewee(revieweeId: string): Promise<number | null>
 }
 
 export function createReviewRepository(prisma: PrismaClient): ReviewRepository {
@@ -53,6 +54,14 @@ export function createReviewRepository(prisma: PrismaClient): ReviewRepository {
         },
         include: { tagSelections: true },
       })
+    },
+
+    async getAverageRatingByReviewee(revieweeId) {
+      const result = await prisma.review.aggregate({
+        where: { revieweeId },
+        _avg: { rating: true },
+      })
+      return result._avg.rating
     },
   }
 }

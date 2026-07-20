@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
 import {
+  carrierProfileRepository,
   customerProfileRepository,
   proposalRepository,
   reviewRepository,
@@ -32,6 +33,7 @@ export async function POST(req: Request, context: RouteContext) {
   const result = await submitReview(
     {
       customerProfileRepo: customerProfileRepository,
+      carrierProfileRepo: carrierProfileRepository,
       shipmentRepo: shipmentRepository,
       proposalRepo: proposalRepository,
       reviewRepo: reviewRepository,

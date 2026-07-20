@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 4 em andamento — S4-T1 ✅, próximo: S4-T2 (Rating recalculation)
+**Status:** Sprint 4 em andamento — S4-T1 ✅, S4-T2 ✅, próximo: S4-T3 (Review tags seed)
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -80,7 +80,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | ID | Task | Status | Doc |
 |---|---|---|---|
 | S4-T1 | Review API — submit (rating + tags), validações de janela | ✅ | [→](tasks/s4-t1-review-api/) |
-| S4-T2 | Rating recalculation — atualiza avgRating em carrierProfile e customerProfile | ○ | [→](tasks/s4-t2-rating-calc/) |
+| S4-T2 | Rating recalculation — atualiza avgRating em carrierProfile e customerProfile | ✅ | [→](tasks/s4-t2-rating-calc/) |
 | S4-T3 | Review tags seed — carrier tags + customer tags | ○ | [→](tasks/s4-t3-review-tags-seed/) |
 
 ---

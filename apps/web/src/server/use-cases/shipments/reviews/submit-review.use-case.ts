@@ -1,3 +1,4 @@
+import type { CarrierProfileRepository } from '../../../repositories/carrier-profile.repository'
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { ReviewTagRepository } from '../../../repositories/review-tag.repository'
@@ -19,6 +20,7 @@ export type SubmitReviewResult =
 
 interface SubmitReviewRepos {
   customerProfileRepo: CustomerProfileRepository
+  carrierProfileRepo: CarrierProfileRepository
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
   reviewRepo: ReviewRepository
@@ -81,6 +83,16 @@ export async function submitReview(
     rating: input.rating,
     tagIds,
   })
+
+  const avg = await repos.reviewRepo.getAverageRatingByReviewee(revieweeId)
+  if (avg !== null) {
+    const rounded = Math.round(avg * 100) / 100
+    if (participant.role === 'CUSTOMER') {
+      await repos.carrierProfileRepo.updateRating(revieweeId, rounded)
+    } else {
+      await repos.customerProfileRepo.updateRating(revieweeId, rounded)
+    }
+  }
 
   const allReviews = await repos.reviewRepo.findByShipment(shipmentId)
   const hasCustomer = allReviews.some((r) => r.reviewerRole === 'CUSTOMER')
