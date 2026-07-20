@@ -1,0 +1,55 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s5-t1-document-upload",
+  "resources": [
+    {
+      "_id": "wrk_movux_s5_documents",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S5 Carrier Documents",
+      "description": "S5-T1: upload and list carrier verification documents"
+    },
+    {
+      "_id": "env_movux_s5_documents_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s5_documents",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001" }
+    },
+    {
+      "_id": "jar_movux_s5_documents_carrier",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s5_documents",
+      "name": "Carrier Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_upload_document",
+      "_type": "request",
+      "parentId": "wrk_movux_s5_documents",
+      "name": "Upload Document",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/me/documents",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          { "name": "type", "value": "CPF" },
+          { "name": "file", "type": "file", "fileName": "" }
+        ]
+      },
+      "cookieJar": "jar_movux_s5_documents_carrier"
+    },
+    {
+      "_id": "req_list_documents",
+      "_type": "request",
+      "parentId": "wrk_movux_s5_documents",
+      "name": "List My Documents",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/me/documents",
+      "headers": [],
+      "cookieJar": "jar_movux_s5_documents_carrier"
+    }
+  ]
+}

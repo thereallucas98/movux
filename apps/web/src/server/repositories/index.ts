@@ -3,6 +3,7 @@ import { createAssignmentRepository } from './assignment.repository'
 import { createAuditLogRepository } from './audit-log.repository'
 import { createShiftCandidateRepository } from './candidate.repository'
 import { createCategoryRepository } from './category.repository'
+import { createCarrierDocumentRepository } from './carrier-document.repository'
 import { createCarrierProfileRepository } from './carrier-profile.repository'
 import { createCustomerProfileRepository } from './customer-profile.repository'
 import { createDeliveryConfirmationRepository } from './delivery-confirmation.repository'
@@ -35,6 +36,7 @@ import { createWorkspaceRepository } from './workspace.repository'
 export const userRepository = createUserRepository(prisma)
 export const customerProfileRepository = createCustomerProfileRepository(prisma)
 export const carrierProfileRepository = createCarrierProfileRepository(prisma)
+export const carrierDocumentRepository = createCarrierDocumentRepository(prisma)
 export const pricingRepository = createPricingRepository(prisma)
 export const shipmentRepository = createShipmentRepository(prisma)
 export const proposalQueueRepository = createProposalQueueRepository(prisma)

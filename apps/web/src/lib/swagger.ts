@@ -50,6 +50,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Mutual rating between customer and carrier after delivery',
       },
       {
+        name: 'Carrier Documents',
+        description: 'Carrier verification document upload (Supabase Storage)',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

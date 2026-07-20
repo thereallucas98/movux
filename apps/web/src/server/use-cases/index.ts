@@ -109,6 +109,11 @@ export type { SubmitReviewResult } from './shipments/reviews/submit-review.use-c
 export { listReviewsForShipment } from './shipments/reviews/list-reviews-for-shipment.use-case'
 export type { ListReviewsForShipmentResult } from './shipments/reviews/list-reviews-for-shipment.use-case'
 
+export { uploadCarrierDocument } from './carrier-documents/upload-carrier-document.use-case'
+export type { UploadCarrierDocumentResult } from './carrier-documents/upload-carrier-document.use-case'
+
+export { listCarrierDocuments } from './carrier-documents/list-carrier-documents.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 
