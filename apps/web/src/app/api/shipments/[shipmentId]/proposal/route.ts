@@ -4,6 +4,7 @@ import { errorResponse, validationErrorResponse } from '~/server/http/error-resp
 import {
   proposalQueueRepository,
   proposalRepository,
+  shipmentEventRepository,
   shipmentRepository,
 } from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
@@ -26,7 +27,12 @@ export async function POST(req: Request, context: RouteContext) {
   if (!bodyParsed.success) return validationErrorResponse(bodyParsed.error)
 
   const result = await submitProposal(
-    { shipmentRepo: shipmentRepository, queueRepo: proposalQueueRepository, proposalRepo: proposalRepository },
+    {
+      shipmentRepo: shipmentRepository,
+      queueRepo: proposalQueueRepository,
+      proposalRepo: proposalRepository,
+      shipmentEventRepo: shipmentEventRepository,
+    },
     principal.userId,
     paramParsed.data.shipmentId,
     bodyParsed.data,

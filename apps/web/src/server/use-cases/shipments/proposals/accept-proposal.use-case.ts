@@ -1,6 +1,7 @@
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
+import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
 
@@ -13,6 +14,7 @@ interface AcceptProposalRepos {
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
   queueRepo: ProposalQueueRepository
+  shipmentEventRepo: ShipmentEventRepository
 }
 
 export async function acceptProposal(
@@ -54,6 +56,7 @@ export async function acceptProposal(
   await repos.proposalRepo.respondToAttempt(proposal.id, proposal.currentAttempt, 'ACCEPTED')
   await repos.proposalRepo.updateStatus(proposal.id, 'ACCEPTED')
   await repos.shipmentRepo.markCarrierSelected(shipmentId, acceptedAttempt.priceInCents)
+  await repos.shipmentEventRepo.create(shipmentId, 'CARRIER_SELECTED', userId)
 
   const others = await repos.proposalRepo.findOtherActiveByShipment(shipmentId, proposal.id)
   for (const other of others) {

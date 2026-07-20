@@ -5,6 +5,7 @@ import {
   customerProfileRepository,
   proposalQueueRepository,
   proposalRepository,
+  shipmentEventRepository,
   shipmentRepository,
 } from '~/server/repositories'
 import { ProposalIdParamSchema } from '~/server/schemas/proposal.schema'
@@ -27,6 +28,7 @@ export async function POST(req: Request, context: RouteContext) {
       shipmentRepo: shipmentRepository,
       proposalRepo: proposalRepository,
       queueRepo: proposalQueueRepository,
+      shipmentEventRepo: shipmentEventRepository,
     },
     principal.userId,
     paramParsed.data.shipmentId,

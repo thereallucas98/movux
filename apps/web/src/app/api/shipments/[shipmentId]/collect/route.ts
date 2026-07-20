@@ -4,6 +4,7 @@ import { errorResponse, validationErrorResponse } from '~/server/http/error-resp
 import {
   proposalRepository,
   safetyCheckInRepository,
+  shipmentEventRepository,
   shipmentRepository,
 } from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
@@ -25,6 +26,7 @@ export async function POST(req: Request, context: RouteContext) {
       shipmentRepo: shipmentRepository,
       proposalRepo: proposalRepository,
       safetyCheckInRepo: safetyCheckInRepository,
+      shipmentEventRepo: shipmentEventRepository,
     },
     principal.userId,
     paramParsed.data.shipmentId,

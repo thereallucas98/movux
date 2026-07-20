@@ -1,0 +1,39 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s3-t4-event-log",
+  "resources": [
+    {
+      "_id": "wrk_movux_s3_events",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S3 Shipment Events",
+      "description": "S3-T4: chronological audit log of shipment lifecycle transitions"
+    },
+    {
+      "_id": "env_movux_s3_events_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s3_events",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s3_events_customer",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s3_events",
+      "name": "Customer Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_get_shipment_events",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_events",
+      "name": "Get Shipment Events",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/events",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_events_customer"
+    }
+  ]
+}

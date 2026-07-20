@@ -42,6 +42,10 @@ const options: swaggerJsdoc.Options = {
           "Customer's double-confirmation of delivery, with 24h lazy auto-confirm",
       },
       {
+        name: 'Shipment Events',
+        description: 'Chronological audit log of a shipment lifecycle transitions',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 3 em andamento — S3-T1 ✅, S3-T2 ✅, S3-T3 ✅, próximo: S3-T4 (Event log)
+**Status:** Sprint 3 ✅ concluído — próximo: Sprint 4 (Reviews & Ratings)
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -69,7 +69,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | S3-T1 | Safety check-in API — customer e carrier confirmam termo | ✅ | [→](tasks/s3-t1-safety-checkin/) |
 | S3-T2 | Transit status API — collected, in_transit, delivered (carrier) | ✅ | [→](tasks/s3-t2-transit-status/) |
 | S3-T3 | Delivery confirmation API — double-confirm do customer + auto-confirm 24h | ✅ | [→](tasks/s3-t3-delivery-confirm/) |
-| S3-T4 | Shipment event log — audit trail de todas as transições | ○ | [→](tasks/s3-t4-event-log/) |
+| S3-T4 | Shipment event log — audit trail de todas as transições | ✅ | [→](tasks/s3-t4-event-log/) |
 
 ---
 

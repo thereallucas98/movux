@@ -2,6 +2,7 @@ import type { SafetyCheckIn } from '~/generated/prisma/client'
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { SafetyCheckInRepository } from '../../../repositories/safety-check-in.repository'
+import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { resolveSafetyParticipant } from './resolve-safety-participant'
 
@@ -14,6 +15,7 @@ interface ConfirmSafetyCheckInRepos {
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
   safetyCheckInRepo: SafetyCheckInRepository
+  shipmentEventRepo: ShipmentEventRepository
 }
 
 export async function confirmSafetyCheckIn(
@@ -45,6 +47,13 @@ export async function confirmSafetyCheckIn(
     participant.role,
     ipAddress,
   )
+
+  const allCheckIns = await repos.safetyCheckInRepo.findByShipment(shipmentId)
+  const hasCustomer = allCheckIns.some((c) => c.role === 'CUSTOMER')
+  const hasCarrier = allCheckIns.some((c) => c.role === 'CARRIER')
+  if (hasCustomer && hasCarrier) {
+    await repos.shipmentEventRepo.create(shipmentId, 'SAFETY_CONFIRMED', null)
+  }
 
   return { success: true, checkIn }
 }

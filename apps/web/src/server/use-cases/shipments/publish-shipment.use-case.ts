@@ -1,4 +1,5 @@
 import type { CustomerProfileRepository } from '../../repositories/customer-profile.repository'
+import type { ShipmentEventRepository } from '../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../repositories/shipment.repository'
 
 export type PublishShipmentResult =
@@ -8,6 +9,7 @@ export type PublishShipmentResult =
 interface PublishShipmentRepos {
   customerProfileRepo: CustomerProfileRepository
   shipmentRepo: ShipmentRepository
+  shipmentEventRepo: ShipmentEventRepository
 }
 
 export async function publishShipment(
@@ -29,5 +31,7 @@ export async function publishShipment(
   }
 
   await repos.shipmentRepo.updateStatus(shipmentId, 'OPEN')
+  await repos.shipmentEventRepo.create(shipmentId, 'PUBLISHED', userId)
+
   return { success: true }
 }

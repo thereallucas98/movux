@@ -3,6 +3,7 @@ import type {
   ProposalRepository,
   ProposalWithAttempts,
 } from '../../../repositories/proposal.repository'
+import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
@@ -24,6 +25,7 @@ interface SubmitProposalRepos {
   shipmentRepo: ShipmentRepository
   queueRepo: ProposalQueueRepository
   proposalRepo: ProposalRepository
+  shipmentEventRepo: ShipmentEventRepository
 }
 
 export async function submitProposal(
@@ -73,6 +75,10 @@ export async function submitProposal(
   if (shipment.status === 'OPEN') {
     await repos.shipmentRepo.updateStatus(shipmentId, 'PROPOSALS_RECEIVED')
   }
+
+  await repos.shipmentEventRepo.create(shipmentId, 'PROPOSAL_RECEIVED', carrierId, {
+    proposalId: proposal.id,
+  })
 
   return { success: true, proposal }
 }

@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { customerProfileRepository, shipmentRepository } from '~/server/repositories'
+import {
+  customerProfileRepository,
+  shipmentEventRepository,
+  shipmentRepository,
+} from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { publishShipment } from '~/server/use-cases'
 
@@ -17,7 +21,11 @@ export async function POST(req: Request, context: RouteContext) {
   if (!paramParsed.success) return validationErrorResponse(paramParsed.error)
 
   const result = await publishShipment(
-    { customerProfileRepo: customerProfileRepository, shipmentRepo: shipmentRepository },
+    {
+      customerProfileRepo: customerProfileRepository,
+      shipmentRepo: shipmentRepository,
+      shipmentEventRepo: shipmentEventRepository,
+    },
     principal.userId,
     paramParsed.data.shipmentId,
   )

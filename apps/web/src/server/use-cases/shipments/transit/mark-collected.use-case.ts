@@ -1,5 +1,6 @@
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { SafetyCheckInRepository } from '../../../repositories/safety-check-in.repository'
+import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { resolveSelectedCarrier } from './resolve-selected-carrier'
 
@@ -11,6 +12,7 @@ interface MarkCollectedRepos {
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
   safetyCheckInRepo: SafetyCheckInRepository
+  shipmentEventRepo: ShipmentEventRepository
 }
 
 export async function markCollected(
@@ -34,6 +36,7 @@ export async function markCollected(
   }
 
   await repos.shipmentRepo.markCollected(shipmentId)
+  await repos.shipmentEventRepo.create(shipmentId, 'COLLECTED', userId)
 
   return { success: true }
 }

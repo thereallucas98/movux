@@ -100,6 +100,9 @@ export type { ConfirmDeliveryResult } from './shipments/delivery/confirm-deliver
 export { getDeliveryConfirmationStatus } from './shipments/delivery/get-delivery-confirmation-status.use-case'
 export type { GetDeliveryConfirmationStatusResult } from './shipments/delivery/get-delivery-confirmation-status.use-case'
 
+export { getShipmentEvents } from './shipments/get-shipment-events.use-case'
+export type { GetShipmentEventsResult } from './shipments/get-shipment-events.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

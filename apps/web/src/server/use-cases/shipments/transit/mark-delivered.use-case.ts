@@ -1,4 +1,5 @@
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
+import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { resolveSelectedCarrier } from './resolve-selected-carrier'
 
@@ -9,6 +10,7 @@ export type MarkDeliveredResult =
 interface MarkDeliveredRepos {
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
+  shipmentEventRepo: ShipmentEventRepository
 }
 
 export async function markDelivered(
@@ -25,6 +27,7 @@ export async function markDelivered(
   }
 
   await repos.shipmentRepo.markDelivered(shipmentId)
+  await repos.shipmentEventRepo.create(shipmentId, 'DELIVERED', userId)
 
   return { success: true }
 }
