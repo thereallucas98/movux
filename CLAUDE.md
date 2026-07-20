@@ -19,6 +19,24 @@ Decisões de definição vão em [`docs/decisions.md`](docs/decisions.md) (ADR e
 
 ---
 
+## Skills disponíveis (`.claude/skills/`)
+
+Use a skill correspondente sempre que o pedido do usuário se encaixar no
+gatilho — não espere ser instruído a invocá-la explicitamente. Cada arquivo
+tem a instrução completa; não a duplique aqui.
+
+| Skill | Arquivo | Gatilho |
+|---|---|---|
+| `security-check` | [`.claude/skills/security-check.md`](.claude/skills/security-check.md) | Pedido de auditoria/nota/score de segurança, ou checagem de secrets/inputs/auth/deps/headers |
+| `task-doc` | [`.claude/skills/task-doc.md`](.claude/skills/task-doc.md) | Ao criar `brief.md`/`exploration.md`/`research.md`/`plan.md`/`todo.md`/`validation.md` em `docs/tasks/<slug>/` |
+| `definition-gate` | [`.claude/skills/definition-gate.md`](.claude/skills/definition-gate.md) | Ao precisar fazer perguntas de decisão (Fast/Good/Ideal) para o usuário |
+| `deploy-checklist` | [`.claude/skills/deploy-checklist.md`](.claude/skills/deploy-checklist.md) | Antes de marcar uma execução como completa, ou quando pedido para validar/preparar um commit |
+
+Novas skills adicionadas a `.claude/skills/` devem ganhar uma linha nesta
+tabela — é o único índice central delas neste projeto.
+
+---
+
 ## Project Overview
 
 **Movux** — marketplace de fretes e mudanças com camadas progressivas de segurança.
