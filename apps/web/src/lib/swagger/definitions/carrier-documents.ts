@@ -127,3 +127,45 @@
  *       '409':
  *         description: Document is not PENDING
  */
+
+/**
+ * @swagger
+ * /api/admin/carrier-documents/{documentId}/external-validation:
+ *   post:
+ *     summary: Record an external validation check for a document
+ *     description: >
+ *       Records the result of a CPF/CNH check — manual today (no paid
+ *       external API is called), automatable later without a contract
+ *       change. Stored as an envelope in CarrierDocument.externalValidation:
+ *       `{ provider: "MANUAL", result, notes, checkedBy, checkedAt }`. A
+ *       future automated provider (e.g. BigDataCorp) would use the same
+ *       field with `provider: "BIGDATACORP"` and a `raw` API response
+ *       instead of `notes`. Works regardless of the document's current
+ *       status (PENDING/APPROVED/REJECTED) — this is supporting evidence,
+ *       not a state transition; approve/reject (separate endpoints) remain
+ *       the actual decision. Calling this again on the same document
+ *       overwrites the previous record. Admin only.
+ *     tags: [Carrier Documents]
+ *     parameters:
+ *       - in: path
+ *         name: documentId
+ *         required: true
+ *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [result]
+ *             properties:
+ *               result: { type: string, enum: [MATCH, MISMATCH, INCONCLUSIVE] }
+ *               notes: { type: string }
+ *     responses:
+ *       '200':
+ *         description: Validation recorded
+ *       '400':
+ *         description: Invalid result value
+ *       '404':
+ *         $ref: '#/components/responses/NotFoundError'
+ */

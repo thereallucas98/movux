@@ -1,0 +1,43 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s5-t3-external-validation",
+  "resources": [
+    {
+      "_id": "wrk_movux_s5_external_validation",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S5 External Validation",
+      "description": "S5-T3: record manual CPF/CNH check results (automatable later)"
+    },
+    {
+      "_id": "env_movux_s5_external_validation_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s5_external_validation",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "document_id": "" }
+    },
+    {
+      "_id": "jar_movux_s5_external_validation_admin",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s5_external_validation",
+      "name": "Admin Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_record_external_validation",
+      "_type": "request",
+      "parentId": "wrk_movux_s5_external_validation",
+      "name": "Record External Validation",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/admin/carrier-documents/{{ _.document_id }}/external-validation",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"result\": \"MATCH\",\n  \"notes\": \"Conferido na Receita, nome bate\"\n}"
+      },
+      "cookieJar": "jar_movux_s5_external_validation_admin"
+    }
+  ]
+}

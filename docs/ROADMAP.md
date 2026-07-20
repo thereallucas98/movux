@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 5 em andamento — S5-T1 ✅, S5-T2 ✅, próximo: S5-T3 (External validation)
+**Status:** Sprint 5 ✅ concluído — próximo: Sprint 6 (Notifications)
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -93,7 +93,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 |---|---|---|---|
 | S5-T1 | Document upload API — Supabase Storage, tipos de doc por role | ✅ | [→](tasks/s5-t1-document-upload/) |
 | S5-T2 | Admin verification API — approve/reject doc, atualizar verificationStatus | ✅ | [→](tasks/s5-t2-admin-verify/) |
-| S5-T3 | External validation — BigDataCorp (CPF/CNH) + Serpro (CNPJ) | ○ | [→](tasks/s5-t3-external-validation/) |
+| S5-T3 | External validation — manual por enquanto (estrutura pronta pra BigDataCorp/Serpro) | ✅ | [→](tasks/s5-t3-external-validation/) |
 
 ---
 

@@ -122,6 +122,9 @@ export type { RejectCarrierDocumentResult } from './carrier-documents/reject-car
 
 export { listCarrierDocumentsForAdmin } from './carrier-documents/list-carrier-documents-for-admin.use-case'
 
+export { recordExternalValidation } from './carrier-documents/record-external-validation.use-case'
+export type { RecordExternalValidationResult } from './carrier-documents/record-external-validation.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

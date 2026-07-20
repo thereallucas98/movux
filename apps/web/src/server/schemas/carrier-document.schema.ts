@@ -45,3 +45,8 @@ export const ListCarrierDocumentsQuerySchema = z.object({
   cursor: z.string().optional(),
   limit: z.coerce.number().int().positive().max(100).optional(),
 })
+
+export const ExternalValidationBodySchema = z.object({
+  result: z.enum(['MATCH', 'MISMATCH', 'INCONCLUSIVE']),
+  notes: z.string().optional(),
+})

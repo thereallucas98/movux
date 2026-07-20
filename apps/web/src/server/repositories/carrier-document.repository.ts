@@ -17,6 +17,19 @@ export interface ListCarrierDocumentsFilter {
   limit?: number
 }
 
+/**
+ * provider distinguishes a manual admin check (today) from a future paid
+ * automated provider (e.g. BIGDATACORP, not implemented yet) — same field,
+ * same envelope shape family, no schema change needed when that's added.
+ */
+export type ExternalValidationEnvelope = {
+  provider: 'MANUAL'
+  result: 'MATCH' | 'MISMATCH' | 'INCONCLUSIVE'
+  notes?: string
+  checkedBy: string
+  checkedAt: string
+}
+
 export interface CarrierDocumentRepository {
   create(data: CreateCarrierDocumentInput): Promise<CarrierDocument>
   findByCarrier(carrierId: string): Promise<CarrierDocument[]>
@@ -31,6 +44,7 @@ export interface CarrierDocumentRepository {
   findByStatus(
     filter: ListCarrierDocumentsFilter,
   ): Promise<{ data: CarrierDocument[]; nextCursor: string | null }>
+  recordExternalValidation(id: string, envelope: ExternalValidationEnvelope): Promise<void>
 }
 
 export function createCarrierDocumentRepository(
@@ -82,6 +96,13 @@ export function createCarrierDocumentRepository(
       const nextCursor = hasMore ? page[page.length - 1].id : null
 
       return { data: page, nextCursor }
+    },
+
+    async recordExternalValidation(id, envelope) {
+      await prisma.carrierDocument.update({
+        where: { id },
+        data: { externalValidation: envelope },
+      })
     },
   }
 }
