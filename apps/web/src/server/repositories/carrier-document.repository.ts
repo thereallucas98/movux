@@ -17,6 +17,10 @@ export interface ListCarrierDocumentsFilter {
   limit?: number
 }
 
+export type CarrierDocumentWithCarrier = CarrierDocument & {
+  carrier: { fullName: string; email: string } | null
+}
+
 /**
  * provider distinguishes a manual admin check (today) from a future paid
  * automated provider (e.g. BIGDATACORP, not implemented yet) — same field,
@@ -43,8 +47,11 @@ export interface CarrierDocumentRepository {
   findApprovedTypesByCarrier(carrierId: string): Promise<CarrierDocumentType[]>
   findByStatus(
     filter: ListCarrierDocumentsFilter,
-  ): Promise<{ data: CarrierDocument[]; nextCursor: string | null }>
-  recordExternalValidation(id: string, envelope: ExternalValidationEnvelope): Promise<void>
+  ): Promise<{ data: CarrierDocumentWithCarrier[]; nextCursor: string | null }>
+  recordExternalValidation(
+    id: string,
+    envelope: ExternalValidationEnvelope,
+  ): Promise<void>
 }
 
 export function createCarrierDocumentRepository(
@@ -89,6 +96,7 @@ export function createCarrierDocumentRepository(
         orderBy: [{ uploadedAt: 'desc' }, { id: 'desc' }],
         take: limit + 1,
         ...(filter.cursor ? { cursor: { id: filter.cursor }, skip: 1 } : {}),
+        include: { carrier: { select: { fullName: true, email: true } } },
       })
 
       const hasMore = data.length > limit

@@ -1,0 +1,23 @@
+query CarrierDocuments($status: VerificationStatus, $cursor: ID, $limit: Int) {
+  carrierDocuments(status: $status, cursor: $cursor, limit: $limit) {
+    data {
+      id
+      type
+      fileUrl
+      status
+      rejectionReason
+      uploadedAt
+      reviewedAt
+      carrierName
+      carrierEmail
+      externalValidation {
+        provider
+        result
+        notes
+        checkedBy
+        checkedAt
+      }
+    }
+    nextCursor
+  }
+}

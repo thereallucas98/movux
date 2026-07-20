@@ -1,0 +1,3 @@
+mutation RecordExternalValidation($documentId: ID!, $input: ExternalValidationInput!) {
+  recordExternalValidation(documentId: $documentId, input: $input)
+}

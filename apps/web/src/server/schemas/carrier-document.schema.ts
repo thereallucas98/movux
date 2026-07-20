@@ -10,7 +10,11 @@ export const CARRIER_DOCUMENT_TYPES = [
 
 export const DocumentTypeSchema = z.enum(CARRIER_DOCUMENT_TYPES)
 
-export const DOCUMENT_MIME_WHITELIST = ['image/jpeg', 'image/png', 'application/pdf'] as const
+export const DOCUMENT_MIME_WHITELIST = [
+  'image/jpeg',
+  'image/png',
+  'application/pdf',
+] as const
 
 export const DOCUMENT_MAX_BYTES = 10 * 1024 * 1024
 
@@ -26,7 +30,11 @@ export function parseDocumentField(formData: FormData): ParseDocumentResult {
   if (raw.size > DOCUMENT_MAX_BYTES) {
     return { success: false, code: 'ATTACHMENT_INVALID' }
   }
-  if (!DOCUMENT_MIME_WHITELIST.includes(raw.type as (typeof DOCUMENT_MIME_WHITELIST)[number])) {
+  if (
+    !DOCUMENT_MIME_WHITELIST.includes(
+      raw.type as (typeof DOCUMENT_MIME_WHITELIST)[number],
+    )
+  ) {
     return { success: false, code: 'ATTACHMENT_INVALID' }
   }
   return { success: true, file: raw }
@@ -37,7 +45,7 @@ export const CarrierDocumentIdParamSchema = z.object({
 })
 
 export const RejectCarrierDocumentSchema = z.object({
-  rejectionReason: z.string().min(1),
+  rejectionReason: z.string().min(1, 'Informe o motivo da rejeição'),
 })
 
 export const ListCarrierDocumentsQuerySchema = z.object({
@@ -47,6 +55,8 @@ export const ListCarrierDocumentsQuerySchema = z.object({
 })
 
 export const ExternalValidationBodySchema = z.object({
-  result: z.enum(['MATCH', 'MISMATCH', 'INCONCLUSIVE']),
+  result: z.enum(['MATCH', 'MISMATCH', 'INCONCLUSIVE'], {
+    error: 'Selecione o resultado da checagem',
+  }),
   notes: z.string().optional(),
 })

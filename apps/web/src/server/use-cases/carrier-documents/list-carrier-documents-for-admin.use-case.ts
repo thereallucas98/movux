@@ -1,6 +1,6 @@
-import type { CarrierDocument } from '~/generated/prisma/client'
 import type {
   CarrierDocumentRepository,
+  CarrierDocumentWithCarrier,
   ListCarrierDocumentsFilter,
 } from '../../repositories/carrier-document.repository'
 
@@ -11,6 +11,6 @@ interface ListCarrierDocumentsForAdminRepos {
 export async function listCarrierDocumentsForAdmin(
   repos: ListCarrierDocumentsForAdminRepos,
   filter: ListCarrierDocumentsFilter,
-): Promise<{ data: CarrierDocument[]; nextCursor: string | null }> {
+): Promise<{ data: CarrierDocumentWithCarrier[]; nextCursor: string | null }> {
   return repos.carrierDocumentRepo.findByStatus(filter)
 }

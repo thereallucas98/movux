@@ -1,0 +1,3 @@
+mutation ApproveCarrierDocument($documentId: ID!) {
+  approveCarrierDocument(documentId: $documentId)
+}

@@ -16,6 +16,7 @@ import './enums/notification.enum'
 import './enums/plan-tier.enum'
 import './enums/shipment.enum'
 import './enums/proposal.enum'
+import './enums/carrier-document.enum'
 
 // Import types so they register with the builder
 import './types/user.type'
@@ -42,6 +43,7 @@ import './types/shipment.type'
 import './types/browse-shipment.type'
 import './types/proposal.type'
 import './types/queue-entry.type'
+import './types/carrier-document.type'
 
 // Import queries
 import './queries/me.query'
@@ -65,6 +67,7 @@ import './queries/shipments.query'
 import './queries/browse-shipments.query'
 import './queries/queue.query'
 import './queries/proposal.query'
+import './queries/carrier-documents.query'
 
 // Import mutations
 import './mutations/me.mutation'
@@ -85,5 +88,6 @@ import './mutations/notification.mutation'
 import './mutations/shipments.mutation'
 import './mutations/queue.mutation'
 import './mutations/proposal.mutation'
+import './mutations/carrier-documents.mutation'
 
 export const schema = builder.toSchema()

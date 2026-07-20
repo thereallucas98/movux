@@ -3,6 +3,8 @@ import { getAccessTokenFromCookie, verifyAccessToken } from '~/lib/session'
 import {
   assignmentRepository,
   auditLogRepository,
+  carrierDocumentRepository,
+  carrierProfileRepository,
   categoryRepository,
   customerProfileRepository,
   geographyRepository,
@@ -70,6 +72,8 @@ export interface GraphQLContext {
     proposalRepo: typeof proposalRepository
     notificationLogRepo: typeof notificationLogRepository
     shipmentEventRepo: typeof shipmentEventRepository
+    carrierProfileRepo: typeof carrierProfileRepository
+    carrierDocumentRepo: typeof carrierDocumentRepository
   }
 }
 
@@ -140,6 +144,8 @@ export async function createGraphQLContext(
       proposalRepo: proposalRepository,
       notificationLogRepo: notificationLogRepository,
       shipmentEventRepo: shipmentEventRepository,
+      carrierProfileRepo: carrierProfileRepository,
+      carrierDocumentRepo: carrierDocumentRepository,
     },
   }
 }

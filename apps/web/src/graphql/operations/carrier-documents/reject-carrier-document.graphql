@@ -1,0 +1,3 @@
+mutation RejectCarrierDocument($documentId: ID!, $rejectionReason: String!) {
+  rejectCarrierDocument(documentId: $documentId, rejectionReason: $rejectionReason)
+}
