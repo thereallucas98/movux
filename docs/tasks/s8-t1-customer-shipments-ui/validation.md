@@ -23,6 +23,12 @@
 | 13 | Responsivo 375px (mobile) | Bottom sheet no calendário, cards na lista, tab bar inferior, sem scroll horizontal | ✅ |
 | 14 | Responsivo desktop (1280px) | Modal centralizado no calendário, tabela na lista | ✅ |
 | 15 | Console do navegador | Sem erros do app (só ruído de extensão do Chrome) | ✅ |
+| 16 | Calendário — dias passados | Dias antes de hoje desabilitados no grid (não clicáveis) | ✅ |
+| 17 | Calendário — navegação pra trás | Chevron "Mês anterior" desabilitado no mês atual | ✅ |
+| 18 | Calendário — navegação pra frente | Chevron "Próximo mês" desabilitado em mês atual + 6 (ex.: hoje jul/2026 → trava em jan/2027) | ✅ |
+| 19 | Janela de horário — hoje após 12h | "Manhã" some das opções; se estava selecionada, troca automaticamente pra "Tarde" | ✅ |
+| 20 | Janela de horário — data futura | "Manhã" volta a aparecer nas opções | ✅ |
+| 21 | Mensagens de erro do Zod | Revisadas pra PT-BR humano por campo (`Selecione uma data`, `Informe a rua`, `CEP inválido` etc.) em vez de mensagens técnicas tipo "data ISO inválido" | ✅ corrigido |
 
 ## Typecheck / Lint / Build
 
@@ -42,6 +48,8 @@ Esta task teve bem mais desvios que o normal porque o QA foi feito ao vivo, test
 6. **CEP com máscara** — conectado o `CepInput` que já existia em `masked-input.tsx`, sem uso até então.
 
 Nenhum desvio de arquitetura da Research original (GraphQL + `graphql-request` + React Query seguiu como decidido).
+
+7. **Correções pós-QA (feedback do usuário depois da validação inicial)**: calendário passou a bloquear dias passados, travar navegação de mês antes do mês atual e além de mês atual + 6 (`apps/web/src/components/ui/adaptive-date-picker.tsx`); janela de horário "Manhã" passou a ficar indisponível quando a data agendada é hoje e já passou das 12h, com troca automática pra "Tarde" se estava selecionada (`~/lib/date-br.ts`, novo helper compartilhado com o schema); mensagens de validação do Zod revisadas campo a campo pra PT-BR humano (schema já tinha `z.config(z.locales.pt())`, mas as mensagens padrão do locale ainda soavam técnicas — ex. "Invalid ISO date" traduzido literalmente).
 
 ## Acceptance criteria (brief.md)
 

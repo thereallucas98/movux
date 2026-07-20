@@ -20,6 +20,7 @@ import {
 import { Input } from '~/components/ui/input'
 import { CepInput } from '~/components/ui/masked-input'
 import { Textarea } from '~/components/ui/textarea'
+import { isMorningWindowBlocked } from '~/lib/date-br'
 import { useCreateShipment } from '~/graphql/hooks/use-create-shipment'
 import {
   useNeighborhoods,
@@ -116,12 +117,29 @@ export function CreateShipmentForm() {
   })
 
   const timeWindow = form.watch('timeWindow')
+  const scheduledDate = form.watch('scheduledDate')
+
+  const morningBlocked = scheduledDate
+    ? isMorningWindowBlocked(scheduledDate)
+    : false
+  const timeWindowOptions = morningBlocked
+    ? TIME_WINDOW_OPTIONS.filter((option) => option.value !== 'MORNING')
+    : TIME_WINDOW_OPTIONS
 
   // mode: 'onChange' só valida a partir da 1ª interação — dispara uma
   // validação no mount pra o botão já nascer desabilitado (form vazio).
   useEffect(() => {
     form.trigger()
   }, [])
+
+  // Se o dia agendado virou hoje depois do meio-dia (ou a hora avançou com
+  // o form aberto), o turno "Manhã" deixa de ser válido — troca pro próximo
+  // turno disponível em vez de deixar o form num estado que o Zod recusa.
+  useEffect(() => {
+    if (morningBlocked && timeWindow === 'MORNING') {
+      form.setValue('timeWindow', 'AFTERNOON', { shouldValidate: true })
+    }
+  }, [morningBlocked, timeWindow])
 
   async function onSubmit(values: CreateShipmentFormValues) {
     try {
@@ -312,7 +330,7 @@ export function CreateShipmentForm() {
                 <FormLabel>Janela de horário</FormLabel>
                 <FormControl>
                   <AdaptiveSelect
-                    options={TIME_WINDOW_OPTIONS}
+                    options={timeWindowOptions}
                     getOptionValue={(o) => o.value}
                     getOptionLabel={(o) => o.label}
                     value={field.value}

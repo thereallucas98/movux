@@ -3,13 +3,17 @@
 import {
   addMonths,
   eachDayOfInterval,
+  endOfDay,
   endOfMonth,
+  endOfWeek,
   format,
+  isAfter,
+  isBefore,
   isSameDay,
   isSameMonth,
+  startOfDay,
   startOfMonth,
   startOfWeek,
-  endOfWeek,
   subMonths,
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -29,6 +33,10 @@ interface AdaptiveDatePickerProps {
   placeholder?: string
   disabled?: boolean
   className?: string
+  /** Menor data selecionável. Padrão: hoje — nunca permite data passada. */
+  minDate?: Date
+  /** Maior data selecionável. Padrão: hoje + 6 meses. */
+  maxDate?: Date
 }
 
 function buildWeeks(month: Date): Date[][] {
@@ -44,16 +52,21 @@ function buildWeeks(month: Date): Date[][] {
 /**
  * Custom month grid — not a react-day-picker wrapper. Built to match the
  * reference design: wide layout, generous row height, weekday header row,
- * selected day as a solid filled circle.
+ * selected day as a solid filled circle. Days outside [minDate, maxDate]
+ * are disabled, not just visually muted.
  */
 function MonthGrid({
   month,
   selected,
   onSelectDay,
+  minDate,
+  maxDate,
 }: {
   month: Date
   selected: Date | undefined
   onSelectDay: (day: Date) => void
+  minDate: Date
+  maxDate: Date
 }) {
   const weeks = buildWeeks(month)
 
@@ -75,6 +88,8 @@ function MonthGrid({
             {week.map((day) => {
               const inMonth = isSameMonth(day, month)
               const isSelected = selected && isSameDay(day, selected)
+              const outOfRange = isBefore(day, minDate) || isAfter(day, maxDate)
+              const isDisabled = !inMonth || outOfRange
               return (
                 <div
                   key={day.toISOString()}
@@ -83,12 +98,12 @@ function MonthGrid({
                   <button
                     type="button"
                     onClick={() => onSelectDay(day)}
-                    disabled={!inMonth}
+                    disabled={isDisabled}
                     className={cn(
                       'flex h-12 w-12 items-center justify-center rounded-full text-base transition-colors sm:h-14 sm:w-14 sm:text-lg',
-                      !inMonth &&
+                      isDisabled &&
                         'text-muted-foreground/30 pointer-events-none',
-                      inMonth &&
+                      !isDisabled &&
                         !isSelected &&
                         'text-foreground hover:bg-muted',
                       isSelected &&
@@ -119,21 +134,40 @@ export function AdaptiveDatePicker({
   placeholder = 'Selecione uma data',
   disabled = false,
   className,
+  minDate,
+  maxDate,
 }: AdaptiveDatePickerProps) {
+  const today = React.useMemo(() => startOfDay(new Date()), [])
+  const effectiveMinDate = minDate ?? today
+  const effectiveMaxDate = React.useMemo(
+    () => maxDate ?? endOfDay(endOfMonth(addMonths(today, 6))),
+    [maxDate, today],
+  )
+
   const [open, setOpen] = React.useState(false)
   const [pending, setPending] = React.useState<Date | undefined>(
     value ?? undefined,
   )
   const [visibleMonth, setVisibleMonth] = React.useState<Date>(
-    value ?? new Date(),
+    value ?? effectiveMinDate,
   )
 
   React.useEffect(() => {
     if (open) {
       setPending(value ?? undefined)
-      setVisibleMonth(value ?? new Date())
+      setVisibleMonth(value ?? effectiveMinDate)
     }
+    // eslint-disable-next-line
   }, [open, value])
+
+  const isPrevDisabled = !isAfter(
+    startOfMonth(visibleMonth),
+    startOfMonth(effectiveMinDate),
+  )
+  const isNextDisabled = !isBefore(
+    startOfMonth(visibleMonth),
+    startOfMonth(effectiveMaxDate),
+  )
 
   function handleConfirm() {
     onChange?.(pending)
@@ -192,7 +226,8 @@ export function AdaptiveDatePicker({
               type="button"
               aria-label="Mês anterior"
               onClick={() => setVisibleMonth((m) => subMonths(m, 1))}
-              className="hover:bg-muted flex h-10 w-10 items-center justify-center rounded-full"
+              disabled={isPrevDisabled}
+              className="hover:bg-muted flex h-10 w-10 items-center justify-center rounded-full disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -203,7 +238,8 @@ export function AdaptiveDatePicker({
               type="button"
               aria-label="Próximo mês"
               onClick={() => setVisibleMonth((m) => addMonths(m, 1))}
-              className="hover:bg-muted flex h-10 w-10 items-center justify-center rounded-full"
+              disabled={isNextDisabled}
+              className="hover:bg-muted flex h-10 w-10 items-center justify-center rounded-full disabled:pointer-events-none disabled:opacity-30"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -213,6 +249,8 @@ export function AdaptiveDatePicker({
             month={visibleMonth}
             selected={pending}
             onSelectDay={setPending}
+            minDate={effectiveMinDate}
+            maxDate={effectiveMaxDate}
           />
         </div>
       </AdaptiveDialog>
