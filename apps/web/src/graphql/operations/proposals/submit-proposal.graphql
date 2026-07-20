@@ -1,0 +1,18 @@
+mutation SubmitProposal($shipmentId: ID!, $input: SubmitProposalInput!) {
+  submitProposal(shipmentId: $shipmentId, input: $input) {
+    id
+    status
+    currentAttempt
+    agreedSlaHours
+    expiresAt
+    attempts {
+      id
+      attemptNumber
+      priceInCents
+      message
+      proposedAt
+      respondedAt
+      responseType
+    }
+  }
+}

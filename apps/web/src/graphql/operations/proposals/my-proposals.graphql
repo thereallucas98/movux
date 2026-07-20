@@ -1,0 +1,43 @@
+query MyProposals($cursor: ID, $limit: Int) {
+  myProposals(cursor: $cursor, limit: $limit) {
+    data {
+      id
+      status
+      position
+      calledAt
+      exhaustedAt
+      shipment {
+        id
+        type
+        description
+        scheduledDate
+        timeWindow
+        suggestedPriceInCents
+        customerSlaHours
+        addresses {
+          type
+          neighborhoodName
+          cityId
+          state
+        }
+      }
+      proposal {
+        id
+        status
+        currentAttempt
+        agreedSlaHours
+        expiresAt
+        attempts {
+          id
+          attemptNumber
+          priceInCents
+          message
+          proposedAt
+          respondedAt
+          responseType
+        }
+      }
+    }
+    nextCursor
+  }
+}

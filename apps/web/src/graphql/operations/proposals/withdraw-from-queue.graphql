@@ -1,0 +1,3 @@
+mutation WithdrawFromQueue($shipmentId: ID!) {
+  withdrawFromQueue(shipmentId: $shipmentId)
+}

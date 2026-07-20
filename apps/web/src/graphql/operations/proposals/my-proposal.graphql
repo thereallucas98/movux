@@ -1,0 +1,21 @@
+query MyProposal($shipmentId: ID!) {
+  myProposal(shipmentId: $shipmentId) {
+    id
+    status
+    currentAttempt
+    customerSlaHours
+    carrierSlaHours
+    agreedSlaHours
+    expiresAt
+    createdAt
+    attempts {
+      id
+      attemptNumber
+      priceInCents
+      message
+      proposedAt
+      respondedAt
+      responseType
+    }
+  }
+}

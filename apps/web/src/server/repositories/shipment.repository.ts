@@ -92,34 +92,32 @@ export type BrowseShipmentItem = Pick<
 
 export interface ShipmentRepository {
   createDraft(data: CreateDraftInput): Promise<ShipmentWithDetails>
-  findByIdForOwner(id: string, customerId: string): Promise<ShipmentWithDetails | null>
+  findByIdForOwner(
+    id: string,
+    customerId: string,
+  ): Promise<ShipmentWithDetails | null>
   findStatusForOwner(
     id: string,
     customerId: string,
-  ): Promise<
-    { id: string; status: ShipmentStatus; deliveredAt: Date | null; description: string } | null
-  >
-  findStatusById(
-    id: string,
-  ): Promise<
-    {
-      id: string
-      status: ShipmentStatus
-      customerId: string
-      deliveredAt: Date | null
-      description: string
-    } | null
-  >
-  findForProposal(
-    id: string,
-  ): Promise<
-    {
-      status: ShipmentStatus
-      customerSlaHours: number
-      customerId: string
-      description: string
-    } | null
-  >
+  ): Promise<{
+    id: string
+    status: ShipmentStatus
+    deliveredAt: Date | null
+    description: string
+  } | null>
+  findStatusById(id: string): Promise<{
+    id: string
+    status: ShipmentStatus
+    customerId: string
+    deliveredAt: Date | null
+    description: string
+  } | null>
+  findForProposal(id: string): Promise<{
+    status: ShipmentStatus
+    customerSlaHours: number
+    customerId: string
+    description: string
+  } | null>
   updateStatus(id: string, status: ShipmentStatus): Promise<void>
   markCarrierSelected(id: string, finalPriceInCents: number): Promise<void>
   markCollected(id: string): Promise<void>
@@ -134,7 +132,7 @@ export interface ShipmentRepository {
   ): Promise<{ data: BrowseShipmentItem[]; nextCursor: string | null }>
 }
 
-const BROWSE_SELECT = {
+export const SHIPMENT_BROWSE_SELECT = {
   id: true,
   type: true,
   description: true,
@@ -152,7 +150,9 @@ const BROWSE_SELECT = {
   },
 } as const
 
-export function createShipmentRepository(prisma: PrismaClient): ShipmentRepository {
+export function createShipmentRepository(
+  prisma: PrismaClient,
+): ShipmentRepository {
   return {
     async createDraft(data) {
       return prisma.shipment.create({
@@ -191,7 +191,12 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
     async findStatusForOwner(id, customerId) {
       return prisma.shipment.findFirst({
         where: { id, customerId },
-        select: { id: true, status: true, deliveredAt: true, description: true },
+        select: {
+          id: true,
+          status: true,
+          deliveredAt: true,
+          description: true,
+        },
       })
     },
 
@@ -211,7 +216,12 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
     async findForProposal(id) {
       return prisma.shipment.findUnique({
         where: { id },
-        select: { status: true, customerSlaHours: true, customerId: true, description: true },
+        select: {
+          status: true,
+          customerSlaHours: true,
+          customerId: true,
+          description: true,
+        },
       })
     },
 
@@ -250,12 +260,13 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
     async listForCustomer(customerId, filter) {
       const limit = filter.limit ?? 20
       const data = await prisma.shipment.findMany({
-        where: { customerId, ...(filter.status ? { status: filter.status } : {}) },
+        where: {
+          customerId,
+          ...(filter.status ? { status: filter.status } : {}),
+        },
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit + 1,
-        ...(filter.cursor
-          ? { cursor: { id: filter.cursor }, skip: 1 }
-          : {}),
+        ...(filter.cursor ? { cursor: { id: filter.cursor }, skip: 1 } : {}),
       })
 
       const hasMore = data.length > limit
@@ -275,7 +286,7 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
             ? { addresses: { some: { type: 'ORIGIN', cityId: filter.cityId } } }
             : {}),
         },
-        select: BROWSE_SELECT,
+        select: SHIPMENT_BROWSE_SELECT,
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit + 1,
         ...(filter.cursor ? { cursor: { id: filter.cursor }, skip: 1 } : {}),

@@ -1,0 +1,9 @@
+mutation JoinProposalQueue($shipmentId: ID!) {
+  joinProposalQueue(shipmentId: $shipmentId) {
+    id
+    status
+    position
+    calledAt
+    exhaustedAt
+  }
+}

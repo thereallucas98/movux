@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) em andamento, S8-T1 ✅ concluído
+**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) em andamento, S8-T1 ✅ concluído, S8-T2 ✅ concluído
 **Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 7 (Plans & Billing) — invertendo a ordem numérica original; Billing fica por último porque depende de conta Mercado Pago configurada, mesmo padrão do Supabase/BigDataCorp/Resend
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
@@ -129,10 +129,10 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | ID | Task | Status | Doc |
 |---|---|---|---|
 | S8-T1 | Customer: fretes — GraphQL (myShipments, shipment, createShipment) + dashboard/lista/criação | ✅ | [→](tasks/s8-t1-customer-shipments-ui/) |
-| S8-T2 | Carrier: buscar fretes abertos + enviar proposta | ○ | — |
+| S8-T2 | Carrier: buscar fretes abertos + enviar proposta | ✅ | [→](tasks/s8-t2-carrier-shipments-ui/) |
 | S8-T3 | Admin: verificação de documentos | ○ | — |
 
-S8-T2 e S8-T3 ainda não têm brief — escopo real só na hora de cada uma.
+S8-T3 ainda não tem brief — escopo real só na hora.
 
 ---
 

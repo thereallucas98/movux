@@ -6,9 +6,12 @@ import {
   categoryRepository,
   customerProfileRepository,
   geographyRepository,
+  notificationLogRepository,
   notificationPreferenceRepository,
   notificationRepository,
   pricingRepository,
+  proposalQueueRepository,
+  proposalRepository,
   requestRepository,
   scheduleRepository,
   shiftCandidateRepository,
@@ -16,6 +19,7 @@ import {
   shiftPatternRepository,
   shiftRepository,
   shiftTimelineNoteRepository,
+  shipmentEventRepository,
   shipmentRepository,
   specialtyRepository,
   tenantMembershipRepository,
@@ -62,6 +66,10 @@ export interface GraphQLContext {
     customerProfileRepo: typeof customerProfileRepository
     pricingRepo: typeof pricingRepository
     geographyRepo: typeof geographyRepository
+    proposalQueueRepo: typeof proposalQueueRepository
+    proposalRepo: typeof proposalRepository
+    notificationLogRepo: typeof notificationLogRepository
+    shipmentEventRepo: typeof shipmentEventRepository
   }
 }
 
@@ -128,6 +136,10 @@ export async function createGraphQLContext(
       customerProfileRepo: customerProfileRepository,
       pricingRepo: pricingRepository,
       geographyRepo: geographyRepository,
+      proposalQueueRepo: proposalQueueRepository,
+      proposalRepo: proposalRepository,
+      notificationLogRepo: notificationLogRepository,
+      shipmentEventRepo: shipmentEventRepository,
     },
   }
 }

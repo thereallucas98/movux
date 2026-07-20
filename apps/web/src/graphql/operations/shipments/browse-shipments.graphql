@@ -1,0 +1,25 @@
+query BrowseShipments($cityId: ID, $type: ShipmentType, $cursor: ID, $limit: Int) {
+  browseShipments(cityId: $cityId, type: $type, cursor: $cursor, limit: $limit) {
+    data {
+      id
+      type
+      description
+      estimatedWeightKg
+      estimatedVolumeM3
+      vehicleTypeRequired
+      scheduledDate
+      timeWindow
+      specificTime
+      suggestedPriceInCents
+      customerSlaHours
+      createdAt
+      addresses {
+        type
+        neighborhoodName
+        cityId
+        state
+      }
+    }
+    nextCursor
+  }
+}

@@ -1,8 +1,10 @@
+import { MyProposalsList } from '~/components/features/proposals/my-proposals-list'
+
 export default function CarrierProposalsPage() {
   return (
-    <div>
+    <div className="space-y-4">
       <h1 className="text-foreground text-2xl font-bold">Minhas propostas</h1>
-      <p className="text-muted-foreground mt-2">Em breve.</p>
+      <MyProposalsList />
     </div>
   )
 }

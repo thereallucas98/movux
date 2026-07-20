@@ -1,0 +1,9 @@
+query MyQueueEntry($shipmentId: ID!) {
+  myQueueEntry(shipmentId: $shipmentId) {
+    id
+    status
+    position
+    calledAt
+    exhaustedAt
+  }
+}

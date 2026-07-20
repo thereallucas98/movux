@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { formatPriceInCents } from '~/lib/format-price'
 import { cn } from '~/lib/utils'
 
 // ─── Mask engine ──────────────────────────────────────────────────────────────
@@ -165,6 +166,43 @@ export function PhoneInput({
       value={applyPhoneMask(value)}
       onChange={handleChange}
       placeholder="(00) 00000-0000"
+      className={cn(baseInputCls, className)}
+    />
+  )
+}
+
+// ─── Currency (BRL) ─────────────────────────────────────────────────────────
+// Digita só números; formata como moeda em tempo real (evita o problema de
+// `type="number"` descartar vírgula decimal — mesmo bug já corrigido no S8-T1).
+// Valor reportado é sempre em centavos (inteiro), nunca ponto flutuante.
+
+export interface CurrencyInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange' | 'value'
+> {
+  /** Valor em centavos */
+  value?: number
+  onChange?: (cents: number) => void
+}
+
+export function CurrencyInput({
+  value,
+  onChange,
+  className,
+  ...props
+}: CurrencyInputProps) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const digits = digitsOnly(e.target.value)
+    onChange?.(digits ? Number(digits) : 0)
+  }
+
+  return (
+    <input
+      {...props}
+      inputMode="numeric"
+      value={value ? formatPriceInCents(value) : ''}
+      onChange={handleChange}
+      placeholder="R$ 0,00"
       className={cn(baseInputCls, className)}
     />
   )

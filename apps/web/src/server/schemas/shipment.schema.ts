@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { todayInBrazil } from '~/lib/date-br'
+import { slaHoursSchema } from './sla-hours.schema'
 
 const shipmentTypeSchema = z.enum([
   'RESIDENTIAL_MOVING',
@@ -73,10 +74,7 @@ export const CreateShipmentSchema = z
       }),
     timeWindow: timeWindowSchema,
     specificTime: z.string().optional(),
-    customerSlaHours: z.union(
-      [z.literal(4), z.literal(6), z.literal(8), z.literal(12), z.literal(24)],
-      { error: 'Selecione um prazo de resposta' },
-    ),
+    customerSlaHours: slaHoursSchema('Selecione um prazo de resposta'),
     origin: ShipmentAddressSchema,
     destination: ShipmentAddressSchema,
     modifiers: z.array(ShipmentModifierInputSchema).default([]),

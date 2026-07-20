@@ -1,0 +1,3 @@
+mutation WithdrawProposal($shipmentId: ID!) {
+  withdrawProposal(shipmentId: $shipmentId)
+}

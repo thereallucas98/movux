@@ -1,21 +1,19 @@
 import { z } from 'zod'
+import { slaHoursSchema } from './sla-hours.schema'
 
-const slaHoursSchema = z.union([
-  z.literal(4),
-  z.literal(6),
-  z.literal(8),
-  z.literal(12),
-  z.literal(24),
-])
+const priceInCentsSchema = z
+  .number({ error: 'Informe o valor da proposta' })
+  .int()
+  .positive('O valor da proposta precisa ser maior que zero')
 
 export const SubmitProposalSchema = z.object({
-  priceInCents: z.number().int().positive(),
-  carrierSlaHours: slaHoursSchema,
+  priceInCents: priceInCentsSchema,
+  carrierSlaHours: slaHoursSchema('Selecione um prazo de resposta'),
   message: z.string().optional(),
 })
 
 export const AddProposalAttemptSchema = z.object({
-  priceInCents: z.number().int().positive(),
+  priceInCents: priceInCentsSchema,
   message: z.string().optional(),
 })
 

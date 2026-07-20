@@ -1,4 +1,7 @@
 import type { PrismaClient, QueueEntryStatus } from '~/generated/prisma/client'
+import type { BrowseShipmentItem } from './shipment.repository'
+import { SHIPMENT_BROWSE_SELECT } from './shipment.repository'
+import type { ProposalWithAttempts } from './proposal.repository'
 
 export interface QueueEntry {
   id: string
@@ -10,15 +13,38 @@ export interface QueueEntry {
   exhaustedAt: Date | null
 }
 
+export interface CarrierQueueEntryRow extends QueueEntry {
+  shipment: BrowseShipmentItem
+  proposal: ProposalWithAttempts | null
+}
+
 export interface ProposalQueueRepository {
-  findByShipmentAndCarrier(shipmentId: string, carrierId: string): Promise<QueueEntry | null>
+  findByShipmentAndCarrier(
+    shipmentId: string,
+    carrierId: string,
+  ): Promise<QueueEntry | null>
   countByShipment(shipmentId: string): Promise<number>
   countCalledByShipment(shipmentId: string): Promise<number>
-  findNextWaiting(shipmentId: string, limit: number): Promise<{ id: string; carrierId: string }[]>
-  create(shipmentId: string, carrierId: string, position: number): Promise<QueueEntry>
-  updateStatus(id: string, status: QueueEntryStatus, calledAt?: Date): Promise<void>
+  findNextWaiting(
+    shipmentId: string,
+    limit: number,
+  ): Promise<{ id: string; carrierId: string }[]>
+  create(
+    shipmentId: string,
+    carrierId: string,
+    position: number,
+  ): Promise<QueueEntry>
+  updateStatus(
+    id: string,
+    status: QueueEntryStatus,
+    calledAt?: Date,
+  ): Promise<void>
   markManyCalled(ids: string[]): Promise<void>
   exhaustOthers(shipmentId: string, exceptQueueEntryId: string): Promise<void>
+  listByCarrier(
+    carrierId: string,
+    filter: { cursor?: string; limit?: number },
+  ): Promise<{ data: CarrierQueueEntryRow[]; nextCursor: string | null }>
 }
 
 export function createProposalQueueRepository(
@@ -36,7 +62,9 @@ export function createProposalQueueRepository(
     },
 
     async countCalledByShipment(shipmentId) {
-      return prisma.proposalQueueEntry.count({ where: { shipmentId, status: 'CALLED' } })
+      return prisma.proposalQueueEntry.count({
+        where: { shipmentId, status: 'CALLED' },
+      })
     },
 
     async findNextWaiting(shipmentId, limit) {
@@ -78,6 +106,28 @@ export function createProposalQueueRepository(
         },
         data: { status: 'EXHAUSTED', exhaustedAt: new Date() },
       })
+    },
+
+    async listByCarrier(carrierId, filter) {
+      const limit = filter.limit ?? 20
+      const rows = await prisma.proposalQueueEntry.findMany({
+        where: { carrierId },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        take: limit + 1,
+        ...(filter.cursor ? { cursor: { id: filter.cursor }, skip: 1 } : {}),
+        include: {
+          shipment: { select: SHIPMENT_BROWSE_SELECT },
+          proposal: {
+            include: { attempts: { orderBy: { attemptNumber: 'asc' } } },
+          },
+        },
+      })
+
+      const hasMore = rows.length > limit
+      const page = hasMore ? rows.slice(0, limit) : rows
+      const nextCursor = hasMore ? page[page.length - 1].id : null
+
+      return { data: page, nextCursor }
     },
   }
 }
