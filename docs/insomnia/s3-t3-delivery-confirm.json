@@ -1,0 +1,67 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s3-t3-delivery-confirm",
+  "resources": [
+    {
+      "_id": "wrk_movux_s3_delivery",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S3 Delivery Confirmation",
+      "description": "S3-T3: confirm delivery, report issue, read status"
+    },
+    {
+      "_id": "env_movux_s3_delivery_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s3_delivery",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s3_delivery_customer",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s3_delivery",
+      "name": "Customer Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_confirm_delivery",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_delivery",
+      "name": "Confirm Delivery",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/delivery-confirmation",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"confirmed\": true\n}"
+      },
+      "cookieJar": "jar_movux_s3_delivery_customer"
+    },
+    {
+      "_id": "req_report_issue",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_delivery",
+      "name": "Report Delivery Issue",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/delivery-confirmation",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"confirmed\": false,\n  \"issueDescription\": \"Caixa amassada\"\n}"
+      },
+      "cookieJar": "jar_movux_s3_delivery_customer"
+    },
+    {
+      "_id": "req_get_delivery_status",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_delivery",
+      "name": "Get Delivery Confirmation Status",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/delivery-confirmation",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_delivery_customer"
+    }
+  ]
+}

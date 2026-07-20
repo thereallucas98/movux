@@ -37,6 +37,11 @@ const options: swaggerJsdoc.Options = {
         description: 'Carrier-driven lifecycle transitions — collect, in transit, deliver',
       },
       {
+        name: 'Delivery Confirmation',
+        description:
+          "Customer's double-confirmation of delivery, with 24h lazy auto-confirm",
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

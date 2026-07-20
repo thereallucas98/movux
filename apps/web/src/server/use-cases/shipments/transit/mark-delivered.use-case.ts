@@ -24,7 +24,7 @@ export async function markDelivered(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  await repos.shipmentRepo.updateStatus(shipmentId, 'DELIVERED')
+  await repos.shipmentRepo.markDelivered(shipmentId)
 
   return { success: true }
 }

@@ -33,7 +33,7 @@ export async function markCollected(
     return { success: false, code: 'SAFETY_NOT_CONFIRMED' }
   }
 
-  await repos.shipmentRepo.updateStatus(shipmentId, 'COLLECTED')
+  await repos.shipmentRepo.markCollected(shipmentId)
 
   return { success: true }
 }

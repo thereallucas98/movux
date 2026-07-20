@@ -4,6 +4,7 @@ import { createAuditLogRepository } from './audit-log.repository'
 import { createShiftCandidateRepository } from './candidate.repository'
 import { createCategoryRepository } from './category.repository'
 import { createCustomerProfileRepository } from './customer-profile.repository'
+import { createDeliveryConfirmationRepository } from './delivery-confirmation.repository'
 import { createNotificationRepository } from './notification.repository'
 import { createNotificationPreferenceRepository } from './notification-preference.repository'
 import { createPricingRepository } from './pricing.repository'
@@ -34,6 +35,7 @@ export const shipmentRepository = createShipmentRepository(prisma)
 export const proposalQueueRepository = createProposalQueueRepository(prisma)
 export const proposalRepository = createProposalRepository(prisma)
 export const safetyCheckInRepository = createSafetyCheckInRepository(prisma)
+export const deliveryConfirmationRepository = createDeliveryConfirmationRepository(prisma)
 export const tenantRepository = createTenantRepository(prisma)
 export const tenantMembershipRepository =
   createTenantMembershipRepository(prisma)

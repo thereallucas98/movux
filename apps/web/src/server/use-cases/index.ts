@@ -94,6 +94,12 @@ export type { MarkInTransitResult } from './shipments/transit/mark-in-transit.us
 export { markDelivered } from './shipments/transit/mark-delivered.use-case'
 export type { MarkDeliveredResult } from './shipments/transit/mark-delivered.use-case'
 
+export { confirmDelivery } from './shipments/delivery/confirm-delivery.use-case'
+export type { ConfirmDeliveryResult } from './shipments/delivery/confirm-delivery.use-case'
+
+export { getDeliveryConfirmationStatus } from './shipments/delivery/get-delivery-confirmation-status.use-case'
+export type { GetDeliveryConfirmationStatusResult } from './shipments/delivery/get-delivery-confirmation-status.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

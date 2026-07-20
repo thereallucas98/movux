@@ -24,7 +24,7 @@ export async function markInTransit(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  await repos.shipmentRepo.updateStatus(shipmentId, 'IN_TRANSIT')
+  await repos.shipmentRepo.markInTransit(shipmentId)
 
   return { success: true }
 }

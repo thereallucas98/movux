@@ -96,13 +96,20 @@ export interface ShipmentRepository {
   findStatusForOwner(
     id: string,
     customerId: string,
-  ): Promise<{ id: string; status: ShipmentStatus } | null>
-  findStatusById(id: string): Promise<{ id: string; status: ShipmentStatus } | null>
+  ): Promise<{ id: string; status: ShipmentStatus; deliveredAt: Date | null } | null>
+  findStatusById(
+    id: string,
+  ): Promise<
+    { id: string; status: ShipmentStatus; customerId: string; deliveredAt: Date | null } | null
+  >
   findForProposal(
     id: string,
   ): Promise<{ status: ShipmentStatus; customerSlaHours: number } | null>
   updateStatus(id: string, status: ShipmentStatus): Promise<void>
   markCarrierSelected(id: string, finalPriceInCents: number): Promise<void>
+  markCollected(id: string): Promise<void>
+  markInTransit(id: string): Promise<void>
+  markDelivered(id: string): Promise<void>
   listForCustomer(
     customerId: string,
     filter: ListShipmentsFilter,
@@ -169,14 +176,14 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
     async findStatusForOwner(id, customerId) {
       return prisma.shipment.findFirst({
         where: { id, customerId },
-        select: { id: true, status: true },
+        select: { id: true, status: true, deliveredAt: true },
       })
     },
 
     async findStatusById(id) {
       return prisma.shipment.findUnique({
         where: { id },
-        select: { id: true, status: true },
+        select: { id: true, status: true, customerId: true, deliveredAt: true },
       })
     },
 
@@ -195,6 +202,27 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
       await prisma.shipment.update({
         where: { id },
         data: { status: 'CARRIER_SELECTED', finalPriceInCents },
+      })
+    },
+
+    async markCollected(id) {
+      await prisma.shipment.update({
+        where: { id },
+        data: { status: 'COLLECTED', collectedAt: new Date() },
+      })
+    },
+
+    async markInTransit(id) {
+      await prisma.shipment.update({
+        where: { id },
+        data: { status: 'IN_TRANSIT', inTransitAt: new Date() },
+      })
+    },
+
+    async markDelivered(id) {
+      await prisma.shipment.update({
+        where: { id },
+        data: { status: 'DELIVERED', deliveredAt: new Date() },
       })
     },
 
