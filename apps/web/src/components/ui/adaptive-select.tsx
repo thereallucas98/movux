@@ -37,7 +37,7 @@ interface AdaptiveSelectProps<TOption, TValue extends string> {
 // ─── Base trigger classes (mirrors SelectTrigger defaults) ────────────────────
 
 const baseTriggerCls =
-  'flex h-10 w-full items-center justify-between rounded-input border border-input bg-background px-3 py-2 text-sm whitespace-nowrap shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+  'flex h-12 w-full items-center justify-between rounded-input border border-input bg-background px-3 py-2 text-sm whitespace-nowrap shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
 
 // ─── Component ────────────────────────────────────────────────────────────────
 

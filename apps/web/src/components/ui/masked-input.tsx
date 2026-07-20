@@ -31,7 +31,7 @@ function applyPhoneMask(value: string): string {
 // ─── Shared input class (mirrors auth form style) ─────────────────────────────
 
 const baseInputCls = cn(
-  'text-foreground w-full rounded-[10px] border border-[#d3e2e5] bg-[#f5f8fa] px-4 py-4 text-[16px] font-semibold',
+  'text-foreground h-12 w-full rounded-[10px] border border-[#d3e2e5] bg-[#f5f8fa] px-4 text-[16px] font-semibold',
   'placeholder:text-muted-foreground/60 placeholder:font-normal',
   'focus-visible:border-primary focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0',
   'disabled:opacity-50',
