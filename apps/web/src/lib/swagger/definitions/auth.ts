@@ -3,7 +3,11 @@
  * /api/auth/register:
  *   post:
  *     summary: Register a customer or carrier
- *     description: Creates an account (with the matching customerProfile or carrierProfile) and sets the session cookie.
+ *     description: >
+ *       Creates an account (with the matching customerProfile or
+ *       carrierProfile) and sets the session cookie. Sends a verification
+ *       email (best-effort — a delivery failure never blocks registration);
+ *       see POST /api/auth/verify-email.
  *     tags: [Auth]
  *     security: []
  *     requestBody:
@@ -94,4 +98,28 @@
  *             example: { id: "uuid", email: "joao@cliente.dev", fullName: "João Cliente", role: "CUSTOMER", avatarUrl: null, createdAt: "2026-07-19T00:00:00.000Z" }
  *       '401':
  *         $ref: '#/components/responses/UnauthorizedError'
+ */
+
+/**
+ * @swagger
+ * /api/auth/verify-email:
+ *   post:
+ *     summary: Verify email with the token from the registration email
+ *     description: Token is a JWT signed at registration, valid for 24h.
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token: { type: string }
+ *     responses:
+ *       '200':
+ *         description: Email verified
+ *       '400':
+ *         description: Invalid or expired token
  */

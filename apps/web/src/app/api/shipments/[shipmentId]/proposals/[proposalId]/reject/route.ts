@@ -3,9 +3,11 @@ import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
 import {
   customerProfileRepository,
+  notificationLogRepository,
   proposalQueueRepository,
   proposalRepository,
   shipmentRepository,
+  userRepository,
 } from '~/server/repositories'
 import { ProposalIdParamSchema } from '~/server/schemas/proposal.schema'
 import { rejectProposal } from '~/server/use-cases'
@@ -27,6 +29,8 @@ export async function POST(req: Request, context: RouteContext) {
       shipmentRepo: shipmentRepository,
       proposalRepo: proposalRepository,
       queueRepo: proposalQueueRepository,
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
     },
     principal.userId,
     paramParsed.data.shipmentId,

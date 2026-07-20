@@ -1,5 +1,9 @@
-import type { CarrierProfileRepository } from '../../repositories/carrier-profile.repository'
+import { DocumentApproved } from '~/lib/email/templates/document-approved'
+import { sendEmailNotification } from '../../notifications/send-email-notification'
 import type { CarrierDocumentRepository } from '../../repositories/carrier-document.repository'
+import type { CarrierProfileRepository } from '../../repositories/carrier-profile.repository'
+import type { NotificationLogRepository } from '../../repositories/notification-log.repository'
+import type { UserRepository } from '../../repositories/user.repository'
 import { CARRIER_DOCUMENT_TYPES } from '../../schemas/carrier-document.schema'
 
 export type ApproveCarrierDocumentResult =
@@ -9,6 +13,8 @@ export type ApproveCarrierDocumentResult =
 interface ApproveCarrierDocumentRepos {
   carrierDocumentRepo: CarrierDocumentRepository
   carrierProfileRepo: CarrierProfileRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function approveCarrierDocument(
@@ -34,6 +40,17 @@ export async function approveCarrierDocument(
   )
   if (hasAllRequiredTypes) {
     await repos.carrierProfileRepo.markVerified(document.carrierId, adminUserId)
+  }
+
+  const carrier = await repos.userRepo.findById(document.carrierId)
+  if (carrier) {
+    await sendEmailNotification(repos.notificationLogRepo, {
+      userId: carrier.id,
+      to: carrier.email,
+      subject: 'Documento aprovado — Movux',
+      react: DocumentApproved({ carrierName: carrier.fullName, documentType: document.type }),
+      templateCode: 'DOCUMENT_APPROVED',
+    })
   }
 
   return { success: true }

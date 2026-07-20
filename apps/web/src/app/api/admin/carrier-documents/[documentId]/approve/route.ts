@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { carrierDocumentRepository, carrierProfileRepository } from '~/server/repositories'
+import {
+  carrierDocumentRepository,
+  carrierProfileRepository,
+  notificationLogRepository,
+  userRepository,
+} from '~/server/repositories'
 import { CarrierDocumentIdParamSchema } from '~/server/schemas/carrier-document.schema'
 import { approveCarrierDocument } from '~/server/use-cases'
 
@@ -20,6 +25,8 @@ export async function POST(req: Request, context: RouteContext) {
     {
       carrierDocumentRepo: carrierDocumentRepository,
       carrierProfileRepo: carrierProfileRepository,
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
     },
     principal.userId,
     paramParsed.data.documentId,

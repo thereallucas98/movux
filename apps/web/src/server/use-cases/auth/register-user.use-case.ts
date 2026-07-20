@@ -1,4 +1,8 @@
-import { hashPassword, signAccessToken } from '~/lib/auth'
+import { env } from '@movux/env'
+import { hashPassword, signAccessToken, signEmailVerificationToken } from '~/lib/auth'
+import { VerifyEmail } from '~/lib/email/templates/verify-email'
+import { sendEmailNotification } from '../../notifications/send-email-notification'
+import type { NotificationLogRepository } from '../../repositories/notification-log.repository'
 import type { UserRepository } from '../../repositories/user.repository'
 
 export interface RegisterUserInput {
@@ -17,10 +21,16 @@ export type RegisterUserResult =
     }
   | { success: false; code: 'EMAIL_IN_USE' }
 
+interface RegisterUserRepos {
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
+}
+
 export async function registerUser(
-  userRepo: UserRepository,
+  repos: RegisterUserRepos,
   input: RegisterUserInput,
 ): Promise<RegisterUserResult> {
+  const { userRepo } = repos
   const existing = await userRepo.findByEmail(input.email)
   if (existing) {
     return { success: false, code: 'EMAIL_IN_USE' }
@@ -44,6 +54,15 @@ export async function registerUser(
         })
 
   const token = signAccessToken({ sub: user.id, role: user.role })
+
+  const verificationToken = signEmailVerificationToken(user.id)
+  await sendEmailNotification(repos.notificationLogRepo, {
+    userId: user.id,
+    to: user.email,
+    subject: 'Verifique seu email — Movux',
+    react: VerifyEmail({ token: verificationToken, appUrl: env.APP_URL }),
+    templateCode: 'EMAIL_VERIFICATION',
+  })
 
   return {
     success: true,

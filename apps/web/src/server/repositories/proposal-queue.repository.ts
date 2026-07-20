@@ -14,7 +14,7 @@ export interface ProposalQueueRepository {
   findByShipmentAndCarrier(shipmentId: string, carrierId: string): Promise<QueueEntry | null>
   countByShipment(shipmentId: string): Promise<number>
   countCalledByShipment(shipmentId: string): Promise<number>
-  findNextWaiting(shipmentId: string, limit: number): Promise<{ id: string }[]>
+  findNextWaiting(shipmentId: string, limit: number): Promise<{ id: string; carrierId: string }[]>
   create(shipmentId: string, carrierId: string, position: number): Promise<QueueEntry>
   updateStatus(id: string, status: QueueEntryStatus, calledAt?: Date): Promise<void>
   markManyCalled(ids: string[]): Promise<void>
@@ -44,7 +44,7 @@ export function createProposalQueueRepository(
         where: { shipmentId, status: 'WAITING' },
         orderBy: { position: 'asc' },
         take: limit,
-        select: { id: true },
+        select: { id: true, carrierId: true },
       })
     },
 

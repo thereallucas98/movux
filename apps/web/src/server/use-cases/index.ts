@@ -13,6 +13,9 @@ export type {
 export { getCurrentUser } from './auth/get-current-user.use-case'
 export type { GetCurrentUserResult } from './auth/get-current-user.use-case'
 
+export { verifyEmail } from './auth/verify-email.use-case'
+export type { VerifyEmailResult } from './auth/verify-email.use-case'
+
 // ─── Shipments ───────────────────────────────────────────────────────────────
 
 export { createShipment } from './shipments/create-shipment.use-case'

@@ -8,6 +8,7 @@ import { createCarrierProfileRepository } from './carrier-profile.repository'
 import { createCustomerProfileRepository } from './customer-profile.repository'
 import { createDeliveryConfirmationRepository } from './delivery-confirmation.repository'
 import { createNotificationRepository } from './notification.repository'
+import { createNotificationLogRepository } from './notification-log.repository'
 import { createNotificationPreferenceRepository } from './notification-preference.repository'
 import { createPricingRepository } from './pricing.repository'
 import { createProposalRepository } from './proposal.repository'
@@ -71,3 +72,4 @@ export const auditLogRepository = createAuditLogRepository(prisma)
 export const notificationRepository = createNotificationRepository(prisma)
 export const notificationPreferenceRepository =
   createNotificationPreferenceRepository(prisma)
+export const notificationLogRepository = createNotificationLogRepository(prisma)

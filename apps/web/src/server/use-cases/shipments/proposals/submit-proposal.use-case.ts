@@ -1,3 +1,7 @@
+import { ProposalReceived } from '~/lib/email/templates/proposal-received'
+import { sendEmailNotification } from '../../../notifications/send-email-notification'
+import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type {
   ProposalRepository,
@@ -5,6 +9,7 @@ import type {
 } from '../../../repositories/proposal.repository'
 import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
 
@@ -26,6 +31,9 @@ interface SubmitProposalRepos {
   queueRepo: ProposalQueueRepository
   proposalRepo: ProposalRepository
   shipmentEventRepo: ShipmentEventRepository
+  customerProfileRepo: CustomerProfileRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function submitProposal(
@@ -34,7 +42,13 @@ export async function submitProposal(
   shipmentId: string,
   input: SubmitProposalInput,
 ): Promise<SubmitProposalResult> {
-  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+  await sweepExpiredProposals(
+    repos.proposalRepo,
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   const shipment = await repos.shipmentRepo.findForProposal(shipmentId)
   if (!shipment) {
@@ -70,7 +84,7 @@ export async function submitProposal(
   })
 
   await repos.queueRepo.updateStatus(queueEntry.id, 'ACTIVE')
-  await refillCalledGroup(repos.queueRepo, shipmentId)
+  await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
 
   if (shipment.status === 'OPEN') {
     await repos.shipmentRepo.updateStatus(shipmentId, 'PROPOSALS_RECEIVED')
@@ -79,6 +93,24 @@ export async function submitProposal(
   await repos.shipmentEventRepo.create(shipmentId, 'PROPOSAL_RECEIVED', carrierId, {
     proposalId: proposal.id,
   })
+
+  const customer = await repos.customerProfileRepo.findUserIdById(shipment.customerId)
+  if (customer) {
+    const customerUser = await repos.userRepo.findById(customer.userId)
+    if (customerUser) {
+      await sendEmailNotification(repos.notificationLogRepo, {
+        userId: customerUser.id,
+        to: customerUser.email,
+        subject: 'Nova proposta no seu frete — Movux',
+        react: ProposalReceived({
+          customerName: customerUser.fullName,
+          shipmentDescription: shipment.description,
+          priceInCents: input.priceInCents,
+        }),
+        templateCode: 'PROPOSAL_RECEIVED',
+      })
+    }
+  }
 
   return { success: true, proposal }
 }

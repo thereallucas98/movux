@@ -1,8 +1,13 @@
+import { ProposalAccepted } from '~/lib/email/templates/proposal-accepted'
+import { SafetyTermRequired } from '~/lib/email/templates/safety-term-required'
+import { sendEmailNotification } from '../../../notifications/send-email-notification'
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
 
 export type AcceptProposalResult =
@@ -15,6 +20,8 @@ interface AcceptProposalRepos {
   proposalRepo: ProposalRepository
   queueRepo: ProposalQueueRepository
   shipmentEventRepo: ShipmentEventRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function acceptProposal(
@@ -36,7 +43,13 @@ export async function acceptProposal(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+  await sweepExpiredProposals(
+    repos.proposalRepo,
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   const proposal = await repos.proposalRepo.findByIdForShipment(proposalId, shipmentId)
   if (!proposal) {
@@ -65,6 +78,49 @@ export async function acceptProposal(
   }
 
   await repos.queueRepo.exhaustOthers(shipmentId, proposal.queueEntryId)
+
+  const [carrierUser, customerUser] = await Promise.all([
+    repos.userRepo.findById(proposal.carrierId),
+    repos.userRepo.findById(userId),
+  ])
+
+  if (carrierUser) {
+    await sendEmailNotification(repos.notificationLogRepo, {
+      userId: carrierUser.id,
+      to: carrierUser.email,
+      subject: 'Sua proposta foi aceita! — Movux',
+      react: ProposalAccepted({
+        carrierName: carrierUser.fullName,
+        shipmentDescription: shipment.description,
+        priceInCents: acceptedAttempt.priceInCents,
+      }),
+      templateCode: 'PROPOSAL_ACCEPTED',
+    })
+
+    await sendEmailNotification(repos.notificationLogRepo, {
+      userId: carrierUser.id,
+      to: carrierUser.email,
+      subject: 'Confirme o termo de segurança — Movux',
+      react: SafetyTermRequired({
+        recipientName: carrierUser.fullName,
+        shipmentDescription: shipment.description,
+      }),
+      templateCode: 'SAFETY_TERM_REQUIRED',
+    })
+  }
+
+  if (customerUser) {
+    await sendEmailNotification(repos.notificationLogRepo, {
+      userId: customerUser.id,
+      to: customerUser.email,
+      subject: 'Confirme o termo de segurança — Movux',
+      react: SafetyTermRequired({
+        recipientName: customerUser.fullName,
+        shipmentDescription: shipment.description,
+      }),
+      templateCode: 'SAFETY_TERM_REQUIRED',
+    })
+  }
 
   return { success: true }
 }

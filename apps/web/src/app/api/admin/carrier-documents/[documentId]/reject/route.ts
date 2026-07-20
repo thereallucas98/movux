@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { carrierDocumentRepository } from '~/server/repositories'
+import { carrierDocumentRepository, notificationLogRepository, userRepository } from '~/server/repositories'
 import {
   CarrierDocumentIdParamSchema,
   RejectCarrierDocumentSchema,
@@ -24,7 +24,11 @@ export async function POST(req: Request, context: RouteContext) {
   if (!bodyParsed.success) return validationErrorResponse(bodyParsed.error)
 
   const result = await rejectCarrierDocument(
-    { carrierDocumentRepo: carrierDocumentRepository },
+    {
+      carrierDocumentRepo: carrierDocumentRepository,
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
+    },
     principal.userId,
     paramParsed.data.documentId,
     bodyParsed.data.rejectionReason,

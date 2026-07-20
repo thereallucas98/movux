@@ -1,7 +1,9 @@
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
 
@@ -16,6 +18,8 @@ interface RejectProposalRepos {
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
   queueRepo: ProposalQueueRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function rejectProposal(
@@ -37,7 +41,13 @@ export async function rejectProposal(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+  await sweepExpiredProposals(
+    repos.proposalRepo,
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   const proposal = await repos.proposalRepo.findByIdForShipment(proposalId, shipmentId)
   if (!proposal) {
@@ -52,7 +62,7 @@ export async function rejectProposal(
   if (proposal.currentAttempt >= MAX_ATTEMPTS) {
     await repos.proposalRepo.updateStatus(proposal.id, 'REJECTED')
     await repos.queueRepo.updateStatus(proposal.queueEntryId, 'EXHAUSTED')
-    await refillCalledGroup(repos.queueRepo, shipmentId)
+    await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
   }
 
   return { success: true }

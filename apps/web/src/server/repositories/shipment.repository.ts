@@ -96,15 +96,30 @@ export interface ShipmentRepository {
   findStatusForOwner(
     id: string,
     customerId: string,
-  ): Promise<{ id: string; status: ShipmentStatus; deliveredAt: Date | null } | null>
+  ): Promise<
+    { id: string; status: ShipmentStatus; deliveredAt: Date | null; description: string } | null
+  >
   findStatusById(
     id: string,
   ): Promise<
-    { id: string; status: ShipmentStatus; customerId: string; deliveredAt: Date | null } | null
+    {
+      id: string
+      status: ShipmentStatus
+      customerId: string
+      deliveredAt: Date | null
+      description: string
+    } | null
   >
   findForProposal(
     id: string,
-  ): Promise<{ status: ShipmentStatus; customerSlaHours: number } | null>
+  ): Promise<
+    {
+      status: ShipmentStatus
+      customerSlaHours: number
+      customerId: string
+      description: string
+    } | null
+  >
   updateStatus(id: string, status: ShipmentStatus): Promise<void>
   markCarrierSelected(id: string, finalPriceInCents: number): Promise<void>
   markCollected(id: string): Promise<void>
@@ -176,21 +191,27 @@ export function createShipmentRepository(prisma: PrismaClient): ShipmentReposito
     async findStatusForOwner(id, customerId) {
       return prisma.shipment.findFirst({
         where: { id, customerId },
-        select: { id: true, status: true, deliveredAt: true },
+        select: { id: true, status: true, deliveredAt: true, description: true },
       })
     },
 
     async findStatusById(id) {
       return prisma.shipment.findUnique({
         where: { id },
-        select: { id: true, status: true, customerId: true, deliveredAt: true },
+        select: {
+          id: true,
+          status: true,
+          customerId: true,
+          deliveredAt: true,
+          description: true,
+        },
       })
     },
 
     async findForProposal(id) {
       return prisma.shipment.findUnique({
         where: { id },
-        select: { status: true, customerSlaHours: true },
+        select: { status: true, customerSlaHours: true, customerId: true, description: true },
       })
     },
 

@@ -1,8 +1,10 @@
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type {
   ProposalRepository,
   ProposalWithAttempts,
 } from '../../../repositories/proposal.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
 
 const MAX_ATTEMPTS = 5
@@ -19,6 +21,8 @@ export type AddProposalAttemptResult =
 interface AddProposalAttemptRepos {
   proposalRepo: ProposalRepository
   queueRepo: ProposalQueueRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function addProposalAttempt(
@@ -27,7 +31,13 @@ export async function addProposalAttempt(
   shipmentId: string,
   input: AddProposalAttemptInput,
 ): Promise<AddProposalAttemptResult> {
-  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+  await sweepExpiredProposals(
+    repos.proposalRepo,
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   const proposal = await repos.proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
   if (!proposal) {

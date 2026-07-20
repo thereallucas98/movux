@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
 import {
+  customerProfileRepository,
+  notificationLogRepository,
   proposalQueueRepository,
   proposalRepository,
   shipmentEventRepository,
   shipmentRepository,
+  userRepository,
 } from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { SubmitProposalSchema } from '~/server/schemas/proposal.schema'
@@ -32,6 +35,9 @@ export async function POST(req: Request, context: RouteContext) {
       queueRepo: proposalQueueRepository,
       proposalRepo: proposalRepository,
       shipmentEventRepo: shipmentEventRepository,
+      customerProfileRepo: customerProfileRepository,
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
     },
     principal.userId,
     paramParsed.data.shipmentId,
@@ -52,7 +58,12 @@ export async function GET(req: Request, context: RouteContext) {
   if (!paramParsed.success) return validationErrorResponse(paramParsed.error)
 
   const result = await getMyProposal(
-    { proposalRepo: proposalRepository, queueRepo: proposalQueueRepository },
+    {
+      proposalRepo: proposalRepository,
+      queueRepo: proposalQueueRepository,
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
+    },
     principal.userId,
     paramParsed.data.shipmentId,
   )

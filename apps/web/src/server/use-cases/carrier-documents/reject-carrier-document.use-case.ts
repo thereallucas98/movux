@@ -1,4 +1,8 @@
+import { DocumentRejected } from '~/lib/email/templates/document-rejected'
+import { sendEmailNotification } from '../../notifications/send-email-notification'
 import type { CarrierDocumentRepository } from '../../repositories/carrier-document.repository'
+import type { NotificationLogRepository } from '../../repositories/notification-log.repository'
+import type { UserRepository } from '../../repositories/user.repository'
 
 export type RejectCarrierDocumentResult =
   | { success: true }
@@ -6,6 +10,8 @@ export type RejectCarrierDocumentResult =
 
 interface RejectCarrierDocumentRepos {
   carrierDocumentRepo: CarrierDocumentRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function rejectCarrierDocument(
@@ -28,6 +34,23 @@ export async function rejectCarrierDocument(
     adminUserId,
     rejectionReason,
   )
+
+  if (document.carrierId) {
+    const carrier = await repos.userRepo.findById(document.carrierId)
+    if (carrier) {
+      await sendEmailNotification(repos.notificationLogRepo, {
+        userId: carrier.id,
+        to: carrier.email,
+        subject: 'Documento precisa de atenção — Movux',
+        react: DocumentRejected({
+          carrierName: carrier.fullName,
+          documentType: document.type,
+          rejectionReason,
+        }),
+        templateCode: 'DOCUMENT_REJECTED',
+      })
+    }
+  }
 
   return { success: true }
 }

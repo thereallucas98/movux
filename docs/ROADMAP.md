@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 5 ✅ concluído — próximo: Sprint 6 (Notifications)
+**Status:** Sprint 6 em andamento — S6-T1 ✅, próximo: S6-T2 (WhatsApp notifications)
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -103,7 +103,7 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 
 | ID | Task | Status | Doc |
 |---|---|---|---|
-| S6-T1 | Email notifications — Resend, templates por evento | ○ | [→](tasks/s6-t1-email-notifications/) |
+| S6-T1 | Email notifications — Resend, templates por evento | ✅ | [→](tasks/s6-t1-email-notifications/) |
 | S6-T2 | WhatsApp notifications — Meta Cloud API, templates aprovados | ○ | [→](tasks/s6-t2-whatsapp-notifications/) |
 | S6-T3 | Notification log — registro de envios, retry em falha | ○ | [→](tasks/s6-t3-notification-log/) |
 

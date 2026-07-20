@@ -1,5 +1,7 @@
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
 
 /**
@@ -13,6 +15,8 @@ import { refillCalledGroup } from '../queue/refill-called-group'
 export async function sweepExpiredProposals(
   proposalRepo: ProposalRepository,
   queueRepo: ProposalQueueRepository,
+  userRepo: UserRepository,
+  notificationLogRepo: NotificationLogRepository,
   shipmentId: string,
 ): Promise<void> {
   const expired = await proposalRepo.findExpiredActiveByShipment(shipmentId)
@@ -23,5 +27,5 @@ export async function sweepExpiredProposals(
     await queueRepo.updateStatus(proposal.queueEntryId, 'EXHAUSTED')
   }
 
-  await refillCalledGroup(queueRepo, shipmentId)
+  await refillCalledGroup(queueRepo, userRepo, notificationLogRepo, shipmentId)
 }

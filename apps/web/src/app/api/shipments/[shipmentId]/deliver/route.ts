@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { proposalRepository, shipmentEventRepository, shipmentRepository } from '~/server/repositories'
+import {
+  customerProfileRepository,
+  notificationLogRepository,
+  proposalRepository,
+  shipmentEventRepository,
+  shipmentRepository,
+  userRepository,
+} from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { markDelivered } from '~/server/use-cases'
 
@@ -21,6 +28,9 @@ export async function POST(req: Request, context: RouteContext) {
       shipmentRepo: shipmentRepository,
       proposalRepo: proposalRepository,
       shipmentEventRepo: shipmentEventRepository,
+      customerProfileRepo: customerProfileRepository,
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
     },
     principal.userId,
     paramParsed.data.shipmentId,

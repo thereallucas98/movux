@@ -24,3 +24,23 @@ function requireJwtSecret(): string {
 export function signAccessToken(payload: JwtPayload) {
   return jwt.sign(payload, requireJwtSecret(), { expiresIn: '7d' })
 }
+
+type EmailVerificationPayload = {
+  sub: string // userId
+  purpose: 'email-verification'
+}
+
+export function signEmailVerificationToken(userId: string): string {
+  const payload: EmailVerificationPayload = { sub: userId, purpose: 'email-verification' }
+  return jwt.sign(payload, requireJwtSecret(), { expiresIn: '24h' })
+}
+
+export function verifyEmailVerificationToken(token: string): { userId: string } | null {
+  try {
+    const decoded = jwt.verify(token, requireJwtSecret()) as EmailVerificationPayload
+    if (decoded.purpose !== 'email-verification') return null
+    return { userId: decoded.sub }
+  } catch {
+    return null
+  }
+}

@@ -1,6 +1,8 @@
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository, QueueEntry } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { sweepExpiredProposals } from '../proposals/sweep-expired-proposals'
 import { refillCalledGroup } from './refill-called-group'
 
@@ -12,6 +14,8 @@ interface JoinProposalQueueRepos {
   shipmentRepo: ShipmentRepository
   queueRepo: ProposalQueueRepository
   proposalRepo: ProposalRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function joinProposalQueue(
@@ -19,7 +23,13 @@ export async function joinProposalQueue(
   carrierId: string,
   shipmentId: string,
 ): Promise<JoinProposalQueueResult> {
-  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+  await sweepExpiredProposals(
+    repos.proposalRepo,
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   const shipment = await repos.shipmentRepo.findStatusById(shipmentId)
   if (!shipment) {
@@ -37,7 +47,7 @@ export async function joinProposalQueue(
   const position = (await repos.queueRepo.countByShipment(shipmentId)) + 1
   await repos.queueRepo.create(shipmentId, carrierId, position)
 
-  await refillCalledGroup(repos.queueRepo, shipmentId)
+  await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
 
   const entry = await repos.queueRepo.findByShipmentAndCarrier(shipmentId, carrierId)
   return { success: true, entry: entry as QueueEntry }

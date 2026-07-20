@@ -30,6 +30,7 @@ export interface UserRepository {
     passwordHash: string
     phone: string
   }): Promise<{ id: string; email: string; fullName: string; role: Role }>
+  markEmailVerified(id: string): Promise<void>
 }
 
 const CREATED_USER_SELECT = {
@@ -97,6 +98,10 @@ export function createUserRepository(prisma: PrismaClient): UserRepository {
         },
         select: CREATED_USER_SELECT,
       })
+    },
+
+    async markEmailVerified(id) {
+      await prisma.user.update({ where: { id }, data: { emailVerifiedAt: new Date() } })
     },
   }
 }

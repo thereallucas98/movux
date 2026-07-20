@@ -1,0 +1,35 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s6-t1-email-notifications",
+  "resources": [
+    {
+      "_id": "wrk_movux_s6_email",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S6 Email Notifications",
+      "description": "S6-T1: email verification (Resend/ConsoleClient fallback)"
+    },
+    {
+      "_id": "env_movux_s6_email_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s6_email",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "verification_token": "" }
+    },
+    {
+      "_id": "req_verify_email",
+      "_type": "request",
+      "parentId": "wrk_movux_s6_email",
+      "name": "Verify Email",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/auth/verify-email",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"token\": \"{{ _.verification_token }}\"\n}"
+      }
+    }
+  ]
+}

@@ -1,4 +1,6 @@
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { refillCalledGroup } from './refill-called-group'
 
 export type WithdrawProposalQueueResult =
@@ -7,6 +9,8 @@ export type WithdrawProposalQueueResult =
 
 export async function withdrawProposalQueue(
   queueRepo: ProposalQueueRepository,
+  userRepo: UserRepository,
+  notificationLogRepo: NotificationLogRepository,
   carrierId: string,
   shipmentId: string,
 ): Promise<WithdrawProposalQueueResult> {
@@ -19,7 +23,7 @@ export async function withdrawProposalQueue(
   }
 
   await queueRepo.updateStatus(entry.id, 'WITHDRAWN')
-  await refillCalledGroup(queueRepo, shipmentId)
+  await refillCalledGroup(queueRepo, userRepo, notificationLogRepo, shipmentId)
 
   return { success: true }
 }

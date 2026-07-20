@@ -1,5 +1,7 @@
+import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
+import type { UserRepository } from '../../../repositories/user.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
 import { sweepExpiredProposals } from './sweep-expired-proposals'
 
@@ -10,6 +12,8 @@ export type WithdrawProposalResult =
 interface WithdrawProposalRepos {
   proposalRepo: ProposalRepository
   queueRepo: ProposalQueueRepository
+  userRepo: UserRepository
+  notificationLogRepo: NotificationLogRepository
 }
 
 export async function withdrawProposal(
@@ -17,7 +21,13 @@ export async function withdrawProposal(
   carrierId: string,
   shipmentId: string,
 ): Promise<WithdrawProposalResult> {
-  await sweepExpiredProposals(repos.proposalRepo, repos.queueRepo, shipmentId)
+  await sweepExpiredProposals(
+    repos.proposalRepo,
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   const proposal = await repos.proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
   if (!proposal) {
@@ -29,7 +39,7 @@ export async function withdrawProposal(
 
   await repos.proposalRepo.updateStatus(proposal.id, 'WITHDRAWN')
   await repos.queueRepo.updateStatus(proposal.queueEntryId, 'WITHDRAWN')
-  await refillCalledGroup(repos.queueRepo, shipmentId)
+  await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
 
   return { success: true }
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
 import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { proposalQueueRepository } from '~/server/repositories'
+import { notificationLogRepository, proposalQueueRepository, userRepository } from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { withdrawProposalQueue } from '~/server/use-cases'
 
@@ -18,6 +18,8 @@ export async function POST(req: Request, context: RouteContext) {
 
   const result = await withdrawProposalQueue(
     proposalQueueRepository,
+    userRepository,
+    notificationLogRepository,
     principal.userId,
     paramParsed.data.shipmentId,
   )
