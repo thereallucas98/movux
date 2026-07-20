@@ -46,6 +46,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Chronological audit log of a shipment lifecycle transitions',
       },
       {
+        name: 'Reviews',
+        description: 'Mutual rating between customer and carrier after delivery',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

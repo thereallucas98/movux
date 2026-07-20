@@ -1,0 +1,53 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s4-t1-review-api",
+  "resources": [
+    {
+      "_id": "wrk_movux_s4_reviews",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S4 Reviews",
+      "description": "S4-T1: submit and list mutual reviews after delivery"
+    },
+    {
+      "_id": "env_movux_s4_reviews_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s4_reviews",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s4_reviews_customer",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s4_reviews",
+      "name": "Customer Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_submit_review",
+      "_type": "request",
+      "parentId": "wrk_movux_s4_reviews",
+      "name": "Submit Review",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/reviews",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"rating\": 5,\n  \"tagIds\": []\n}"
+      },
+      "cookieJar": "jar_movux_s4_reviews_customer"
+    },
+    {
+      "_id": "req_list_reviews",
+      "_type": "request",
+      "parentId": "wrk_movux_s4_reviews",
+      "name": "List Reviews",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/reviews",
+      "headers": [],
+      "cookieJar": "jar_movux_s4_reviews_customer"
+    }
+  ]
+}

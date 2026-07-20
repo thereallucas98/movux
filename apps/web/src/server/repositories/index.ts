@@ -16,6 +16,8 @@ import { createShiftRepository } from './shift.repository'
 import { createShiftPatternRepository } from './shift-pattern.repository'
 import { createShiftExpectedCompositionRepository } from './shift-expected-composition.repository'
 import { createRequestRepository } from './request.repository'
+import { createReviewRepository } from './review.repository'
+import { createReviewTagRepository } from './review-tag.repository'
 import { createSafetyCheckInRepository } from './safety-check-in.repository'
 import { createShiftTimelineNoteRepository } from './shift-timeline-note.repository'
 import { createShipmentEventRepository } from './shipment-event.repository'
@@ -38,6 +40,8 @@ export const proposalRepository = createProposalRepository(prisma)
 export const safetyCheckInRepository = createSafetyCheckInRepository(prisma)
 export const deliveryConfirmationRepository = createDeliveryConfirmationRepository(prisma)
 export const shipmentEventRepository = createShipmentEventRepository(prisma)
+export const reviewRepository = createReviewRepository(prisma)
+export const reviewTagRepository = createReviewTagRepository(prisma)
 export const tenantRepository = createTenantRepository(prisma)
 export const tenantMembershipRepository =
   createTenantMembershipRepository(prisma)

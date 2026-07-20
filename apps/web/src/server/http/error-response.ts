@@ -67,6 +67,8 @@ export type ErrorCode =
   | 'ALREADY_CONFIRMED'
   // Transit status (S3-T2)
   | 'SAFETY_NOT_CONFIRMED'
+  // Reviews (S4-T1)
+  | 'ALREADY_REVIEWED'
 
 interface ErrorShape {
   status: number
@@ -201,6 +203,10 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   SAFETY_NOT_CONFIRMED: {
     status: 409,
     message: 'Both customer and carrier must confirm the safety check-in first',
+  },
+  ALREADY_REVIEWED: {
+    status: 409,
+    message: 'This role has already reviewed this shipment',
   },
 }
 

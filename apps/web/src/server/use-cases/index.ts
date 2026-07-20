@@ -103,6 +103,12 @@ export type { GetDeliveryConfirmationStatusResult } from './shipments/delivery/g
 export { getShipmentEvents } from './shipments/get-shipment-events.use-case'
 export type { GetShipmentEventsResult } from './shipments/get-shipment-events.use-case'
 
+export { submitReview } from './shipments/reviews/submit-review.use-case'
+export type { SubmitReviewResult } from './shipments/reviews/submit-review.use-case'
+
+export { listReviewsForShipment } from './shipments/reviews/list-reviews-for-shipment.use-case'
+export type { ListReviewsForShipmentResult } from './shipments/reviews/list-reviews-for-shipment.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

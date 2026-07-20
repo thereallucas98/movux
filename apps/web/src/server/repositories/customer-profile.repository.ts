@@ -2,6 +2,7 @@ import type { PrismaClient } from '~/generated/prisma/client'
 
 export interface CustomerProfileRepository {
   findByUserId(userId: string): Promise<{ id: string } | null>
+  findUserIdById(id: string): Promise<{ userId: string } | null>
 }
 
 export function createCustomerProfileRepository(
@@ -12,6 +13,13 @@ export function createCustomerProfileRepository(
       return prisma.customerProfile.findUnique({
         where: { userId },
         select: { id: true },
+      })
+    },
+
+    async findUserIdById(id) {
+      return prisma.customerProfile.findUnique({
+        where: { id },
+        select: { userId: true },
       })
     },
   }
