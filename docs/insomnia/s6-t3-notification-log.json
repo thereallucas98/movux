@@ -1,0 +1,49 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s6-t3-notification-log",
+  "resources": [
+    {
+      "_id": "wrk_movux_s6_notification_log",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S6 Notification Log",
+      "description": "S6-T3: admin view of sent/failed notifications, manual retry"
+    },
+    {
+      "_id": "env_movux_s6_notification_log_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s6_notification_log",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "notification_id": "" }
+    },
+    {
+      "_id": "jar_movux_s6_notification_log_admin",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s6_notification_log",
+      "name": "Admin Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_list_failed_notifications",
+      "_type": "request",
+      "parentId": "wrk_movux_s6_notification_log",
+      "name": "List Failed Notifications",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/admin/notifications?status=FAILED",
+      "headers": [],
+      "cookieJar": "jar_movux_s6_notification_log_admin"
+    },
+    {
+      "_id": "req_retry_notification",
+      "_type": "request",
+      "parentId": "wrk_movux_s6_notification_log",
+      "name": "Retry Notification",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/admin/notifications/{{ _.notification_id }}/retry",
+      "headers": [],
+      "cookieJar": "jar_movux_s6_notification_log_admin"
+    }
+  ]
+}

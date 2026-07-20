@@ -54,6 +54,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Carrier verification document upload (Supabase Storage)',
       },
       {
+        name: 'Notifications',
+        description: 'Admin view of sent/failed notifications, with manual retry',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

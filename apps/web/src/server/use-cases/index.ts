@@ -128,6 +128,11 @@ export { listCarrierDocumentsForAdmin } from './carrier-documents/list-carrier-d
 export { recordExternalValidation } from './carrier-documents/record-external-validation.use-case'
 export type { RecordExternalValidationResult } from './carrier-documents/record-external-validation.use-case'
 
+export { listNotificationsForAdmin } from './notifications/list-notifications-for-admin.use-case'
+
+export { retryNotification } from './notifications/retry-notification.use-case'
+export type { RetryNotificationResult } from './notifications/retry-notification.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 
