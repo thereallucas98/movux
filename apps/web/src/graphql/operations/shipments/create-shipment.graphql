@@ -1,0 +1,7 @@
+mutation CreateShipment($input: CreateShipmentInput!) {
+  createShipment(input: $input) {
+    id
+    status
+    createdAt
+  }
+}

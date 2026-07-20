@@ -1,0 +1,9 @@
+query Neighborhoods {
+  neighborhoods {
+    id
+    name
+    cityId
+    cityName
+    stateUf
+  }
+}

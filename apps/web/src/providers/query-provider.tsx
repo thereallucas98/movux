@@ -9,6 +9,8 @@ import {
 import { ReactNode, useState } from 'react'
 import { toast } from 'sonner'
 
+import '~/lib/zod-locale'
+
 // Instância única do QueryClient exportada para uso em hooks
 let queryClientInstance: QueryClient | null = null
 

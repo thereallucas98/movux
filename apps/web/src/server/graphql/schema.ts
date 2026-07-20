@@ -14,6 +14,7 @@ import './enums/time-entry.enum'
 import './enums/shift-timeline.enum'
 import './enums/notification.enum'
 import './enums/plan-tier.enum'
+import './enums/shipment.enum'
 
 // Import types so they register with the builder
 import './types/user.type'
@@ -35,6 +36,8 @@ import './types/time-entry.type'
 import './types/shift-timeline.type'
 import './types/notification.type'
 import './types/plan-limits.type'
+import './types/neighborhood.type'
+import './types/shipment.type'
 
 // Import queries
 import './queries/me.query'
@@ -53,6 +56,8 @@ import './queries/time-entries.query'
 import './queries/shift-timeline.query'
 import './queries/notification.query'
 import './queries/plan-limits.query'
+import './queries/neighborhoods.query'
+import './queries/shipments.query'
 
 // Import mutations
 import './mutations/me.mutation'
@@ -70,5 +75,6 @@ import './mutations/requests.mutation'
 import './mutations/time-entries.mutation'
 import './mutations/shift-timeline.mutation'
 import './mutations/notification.mutation'
+import './mutations/shipments.mutation'
 
 export const schema = builder.toSchema()

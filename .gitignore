@@ -28,6 +28,10 @@ coverage
 # Prisma generated client
 apps/web/src/generated/
 
+# GraphQL codegen output
+apps/web/src/server/graphql/schema.graphql
+apps/web/src/graphql/generated/
+
 # Build Outputs
 .next/
 out/

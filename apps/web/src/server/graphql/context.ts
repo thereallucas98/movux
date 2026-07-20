@@ -4,8 +4,11 @@ import {
   assignmentRepository,
   auditLogRepository,
   categoryRepository,
+  customerProfileRepository,
+  geographyRepository,
   notificationPreferenceRepository,
   notificationRepository,
+  pricingRepository,
   requestRepository,
   scheduleRepository,
   shiftCandidateRepository,
@@ -13,6 +16,7 @@ import {
   shiftPatternRepository,
   shiftRepository,
   shiftTimelineNoteRepository,
+  shipmentRepository,
   specialtyRepository,
   tenantMembershipRepository,
   tenantRepository,
@@ -54,6 +58,10 @@ export interface GraphQLContext {
     auditLogRepo: typeof auditLogRepository
     notificationRepo: typeof notificationRepository
     notificationPreferenceRepo: typeof notificationPreferenceRepository
+    shipmentRepo: typeof shipmentRepository
+    customerProfileRepo: typeof customerProfileRepository
+    pricingRepo: typeof pricingRepository
+    geographyRepo: typeof geographyRepository
   }
 }
 
@@ -71,11 +79,11 @@ async function resolvePrincipal(request: Request): Promise<Principal | null> {
         id: true,
         email: true,
         role: true,
-        isActive: true,
+        deletedAt: true,
       },
     })
 
-    if (!user || !user.isActive) return null
+    if (!user || user.deletedAt) return null
 
     return {
       userId: user.id,
@@ -116,6 +124,10 @@ export async function createGraphQLContext(
       auditLogRepo: auditLogRepository,
       notificationRepo: notificationRepository,
       notificationPreferenceRepo: notificationPreferenceRepository,
+      shipmentRepo: shipmentRepository,
+      customerProfileRepo: customerProfileRepository,
+      pricingRepo: pricingRepository,
+      geographyRepo: geographyRepository,
     },
   }
 }

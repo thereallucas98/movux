@@ -4,6 +4,13 @@ Log das decisões de definição deste repositório. Formato: **contexto → dec
 
 ---
 
+## 2026-07-20
+
+### D-004 · Sprint 8 (UI) consome GraphQL, não REST — apesar da API REST já ter 108 rotas testadas
+**Contexto:** ao escopar o S8-T1 (primeira tela real do Sprint 8, fluxo de fretes do customer), havia duas opções de data layer: REST via `api-client` (padrão usado pelos Sprints 0-6, zero trabalho de backend novo) ou GraphQL (schema Pothos hoje só tem `tenant`/`me`, domínio Turnora — nada de shipment/proposal). **Decisão:** GraphQL, usando o stack já documentado no CLAUDE.md (`graphql-request` + React Query, **sem Axios** — a regra "no Axios" do CLAUDE.md continua valendo). Isso significa que cada task de UI do Sprint 8 que expõe um domínio novo (shipment, proposal, carrier, review) precisa construir as queries/mutations Pothos correspondentes antes das telas. **Motivo:** escolha explícita do usuário, priorizando cache/performance de query (React Query sobre GraphQL) sobre reaproveitar a REST já pronta — aceito o trade-off de escopo maior por task. Full plan: [`docs/tasks/s8-t1-customer-shipments-ui/`](tasks/s8-t1-customer-shipments-ui/).
+
+---
+
 ## 2026-07-14
 
 ### D-003 · Adotar Arché + decisions.md como governança de comportamento do assistente

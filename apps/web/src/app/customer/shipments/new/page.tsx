@@ -1,8 +1,10 @@
+import { CreateShipmentForm } from '~/components/features/shipments/create-shipment-form'
+
 export default function NewShipmentPage() {
   return (
-    <div>
+    <div className="space-y-4">
       <h1 className="text-foreground text-2xl font-bold">Novo frete</h1>
-      <p className="text-muted-foreground mt-2">Em breve.</p>
+      <CreateShipmentForm />
     </div>
   )
 }

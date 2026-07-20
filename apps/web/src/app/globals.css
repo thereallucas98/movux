@@ -7,9 +7,10 @@
    ============================================ */
 
 :root {
-  /* ── Brand (green) ────────────────────────── */
-  --brand-base: #1f6f43;
-  --brand-dark: #124b2b;
+  /* ── Brand (purple) ───────────────────────── */
+  --brand-base: #4c33cc;
+  --brand-dark: #3d2aa3;
+  --brand-light: #d4ccff;
 
   /* ── Grayscale ────────────────────────────── */
   --gray-100: #f8f9fa;
@@ -26,8 +27,17 @@
   --neutral-black: #000000;
 
   /* ── Feedback (semantic colors) ──────────── */
-  --feedback-danger: #ef4444;
-  --feedback-success: #19ad70;
+  --feedback-danger: #e52e2e;
+  --feedback-success: #00da6d;
+
+  /* ── Text tones ───────────────────────────── */
+  --text-title: #4c4766;
+  --text-base: #6f6c80;
+  --text-complement: #bebccc;
+
+  /* ── Surface ──────────────────────────────── */
+  --surface-bg: #f7f5fa;
+  --surface-lines: #dad7e0;
 
   /* ── Categorical palette (8 families × 3 tones) ── */
   --blue-dark: #1d4ed8;
@@ -51,19 +61,20 @@
   --orange-light: #ffedd5;
 
   --yellow-dark: #a16207;
-  --yellow-base: #ca8a04;
-  --yellow-light: #f7f3ca;
+  --yellow-base: #ffc042;
+  --yellow-light: #fff1d6;
 
   --green-dark: #15803d;
   --green-base: #16a34a;
   --green-light: #e0fae9;
 
   /* ── Semantic tokens (mapped from primitives) ── */
-  --background: var(--neutral-white);
-  --foreground: var(--gray-800);
+  --background: var(--surface-bg);
+  --foreground: var(--text-title);
 
   --primary: var(--brand-base);
   --primary-hover: var(--brand-dark);
+  --primary-light: var(--brand-light);
   --primary-foreground: var(--neutral-white);
 
   --secondary: var(--neutral-white);
@@ -74,16 +85,16 @@
   --surface-raised: var(--neutral-white);
 
   --card: var(--neutral-white);
-  --card-foreground: var(--gray-800);
+  --card-foreground: var(--text-title);
 
   --popover: var(--neutral-white);
-  --popover-foreground: var(--gray-800);
+  --popover-foreground: var(--text-title);
 
-  --muted: var(--gray-100);
-  --muted-foreground: var(--gray-500);
+  --muted: var(--surface-bg);
+  --muted-foreground: var(--text-base);
 
-  --accent: var(--gray-100);
-  --accent-foreground: var(--gray-800);
+  --accent: var(--surface-bg);
+  --accent-foreground: var(--text-title);
 
   --destructive: var(--feedback-danger);
   --destructive-foreground: var(--neutral-white);
@@ -94,11 +105,11 @@
   --warning: var(--yellow-base);
   --warning-light: var(--yellow-light);
 
-  --border: var(--gray-200);
-  --input: var(--gray-300);
-  --input-foreground: var(--gray-800);
-  --input-placeholder: var(--gray-400);
-  --input-disabled-bg: var(--gray-100);
+  --border: var(--surface-lines);
+  --input: var(--surface-lines);
+  --input-foreground: var(--text-title);
+  --input-placeholder: var(--text-complement);
+  --input-disabled-bg: var(--surface-bg);
   --ring: var(--brand-base);
 
   /* ── Border Radius ────────────────────────── */
@@ -169,6 +180,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -193,6 +205,7 @@
   /* Brand */
   --color-brand-base: var(--brand-base);
   --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
 
   /* Grayscale */
   --color-gray-100: var(--gray-100);

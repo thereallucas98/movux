@@ -1,0 +1,16 @@
+query MyShipments($status: ShipmentStatus, $cursor: ID, $limit: Int) {
+  myShipments(status: $status, cursor: $cursor, limit: $limit) {
+    data {
+      id
+      status
+      type
+      description
+      scheduledDate
+      timeWindow
+      suggestedPriceInCents
+      finalPriceInCents
+      createdAt
+    }
+    nextCursor
+  }
+}

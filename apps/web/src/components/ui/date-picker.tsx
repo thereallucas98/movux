@@ -61,6 +61,7 @@ export function DatePicker({
       <PopoverContent className="z-[9999] w-auto p-0" align="start">
         <Calendar
           mode="single"
+          locale={ptBR}
           selected={value || undefined}
           onSelect={handleSelect}
         />

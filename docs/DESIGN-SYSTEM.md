@@ -2,6 +2,7 @@
 
 **Source:** Financy (Community) Figma file — `node-id=1085-710` (Estilo + Componentes)
 **Adopted:** 2026-04-28
+**Palette updated:** 2026-07-20 (purple brand, replaces the original green — see §1.1)
 **Tailwind:** v4 (CSS variables in `@theme inline`, no `tailwind.config.ts`)
 **Implementation:** [`apps/web/src/app/globals.css`](../apps/web/src/app/globals.css)
 
@@ -11,12 +12,13 @@ This document is the canonical map between Figma tokens and the Tailwind utiliti
 
 ## 1. Color tokens
 
-### 1.1 Brand (green)
+### 1.1 Brand (purple)
 
 | Figma | CSS var | Tailwind utility | Hex |
 |---|---|---|---|
-| `Brand/brand-base` | `--brand-base` | `bg-brand-base`, `text-brand-base` | `#1F6F43` |
-| `Brand/brand-dark` | `--brand-dark` | `bg-brand-dark`, `text-brand-dark` | `#124B2B` |
+| `Brand/brand-base` | `--brand-base` | `bg-brand-base`, `text-brand-base` | `#4C33CC` |
+| `Brand/brand-dark` | `--brand-dark` | `bg-brand-dark`, `text-brand-dark` | `#3D2AA3` (derived — no explicit hover shade was given) |
+| `Brand/brand-light` | `--brand-light` | `bg-brand-light`, `text-brand-light` | `#D4CCFF` |
 
 ### 1.2 Grayscale (8 levels)
 
@@ -35,8 +37,23 @@ This document is the canonical map between Figma tokens and the Tailwind utiliti
 
 | Figma | CSS var | Tailwind utility | Hex |
 |---|---|---|---|
-| `Feedback/danger` | `--feedback-danger` | (use `text-destructive`/`bg-destructive`) | `#EF4444` |
-| `Feedback/success` | `--feedback-success` | (use `text-success`/`bg-success`) | `#19AD70` |
+| `Feedback/danger` | `--feedback-danger` | (use `text-destructive`/`bg-destructive`) | `#E52E2E` |
+| `Feedback/success` | `--feedback-success` | (use `text-success`/`bg-success`) | `#00DA6D` |
+
+### 1.3b Text tones
+
+| Figma | CSS var | Use for |
+|---|---|---|
+| `Text/title` | `--text-title` | Headings, primary body text — mapped to `--foreground` |
+| `Text/base` | `--text-base` | Secondary text — mapped to `--muted-foreground` |
+| `Text/complement` | `--text-complement` | Placeholder, disabled text — mapped to `--input-placeholder` |
+
+### 1.3c Surface
+
+| Figma | CSS var | Hex | Use for |
+|---|---|---|---|
+| `Surface/background` | `--surface-bg` | `#F7F5FA` | Page background — mapped to `--background` |
+| `Surface/lines` | `--surface-lines` | `#DAD7E0` | Borders — mapped to `--border`/`--input` |
 
 ### 1.4 Categorical (8 families × 3 tones)
 
@@ -49,7 +66,7 @@ Used for tags, charts, status badges. Each family ships `dark` (text on light bg
 | Pink | `#BE185D` | `#DB2777` | `#FCE7F3` |
 | Red | `#B91C1C` | `#DC2626` | `#FEE2E2` |
 | Orange | `#C2410C` | `#EA580C` | `#FFEDD5` |
-| Yellow | `#A16207` | `#CA8A04` | `#F7F3CA` |
+| Yellow | `#A16207` | `#FFC042` (Figma "Secondary") | `#FFF1D6` (Figma "Secondary-light") |
 | Green | `#15803D` | `#16A34A` | `#E0FAE9` |
 
 Tailwind utilities: `bg-blue-base`, `text-blue-dark`, `bg-blue-light`, etc. for every family.
@@ -60,26 +77,27 @@ The semantic layer is what app code should use. Don't reach for `bg-gray-200` fr
 
 | Token | Maps to | Use for |
 |---|---|---|
-| `--background` | `--neutral-white` | Page background |
-| `--foreground` | `--gray-800` | Body text |
+| `--background` | `--surface-bg` | Page background |
+| `--foreground` | `--text-title` | Body text |
 | `--primary` | `--brand-base` | Primary CTA, brand surfaces |
 | `--primary-hover` | `--brand-dark` | Primary CTA hover |
+| `--primary-light` | `--brand-light` | Light primary tint (selected states, badges) |
 | `--primary-foreground` | `--neutral-white` | Text on primary bg |
 | `--secondary` | `--neutral-white` | Outline/secondary surfaces |
 | `--secondary-foreground` | `--brand-base` | Text on secondary |
 | `--secondary-border` | `--brand-base` | Outline button border |
-| `--muted` | `--gray-100` | Subtle backgrounds |
-| `--muted-foreground` | `--gray-500` | Subtle text |
-| `--accent` | `--gray-100` | Hover background |
+| `--muted` | `--surface-bg` | Subtle backgrounds |
+| `--muted-foreground` | `--text-base` | Subtle text |
+| `--accent` | `--surface-bg` | Hover background |
 | `--destructive` | `--feedback-danger` | Errors, destructive actions |
 | `--success` | `--feedback-success` | Success states |
 | `--success-light` | `--green-light` | Success badge bg |
-| `--warning` | `--yellow-base` | Warning states |
-| `--warning-light` | `--yellow-light` | Warning badge bg |
-| `--border` | `--gray-200` | Default border |
-| `--input` | `--gray-300` | Input border |
-| `--input-foreground` | `--gray-800` | Input typed text |
-| `--input-placeholder` | `--gray-400` | Input placeholder |
+| `--warning` | `--yellow-base` | Warning states (Figma "Secondary") |
+| `--warning-light` | `--yellow-light` | Warning badge bg (Figma "Secondary-light") |
+| `--border` | `--surface-lines` | Default border |
+| `--input` | `--surface-lines` | Input border |
+| `--input-foreground` | `--text-title` | Input typed text |
+| `--input-placeholder` | `--text-complement` | Input placeholder |
 | `--input-disabled-bg` | `--gray-100` | Input disabled background |
 | `--ring` | `--brand-base` | Focus ring |
 
