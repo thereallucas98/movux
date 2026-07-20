@@ -51,6 +51,7 @@ export interface ProposalRepository {
     shipmentId: string,
     exceptProposalId: string,
   ): Promise<{ id: string; currentAttempt: number; queueEntryId: string }[]>
+  findAcceptedByShipment(shipmentId: string): Promise<{ carrierId: string } | null>
 }
 
 export function createProposalRepository(prisma: PrismaClient): ProposalRepository {
@@ -139,6 +140,13 @@ export function createProposalRepository(prisma: PrismaClient): ProposalReposito
       return prisma.proposal.findMany({
         where: { shipmentId, status: 'ACTIVE', id: { not: exceptProposalId } },
         select: { id: true, currentAttempt: true, queueEntryId: true },
+      })
+    },
+
+    async findAcceptedByShipment(shipmentId) {
+      return prisma.proposal.findFirst({
+        where: { shipmentId, status: 'ACCEPTED' },
+        select: { carrierId: true },
       })
     },
   }

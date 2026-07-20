@@ -531,8 +531,6 @@ The core transaction of the platform.
 | `etaMinutes` | int | nullable — Google Maps Distance Matrix |
 | `windowExpiresAt` | timestamp | nullable — ETA + 30min buffer; alert if exceeded |
 | `customerSlaHours` | int | SLA chosen by customer (4\|6\|8\|12\|24) |
-| `safetyTermCustomerAt` | timestamp | nullable — null = not accepted; timestamp = accepted at that moment |
-| `safetyTermCarrierAt` | timestamp | nullable — null = not accepted; timestamp = accepted at that moment |
 | `expiresAt` | timestamp | nullable — shipment auto-expires if no carrier selected |
 | `cancelledAt` | timestamp | nullable |
 | `cancelReason` | text | nullable |

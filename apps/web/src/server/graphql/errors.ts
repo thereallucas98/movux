@@ -42,6 +42,7 @@ const CODE_TO_MESSAGE: Record<ErrorCode, string> = {
   NOT_CALLED: 'Carrier must be CALLED in the queue to submit a proposal',
   ALREADY_PROPOSED: 'Carrier already has a proposal for this shipment',
   TOO_MANY_ATTEMPTS: 'Proposal already has the maximum of 5 attempts',
+  ALREADY_CONFIRMED: 'Safety check-in already confirmed for this role',
 }
 
 /**

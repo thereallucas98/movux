@@ -79,6 +79,12 @@ export type { AcceptProposalResult } from './shipments/proposals/accept-proposal
 export { rejectProposal } from './shipments/proposals/reject-proposal.use-case'
 export type { RejectProposalResult } from './shipments/proposals/reject-proposal.use-case'
 
+export { confirmSafetyCheckIn } from './shipments/safety/confirm-safety-check-in.use-case'
+export type { ConfirmSafetyCheckInResult } from './shipments/safety/confirm-safety-check-in.use-case'
+
+export { getSafetyCheckInStatus } from './shipments/safety/get-safety-check-in-status.use-case'
+export type { GetSafetyCheckInStatusResult } from './shipments/safety/get-safety-check-in-status.use-case'
+
 export { getMe } from './me/get-me.use-case'
 export type { GetMeResult } from './me/get-me.use-case'
 

@@ -29,6 +29,10 @@ const options: swaggerJsdoc.Options = {
         description: 'Carrier price proposals per shipment — submit, counter-offer, withdraw',
       },
       {
+        name: 'Safety',
+        description: 'Safety term check-in — customer and selected carrier confirm before transit',
+      },
+      {
         name: 'Tenants',
         description:
           'Tenant containers — CRUD, soft-delete, detail with paginated memberships',

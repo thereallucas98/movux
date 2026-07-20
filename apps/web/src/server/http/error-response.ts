@@ -63,6 +63,8 @@ export type ErrorCode =
   | 'NOT_CALLED'
   | 'ALREADY_PROPOSED'
   | 'TOO_MANY_ATTEMPTS'
+  // Safety check-in (S3-T1)
+  | 'ALREADY_CONFIRMED'
 
 interface ErrorShape {
   status: number
@@ -189,6 +191,10 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   TOO_MANY_ATTEMPTS: {
     status: 409,
     message: 'Proposal already has the maximum of 5 attempts',
+  },
+  ALREADY_CONFIRMED: {
+    status: 409,
+    message: 'Safety check-in already confirmed for this role',
   },
 }
 

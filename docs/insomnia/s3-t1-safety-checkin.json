@@ -1,0 +1,66 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-07-20T00:00:00.000Z",
+  "__export_source": "movux.docs:s3-t1-safety-checkin",
+  "resources": [
+    {
+      "_id": "wrk_movux_s3_safety",
+      "_type": "workspace",
+      "parentId": null,
+      "name": "Movux — S3 Safety Check-in",
+      "description": "S3-T1: confirm and read safety term check-in"
+    },
+    {
+      "_id": "env_movux_s3_safety_base",
+      "_type": "environment",
+      "parentId": "wrk_movux_s3_safety",
+      "name": "Base Environment",
+      "data": { "base_url": "http://localhost:3001", "shipment_id": "" }
+    },
+    {
+      "_id": "jar_movux_s3_safety_customer",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s3_safety",
+      "name": "Customer Jar",
+      "cookies": []
+    },
+    {
+      "_id": "jar_movux_s3_safety_carrier",
+      "_type": "cookie_jar",
+      "parentId": "wrk_movux_s3_safety",
+      "name": "Carrier Jar",
+      "cookies": []
+    },
+    {
+      "_id": "req_confirm_safety_customer",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_safety",
+      "name": "Confirm Safety (Customer)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/safety/confirm",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_safety_customer"
+    },
+    {
+      "_id": "req_confirm_safety_carrier",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_safety",
+      "name": "Confirm Safety (Carrier)",
+      "method": "POST",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/safety/confirm",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_safety_carrier"
+    },
+    {
+      "_id": "req_get_safety_status",
+      "_type": "request",
+      "parentId": "wrk_movux_s3_safety",
+      "name": "Get Safety Status",
+      "method": "GET",
+      "url": "{{ _.base_url }}/api/shipments/{{ _.shipment_id }}/safety",
+      "headers": [],
+      "cookieJar": "jar_movux_s3_safety_customer"
+    }
+  ]
+}
