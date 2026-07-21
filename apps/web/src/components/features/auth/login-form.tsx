@@ -10,7 +10,7 @@ import { z } from 'zod'
 
 import { AuthField, authInputCls } from '~/components/features/auth/auth-field'
 import { t } from '~/i18n/t'
-import { api, ApiClientError } from '~/lib/api-client'
+import { api } from '~/lib/api-client'
 import { cn } from '~/lib/utils'
 
 const loginSchema = z.object({
@@ -55,12 +55,10 @@ export function LoginForm() {
         password: values.password,
       })
       window.location.href = redirectTo || destinationForRole(user.role)
-    } catch (err) {
-      const message =
-        err instanceof ApiClientError
-          ? err.message
-          : t('auth.login.invalidCredentials')
-      setError('root', { message })
+    } catch {
+      // O servidor só retorna 'Invalid payload'/'Invalid credentials' em
+      // inglês — nunca mostrar err.message direto, sempre a cópia PT-BR.
+      setError('root', { message: t('auth.login.invalidCredentials') })
     }
   }
 

@@ -26,5 +26,7 @@ export function useMyShipments(filter: UseMyShipmentsFilter = {}) {
       >(MyShipmentsDocument, filter)
       return result.myShipments ?? { data: [], nextCursor: null }
     },
+    // shipments-list.tsx já trata isError com EmptyState próprio.
+    meta: { silent: true },
   })
 }

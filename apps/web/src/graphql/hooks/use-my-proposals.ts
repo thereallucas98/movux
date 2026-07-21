@@ -24,5 +24,7 @@ export function useMyProposals(filter: UseMyProposalsFilter = {}) {
       >(MyProposalsDocument, filter)
       return result.myProposals ?? { data: [], nextCursor: null }
     },
+    // my-proposals-list.tsx já trata isError com EmptyState próprio.
+    meta: { silent: true },
   })
 }

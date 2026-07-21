@@ -9,10 +9,24 @@ import {
 import { ReactNode, useState } from 'react'
 import { toast } from 'sonner'
 
+import { getGraphQLErrorCode } from '~/lib/graphql-client'
 import '~/lib/zod-locale'
 
 // Instância única do QueryClient exportada para uso em hooks
 let queryClientInstance: QueryClient | null = null
+
+// Fallback pra qualquer query/mutation que não tenha mapeamento de erro
+// próprio — ClientError.message do graphql-request despeja o JSON cru da
+// requisição/resposta, então nunca deve ir direto pro toast (ver
+// getGraphQLErrorCode em ~/lib/graphql-client.ts). Hooks que já lançam um
+// Error com mensagem amigável (padrão ERROR_MESSAGES) passam por aqui sem
+// alteração, já que não são ClientError.
+function toFriendlyMessage(error: unknown, fallback: string): string {
+  const code = getGraphQLErrorCode(error)
+  if (code) return fallback
+  if (error instanceof Error && error.message) return error.message
+  return fallback
+}
 
 function createQueryClient(): QueryClient {
   const queryCache = new QueryCache({
@@ -23,7 +37,9 @@ function createQueryClient(): QueryClient {
       if (process.env.NODE_ENV === 'development') {
         console.error(error)
       }
-      toast.error(`Erro ao carregar dados: ${(error as Error).message}`)
+      toast.error(
+        toFriendlyMessage(error, 'Não foi possível carregar os dados.'),
+      )
     },
   })
 
@@ -34,7 +50,9 @@ function createQueryClient(): QueryClient {
       if (process.env.NODE_ENV === 'development') {
         console.error(error)
       }
-      toast.error(`Erro na operação: ${(error as Error).message}`)
+      toast.error(
+        toFriendlyMessage(error, 'Não foi possível completar a operação.'),
+      )
     },
     onSuccess: (_, __, ___, mutation) => {
       // permite configurar mensagens de sucesso customizadas

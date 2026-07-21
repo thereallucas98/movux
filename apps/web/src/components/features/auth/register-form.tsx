@@ -115,8 +115,12 @@ export function RegisterForm() {
 
       router.push('/customer/dashboard')
     } catch (err) {
+      // O servidor só retorna mensagens em inglês — nunca mostrar
+      // err.message direto, mapear pelo status pra uma cópia PT-BR.
       const message =
-        err instanceof ApiClientError ? err.message : t('auth.register.error')
+        err instanceof ApiClientError && err.status === 409
+          ? t('auth.register.emailInUse')
+          : t('auth.register.error')
       setError('root', { message })
     }
   }

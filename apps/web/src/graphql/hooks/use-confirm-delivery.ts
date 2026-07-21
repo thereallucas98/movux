@@ -7,18 +7,36 @@ import {
   type ConfirmDeliveryMutation,
   type ConfirmDeliveryMutationVariables,
 } from '~/graphql/generated/types'
-import { graphqlClient } from '~/lib/graphql-client'
+import { getGraphQLErrorCode, graphqlClient } from '~/lib/graphql-client'
+
+const ERROR_MESSAGES: Record<string, string> = {
+  NOT_FOUND: 'Frete não encontrado.',
+  INVALID_STATE_TRANSITION: 'Esse frete ainda não foi marcado como entregue.',
+  ALREADY_CONFIRMED: 'A entrega desse frete já foi confirmada.',
+}
+
+export function confirmDeliveryErrorMessage(error: unknown): string {
+  const code = getGraphQLErrorCode(error)
+  return (
+    (code && ERROR_MESSAGES[code]) ||
+    'Não foi possível confirmar a entrega. Tente novamente.'
+  )
+}
 
 export function useConfirmDelivery() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (variables: ConfirmDeliveryMutationVariables) => {
-      const result = await graphqlClient.request<
-        ConfirmDeliveryMutation,
-        ConfirmDeliveryMutationVariables
-      >(ConfirmDeliveryDocument, variables)
-      return result.confirmDelivery
+      try {
+        const result = await graphqlClient.request<
+          ConfirmDeliveryMutation,
+          ConfirmDeliveryMutationVariables
+        >(ConfirmDeliveryDocument, variables)
+        return result.confirmDelivery
+      } catch (error) {
+        throw new Error(confirmDeliveryErrorMessage(error))
+      }
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

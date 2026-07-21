@@ -27,5 +27,7 @@ export function useBrowseShipments(filter: UseBrowseShipmentsFilter = {}) {
       >(BrowseShipmentsDocument, filter)
       return result.browseShipments ?? { data: [], nextCursor: null }
     },
+    // browse-shipments-list.tsx já trata isError com EmptyState próprio.
+    meta: { silent: true },
   })
 }

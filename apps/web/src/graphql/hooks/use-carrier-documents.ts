@@ -26,5 +26,7 @@ export function useCarrierDocuments(filter: UseCarrierDocumentsFilter = {}) {
       >(CarrierDocumentsDocument, filter)
       return result.carrierDocuments ?? { data: [], nextCursor: null }
     },
+    // document-list.tsx já trata isError com EmptyState próprio.
+    meta: { silent: true },
   })
 }

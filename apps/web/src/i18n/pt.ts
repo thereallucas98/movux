@@ -34,6 +34,7 @@ export const dict: Record<string, string> = {
   'auth.register.submit': 'Criar conta',
   'auth.register.submitting': 'Criando conta…',
   'auth.register.error': 'Erro ao criar conta. Tente novamente.',
+  'auth.register.emailInUse': 'Esse e-mail já está em uso. Tente entrar em vez de criar uma conta nova.',
   'auth.register.loginCta': 'Já tem conta? Entrar',
   'auth.register.role.label': 'Eu sou',
   'auth.register.role.customer': 'Cliente',
