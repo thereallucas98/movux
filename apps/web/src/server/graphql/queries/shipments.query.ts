@@ -1,4 +1,8 @@
-import { getShipment, listShipmentsForCustomer } from '~/server/use-cases'
+import {
+  getShipment,
+  getShipmentForCarrier,
+  listShipmentsForCustomer,
+} from '~/server/use-cases'
 import { builder } from '../builder'
 import { ShipmentStatusEnum } from '../enums/shipment.enum'
 import { gqlError, gqlErrorFromResult } from '../errors'
@@ -56,6 +60,30 @@ builder.queryField('shipment', (t) =>
         {
           customerProfileRepo: ctx.repos.customerProfileRepo,
           shipmentRepo: ctx.repos.shipmentRepo,
+        },
+        ctx.principal.userId,
+        String(args.id),
+      )
+      if (!result.success) throw gqlErrorFromResult(result)
+
+      return toGraphQLShipment(result.shipment)
+    },
+  }),
+)
+
+builder.queryField('shipmentForCarrier', (t) =>
+  t.field({
+    type: ShipmentType,
+    args: { id: t.arg.id({ required: true }) },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
+      if (ctx.principal.role !== 'CARRIER') throw gqlError('FORBIDDEN')
+
+      const result = await getShipmentForCarrier(
+        {
+          shipmentRepo: ctx.repos.shipmentRepo,
+          queueRepo: ctx.repos.proposalQueueRepo,
+          proposalRepo: ctx.repos.proposalRepo,
         },
         ctx.principal.userId,
         String(args.id),

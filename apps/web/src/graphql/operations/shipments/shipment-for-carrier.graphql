@@ -1,0 +1,30 @@
+query ShipmentForCarrier($id: ID!) {
+  shipmentForCarrier(id: $id) {
+    id
+    status
+    type
+    description
+    estimatedWeightKg
+    estimatedVolumeM3
+    vehicleTypeRequired
+    scheduledDate
+    timeWindow
+    specificTime
+    customerSlaHours
+    suggestedPriceInCents
+    finalPriceInCents
+    createdAt
+    addresses {
+      id
+      type
+      street
+      number
+      complement
+      neighborhoodId
+      neighborhoodName
+      cityId
+      state
+      zipCode
+    }
+  }
+}

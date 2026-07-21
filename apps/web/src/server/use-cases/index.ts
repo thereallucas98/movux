@@ -29,6 +29,8 @@ export type { PublishShipmentResult } from './shipments/publish-shipment.use-cas
 
 export { getShipment } from './shipments/get-shipment.use-case'
 export type { GetShipmentResult } from './shipments/get-shipment.use-case'
+export { getShipmentForCarrier } from './shipments/get-shipment-for-carrier.use-case'
+export type { GetShipmentForCarrierResult } from './shipments/get-shipment-for-carrier.use-case'
 
 export { listShipmentsForCustomer } from './shipments/list-shipments-for-customer.use-case'
 export type {

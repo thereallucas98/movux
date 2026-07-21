@@ -96,6 +96,7 @@ export interface ShipmentRepository {
     id: string,
     customerId: string,
   ): Promise<ShipmentWithDetails | null>
+  findById(id: string): Promise<ShipmentWithDetails | null>
   findStatusForOwner(
     id: string,
     customerId: string,
@@ -184,6 +185,13 @@ export function createShipmentRepository(
     async findByIdForOwner(id, customerId) {
       return prisma.shipment.findFirst({
         where: { id, customerId },
+        include: { addresses: true, modifiers: true },
+      })
+    },
+
+    async findById(id) {
+      return prisma.shipment.findUnique({
+        where: { id },
         include: { addresses: true, modifiers: true },
       })
     },

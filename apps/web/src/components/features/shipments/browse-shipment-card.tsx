@@ -2,6 +2,7 @@
 
 import { formatInTimeZone } from 'date-fns-tz'
 import { ptBR } from 'date-fns/locale'
+import { useRouter } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -13,6 +14,7 @@ import { ShipmentActionButton } from '~/components/features/proposals/shipment-a
 import type { BrowseShipmentsQuery } from '~/graphql/generated/types'
 import { formatPriceInCents } from '~/lib/format-price'
 import { SHIPMENT_TYPE_LABELS, TIME_WINDOW_LABELS } from './shipment-labels'
+import { ShipmentTypeIcon } from './shipment-type-icon'
 
 type BrowseShipmentItem = NonNullable<
   NonNullable<BrowseShipmentsQuery['browseShipments']>['data']
@@ -33,15 +35,24 @@ export function BrowseShipmentCard({
 }: {
   shipment: BrowseShipmentItem
 }) {
+  const router = useRouter()
   const origin = shipment.addresses?.find((a) => a?.type === 'ORIGIN')
   const destination = shipment.addresses?.find((a) => a?.type === 'DESTINATION')
 
   return (
-    <Card>
+    <Card
+      className="hover:border-primary cursor-pointer transition-colors"
+      onClick={() =>
+        shipment.id && router.push(`/carrier/shipments/${shipment.id}`)
+      }
+    >
       <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-base">
-          {shipment.type ? SHIPMENT_TYPE_LABELS[shipment.type] : '—'}
-        </CardTitle>
+        <div className="flex items-center gap-3">
+          {shipment.type && <ShipmentTypeIcon type={shipment.type} />}
+          <CardTitle className="text-base">
+            {shipment.type ? SHIPMENT_TYPE_LABELS[shipment.type] : '—'}
+          </CardTitle>
+        </div>
         <span className="font-semibold">
           {formatPriceInCents(shipment.suggestedPriceInCents ?? 0)}
         </span>
@@ -60,7 +71,7 @@ export function BrowseShipmentCard({
         </p>
       </CardContent>
       {shipment.id && (
-        <CardFooter>
+        <CardFooter onClick={(e) => e.stopPropagation()}>
           <ShipmentActionButton shipmentId={shipment.id} />
         </CardFooter>
       )}

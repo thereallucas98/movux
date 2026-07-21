@@ -3,6 +3,7 @@
 import { formatInTimeZone } from 'date-fns-tz'
 import { ptBR } from 'date-fns/locale'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '~/components/ui/button'
 import {
   Card,
@@ -14,6 +15,7 @@ import {
 import { EmptyState } from '~/components/ui/empty-state'
 import { Skeleton } from '~/components/ui/skeleton'
 import { SHIPMENT_TYPE_LABELS } from '~/components/features/shipments/shipment-labels'
+import { ShipmentTypeIcon } from '~/components/features/shipments/shipment-type-icon'
 import { useMyProposals } from '~/graphql/hooks/use-my-proposals'
 import { formatPriceInCents } from '~/lib/format-price'
 import { ProposalStatusBadge } from './proposal-status-badge'
@@ -29,6 +31,7 @@ function formatScheduledDate(isoString: string): string {
 }
 
 export function MyProposalsList({ limit }: { limit?: number } = {}) {
+  const router = useRouter()
   const { data, isLoading, isError } = useMyProposals(limit ? { limit } : {})
   const entries = data?.data ?? []
 
@@ -75,13 +78,25 @@ export function MyProposalsList({ limit }: { limit?: number } = {}) {
           0
 
         return (
-          <Card key={entry.id}>
+          <Card
+            key={entry.id}
+            className="hover:border-primary cursor-pointer transition-colors"
+            onClick={() =>
+              entry.shipment?.id &&
+              router.push(`/carrier/shipments/${entry.shipment.id}`)
+            }
+          >
             <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base">
-                {entry.shipment.type
-                  ? SHIPMENT_TYPE_LABELS[entry.shipment.type]
-                  : '—'}
-              </CardTitle>
+              <div className="flex items-center gap-3">
+                {entry.shipment.type && (
+                  <ShipmentTypeIcon type={entry.shipment.type} />
+                )}
+                <CardTitle className="text-base">
+                  {entry.shipment.type
+                    ? SHIPMENT_TYPE_LABELS[entry.shipment.type]
+                    : '—'}
+                </CardTitle>
+              </div>
               <div className="flex gap-2">
                 {entry.status && <QueueStatusBadge status={entry.status} />}
                 {entry.proposal?.status && (
@@ -99,7 +114,7 @@ export function MyProposalsList({ limit }: { limit?: number } = {}) {
               </p>
               <p className="font-semibold">{formatPriceInCents(latestPrice)}</p>
             </CardContent>
-            <CardFooter>
+            <CardFooter onClick={(e) => e.stopPropagation()}>
               <ShipmentActionButton shipmentId={entry.shipment.id} />
             </CardFooter>
           </Card>
