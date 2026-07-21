@@ -4,6 +4,13 @@ Log das decisões de definição deste repositório. Formato: **contexto → dec
 
 ---
 
+## 2026-07-21
+
+### D-005 · Navegação desktop: sidebar lateral fixa, sempre — nunca nav horizontal no topo
+**Contexto:** durante o levantamento de referências visuais pro redesign (ver [`docs/design-references-notes.md`](design-references-notes.md)), duas referências mostraram padrões de navegação desktop incompatíveis: `Desktop.svg` usa sidebar lateral fixa (~280px); as telas do "Financy" (Dashboard/Categorias/Transações) usam nav horizontal no topo (logo à esquerda, links centralizados, avatar à direita). O Movux já tem sidebar implementada (`components/features/nav/sidebar.tsx` + `app-shell.tsx`, `md:flex`, `w-64`). **Decisão:** sidebar lateral fixa é definitiva para desktop — nenhuma referência futura de nav horizontal deve ser considerada pra estrutura de navegação; referências futuras devem ser lidas só pela experiência de corpo/conteúdo (cards, listas, forms, modais), não pela chrome de navegação. **Motivo:** decisão explícita do usuário; evita retrabalho estrutural a cada nova referência mandada.
+
+---
+
 ## 2026-07-20
 
 ### D-004 · Sprint 8 (UI) consome GraphQL, não REST — apesar da API REST já ter 108 rotas testadas

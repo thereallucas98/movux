@@ -20,5 +20,8 @@ export function useShipment(id: string) {
       return result.shipment ?? null
     },
     enabled: Boolean(id),
+    // ShipmentDetailView já trata erro/not-found com EmptyState próprio —
+    // sem isso, o toast global (QueryProvider) vaza a query GraphQL crua.
+    meta: { silent: true },
   })
 }

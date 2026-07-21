@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 
 import { cn } from '~/lib/utils'
 
-import { NAV_ITEMS_BY_ROLE } from './nav-items'
+import { getActiveNavHref, NAV_ITEMS_BY_ROLE } from './nav-items'
 
 interface BottomTabsProps {
   role: string
@@ -15,6 +15,7 @@ interface BottomTabsProps {
 export function BottomTabs({ role, className }: BottomTabsProps) {
   const pathname = usePathname()
   const navItems = NAV_ITEMS_BY_ROLE[role] ?? []
+  const activeHref = getActiveNavHref(pathname, navItems)
 
   return (
     <nav
@@ -26,7 +27,7 @@ export function BottomTabs({ role, className }: BottomTabsProps) {
       )}
     >
       {navItems.map(({ href, label, icon: Icon }) => {
-        const isActive = pathname.startsWith(href)
+        const isActive = href === activeHref
         return (
           <Link
             key={href}

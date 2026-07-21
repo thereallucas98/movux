@@ -10,7 +10,7 @@ import { Logo } from '~/components/ui/logo'
 import { api } from '~/lib/api-client'
 import { cn } from '~/lib/utils'
 
-import { NAV_ITEMS_BY_ROLE } from './nav-items'
+import { getActiveNavHref, NAV_ITEMS_BY_ROLE } from './nav-items'
 
 export interface SidebarMe {
   id: string
@@ -39,6 +39,7 @@ function initialsFor(fullName: string): string {
 export function Sidebar({ me, className }: SidebarProps) {
   const pathname = usePathname()
   const navItems = NAV_ITEMS_BY_ROLE[me.role] ?? []
+  const activeHref = getActiveNavHref(pathname, navItems)
 
   async function handleLogout(): Promise<void> {
     await api.post('/api/auth/logout')
@@ -55,10 +56,13 @@ export function Sidebar({ me, className }: SidebarProps) {
     >
       <Logo className="text-foreground mb-6" />
 
-      <nav aria-label="Navegação principal" className="flex flex-1 flex-col gap-1">
+      <nav
+        aria-label="Navegação principal"
+        className="flex flex-1 flex-col gap-1"
+      >
         {navItems.map((item) => {
           const Icon = item.icon
-          const isActive = pathname.startsWith(item.href)
+          const isActive = item.href === activeHref
           return (
             <Link
               key={item.href}
@@ -67,7 +71,9 @@ export function Sidebar({ me, className }: SidebarProps) {
               className={cn(
                 'flex items-center gap-3 rounded-sm px-3 py-2 text-sm font-medium transition-colors',
                 'hover:bg-accent focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none',
-                isActive ? 'bg-accent text-foreground' : 'text-muted-foreground',
+                isActive
+                  ? 'bg-accent text-foreground'
+                  : 'text-muted-foreground',
               )}
             >
               <Icon className="size-5 shrink-0" />

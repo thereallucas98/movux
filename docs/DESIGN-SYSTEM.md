@@ -247,7 +247,33 @@ This was an Option A override — the old red+navy+nunito system was a template 
 
 ---
 
-## 8. References
+## 9. Padrões validados no S8-T4 (piloto de redesign visual)
+
+Origem: `docs/design-references-notes.md` (referências levantadas em chat) + [`docs/tasks/s8-t4-shipment-visual-refresh/`](tasks/s8-t4-shipment-visual-refresh/). Validado em `/customer/shipments` (lista + detalhe) antes de generalizar pras demais telas.
+
+### 9.1 Ícone circular por categoria
+
+Um círculo `size-10` com fundo `bg-{cor}-light` e ícone `text-{cor}-dark`, um tipo/categoria = uma cor da paleta já existente em `globals.css` (`blue`/`purple`/`pink`/`red`/`orange`/`yellow`/`green`, cada uma com `-light`/`-base`/`-dark`). Não cria token novo — só usa o que já estava exposto e sem uso.
+
+```tsx
+<div className="bg-blue-light text-blue-dark flex size-10 shrink-0 items-center justify-center rounded-full">
+  <Home className="size-5" />
+</div>
+```
+
+Exemplo de referência: `components/features/shipments/shipment-type-icon.tsx`.
+
+### 9.2 Painel de filtro (checkbox + pílula)
+
+`AdaptiveDialog` (dialog desktop / sheet mobile) com uma lista de opções, cada uma `checkbox + Badge` (reaproveita o badge de status já existente, não recria a pílula). Rodapé com 2 ações: "Limpar filtro" (ghost) + "Aplicar" (sólido) — estado local (`pending`) só é commitado no "Aplicar", mesmo padrão de `AdaptiveDatePicker`.
+
+**Importante**: se o filtro de destino só aceita 1 valor por vez (like `myShipments(status)`), o comportamento é seleção única mesmo com o visual de checkbox — marcar uma opção desmarca a anterior. Não finge suporte a multi-seleção que a API não tem.
+
+Exemplo de referência: `components/features/shipments/shipment-filter-sheet.tsx`.
+
+---
+
+## 10. References
 
 - Figma source: `5xIKNmt3UVAgt0oQzqduZj` node `1085-710`
 - CLAUDE.md design rules: see `Frontend Coding Standards` and `Responsive Design Rules` sections

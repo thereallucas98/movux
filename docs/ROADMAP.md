@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1, S8-T2, S8-T3)
+**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1, S8-T2, S8-T3, S8-T4 — piloto de redesign visual aprovado)
 **Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 7 (Plans & Billing) — invertendo a ordem numérica original; Billing fica por último porque depende de conta Mercado Pago configurada, mesmo padrão do Supabase/BigDataCorp/Resend
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
@@ -131,8 +131,9 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | S8-T1 | Customer: fretes — GraphQL (myShipments, shipment, createShipment) + dashboard/lista/criação | ✅ | [→](tasks/s8-t1-customer-shipments-ui/) |
 | S8-T2 | Carrier: buscar fretes abertos + enviar proposta | ✅ | [→](tasks/s8-t2-carrier-shipments-ui/) |
 | S8-T3 | Admin: verificação de documentos | ✅ | [→](tasks/s8-t3-admin-document-verification-ui/) |
+| S8-T4 | Fretes do customer — prova de conceito visual (listagem + detalhe) | ✅ | [→](tasks/s8-t4-shipment-visual-refresh/) |
 
-S8-T3 ainda não tem brief — escopo real só na hora.
+S8-T4 é a primeira rodada do redesign visual (ver [`docs/design-references-notes.md`](design-references-notes.md)) — piloto em 1 fluxo antes de generalizar pras demais telas (carrier, admin, dashboards).
 
 ---
 
