@@ -54,7 +54,7 @@ export function Sidebar({ me, className }: SidebarProps) {
       )}
       data-slot="sidebar"
     >
-      <Logo className="text-foreground mb-6" />
+      <Logo iconOnly className="text-foreground mb-6" />
 
       <nav
         aria-label="Navegação principal"

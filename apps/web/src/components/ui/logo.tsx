@@ -1,20 +1,45 @@
 import type { ComponentProps } from 'react'
 import { cn } from '~/lib/utils'
 
+function MovuxMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 80 88"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M70.9175 46.1365L79.415 39.6726L73.6794 7.0061L63.2529 17.331L63.7717 20.3026L72.05 12.1107L76.697 38.6242L69.3977 44.1843L68.0825 45.1821L68.5136 46.7728L72.4957 61.5515L48.3987 73.655L46.0971 74.8119L47.3466 77.046L52.0958 85.5344H33.7271L29.6647 80.9865H26.3402L32.6092 87.9999H56.319L49.5239 75.853L75.4256 62.8457L70.9175 46.1365Z"
+        fill="white"
+      />
+      <path
+        d="M61.9523 55.8396L36.0578 68.8397L42.8529 80.9866H19.1359L0 59.5849L60.206 0L65.9417 32.6665L57.4441 39.1304L44.0585 49.3179L58.2698 42.1671L61.9523 55.8396Z"
+        fill="#FFC042"
+      />
+    </svg>
+  )
+}
+
 interface LogoProps extends ComponentProps<'div'> {
-  /** Reserved for parity with template callers; logo is text-only by default */
+  /** Renders the Movux mark alongside the wordmark */
   iconOnly?: boolean
 }
 
-function Logo({ className, ...props }: LogoProps) {
+function Logo({ className, iconOnly = false, ...props }: LogoProps) {
   return (
     <div
-      className={cn('text-xl font-extrabold tracking-tight', className)}
+      className={cn(
+        'flex items-center gap-2 text-xl font-extrabold tracking-tight',
+        className,
+      )}
       {...props}
     >
+      {iconOnly && <MovuxMark className="size-6 shrink-0" />}
       Movux
     </div>
   )
 }
 
-export { Logo }
+export { Logo, MovuxMark }

@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 
+import { AppSplashScreen } from '~/components/features/splash/app-splash-screen'
 import { QueryProvider } from '~/providers/query-provider'
 
 const inter = Inter({
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} bg-background text-foreground font-sans antialiased`}
       >
+        <AppSplashScreen />
         <QueryProvider>{children}</QueryProvider>
         <Toaster position="top-center" richColors />
       </body>

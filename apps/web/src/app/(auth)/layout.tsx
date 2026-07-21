@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         className="hidden h-full overflow-hidden p-6 lg:block"
       >
         <div className="bg-primary flex h-full w-full items-center justify-center rounded-[20px]">
-          <Logo className="text-primary-foreground text-3xl" />
+          <Logo iconOnly className="text-primary-foreground text-3xl" />
         </div>
       </aside>
 

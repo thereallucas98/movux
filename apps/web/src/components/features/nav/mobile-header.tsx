@@ -25,7 +25,7 @@ export function MobileHeader({ className }: MobileHeaderProps) {
         className,
       )}
     >
-      <Logo className="text-foreground" />
+      <Logo iconOnly className="text-foreground" />
       <IconButton
         variant="outline"
         size="sm"
