@@ -1,0 +1,8 @@
+query AdminDashboardMetrics {
+  adminDashboardMetrics {
+    pendingDocuments
+    flaggedCarriers
+    verifiedCarriers
+    activeCarriers
+  }
+}

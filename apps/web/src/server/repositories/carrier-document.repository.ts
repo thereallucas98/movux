@@ -52,6 +52,7 @@ export interface CarrierDocumentRepository {
     id: string,
     envelope: ExternalValidationEnvelope,
   ): Promise<void>
+  countByStatus(status: VerificationStatus): Promise<number>
 }
 
 export function createCarrierDocumentRepository(
@@ -111,6 +112,10 @@ export function createCarrierDocumentRepository(
         where: { id },
         data: { externalValidation: envelope },
       })
+    },
+
+    async countByStatus(status) {
+      return prisma.carrierDocument.count({ where: { status } })
     },
   }
 }

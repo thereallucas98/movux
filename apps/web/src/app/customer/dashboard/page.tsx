@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from '~/components/ui/button'
+import { CustomerMetrics } from '~/components/features/dashboard/customer-metrics'
 import { ShipmentsList } from '~/components/features/shipments/shipments-list'
 
 export default function CustomerDashboardPage() {
@@ -11,6 +12,8 @@ export default function CustomerDashboardPage() {
           <Link href="/customer/shipments/new">Criar frete</Link>
         </Button>
       </div>
+
+      <CustomerMetrics />
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">

@@ -794,3 +794,22 @@ export type {
   GetMyNextShiftResult,
   MyNextShift,
 } from './dashboard/get-my-next-shift.use-case'
+
+// ─── Dashboard de métricas (S8-T7 — customer/carrier/admin) ──────────────────
+export { getCustomerDashboardMetrics } from './dashboard/get-customer-dashboard-metrics.use-case'
+export type {
+  CustomerDashboardMetrics,
+  GetCustomerDashboardMetricsResult,
+} from './dashboard/get-customer-dashboard-metrics.use-case'
+
+export { getCarrierDashboardMetrics } from './dashboard/get-carrier-dashboard-metrics.use-case'
+export type {
+  CarrierDashboardMetrics,
+  GetCarrierDashboardMetricsResult,
+} from './dashboard/get-carrier-dashboard-metrics.use-case'
+
+export { getAdminDashboardMetrics } from './dashboard/get-admin-dashboard-metrics.use-case'
+export type {
+  AdminDashboardMetrics,
+  GetAdminDashboardMetricsResult,
+} from './dashboard/get-admin-dashboard-metrics.use-case'

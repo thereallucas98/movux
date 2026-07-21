@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from '~/components/ui/button'
+import { CarrierMetrics } from '~/components/features/dashboard/carrier-metrics'
 import { BrowseShipmentsList } from '~/components/features/shipments/browse-shipments-list'
 import { MyProposalsList } from '~/components/features/proposals/my-proposals-list'
 
@@ -12,6 +13,8 @@ export default function CarrierDashboardPage() {
           <Link href="/carrier/shipments">Buscar fretes</Link>
         </Button>
       </div>
+
+      <CarrierMetrics />
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">

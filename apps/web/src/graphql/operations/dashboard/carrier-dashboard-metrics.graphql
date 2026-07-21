@@ -1,0 +1,8 @@
+query CarrierDashboardMetrics {
+  carrierDashboardMetrics {
+    activeShipments
+    totalShipments
+    totalEarnedInCents
+    avgRating
+  }
+}

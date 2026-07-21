@@ -1,6 +1,6 @@
 # Movux — Roadmap
 
-**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1–S8-T6 — redesign visual concluído nos 3 fluxos: customer, carrier, admin)
+**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1–S8-T7 — redesign visual + dashboard de métricas nos 3 fluxos)
 **Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 7 (Plans & Billing) — invertendo a ordem numérica original; Billing fica por último porque depende de conta Mercado Pago configurada, mesmo padrão do Supabase/BigDataCorp/Resend
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
@@ -134,8 +134,9 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | S8-T4 | Fretes do customer — prova de conceito visual (listagem + detalhe) | ✅ | [→](tasks/s8-t4-shipment-visual-refresh/) |
 | S8-T5 | Fretes do carrier — generalização do redesign visual (browse + propostas + detalhe novo) | ✅ | [→](tasks/s8-t5-carrier-visual-refresh/) |
 | S8-T6 | Verificação de documentos (admin) — generalização do redesign visual (ícone por tipo) | ✅ | [→](tasks/s8-t6-admin-visual-refresh/) |
+| S8-T7 | Dashboard de métricas — cards de KPI pra customer, carrier e admin | ✅ | [→](tasks/s8-t7-metrics-dashboard/) |
 
-S8-T4 é a primeira rodada do redesign visual (ver [`docs/design-references-notes.md`](design-references-notes.md)) — piloto em 1 fluxo antes de generalizar pras demais telas. S8-T5 generalizou o padrão pro carrier; S8-T6 fechou a última rodada mapeada (admin). Redesign visual concluído nos 3 fluxos.
+S8-T4 é a primeira rodada do redesign visual (ver [`docs/design-references-notes.md`](design-references-notes.md)) — piloto em 1 fluxo antes de generalizar pras demais telas. S8-T5 generalizou o padrão pro carrier; S8-T6 fechou a última rodada mapeada (admin). S8-T7 é uma nova frente — dashboards com métricas agregadas, pedido explícito do usuário ("está muito seco").
 
 ---
 

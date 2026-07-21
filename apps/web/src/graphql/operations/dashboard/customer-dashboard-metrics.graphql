@@ -1,0 +1,8 @@
+query CustomerDashboardMetrics {
+  customerDashboardMetrics {
+    activeShipments
+    totalShipments
+    totalSpentInCents
+    avgRating
+  }
+}

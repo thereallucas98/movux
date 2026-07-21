@@ -131,7 +131,27 @@ export interface ShipmentRepository {
   listOpenForBrowse(
     filter: BrowseFilter,
   ): Promise<{ data: BrowseShipmentItem[]; nextCursor: string | null }>
+  countActiveByCustomer(customerId: string): Promise<number>
+  sumFinalPriceByCustomer(
+    customerId: string,
+    statuses: ShipmentStatus[],
+  ): Promise<number>
+  countActiveByCarrier(carrierId: string): Promise<number>
+  sumFinalPriceByCarrier(
+    carrierId: string,
+    statuses: ShipmentStatus[],
+  ): Promise<number>
+  countByCustomer(customerId: string): Promise<number>
+  countByCarrier(carrierId: string): Promise<number>
 }
+
+const ACTIVE_SHIPMENT_STATUSES: ShipmentStatus[] = [
+  'OPEN',
+  'PROPOSALS_RECEIVED',
+  'CARRIER_SELECTED',
+  'COLLECTED',
+  'IN_TRANSIT',
+]
 
 export const SHIPMENT_BROWSE_SELECT = {
   id: true,
@@ -305,6 +325,53 @@ export function createShipmentRepository(
       const nextCursor = hasMore ? page[page.length - 1].id : null
 
       return { data: page, nextCursor }
+    },
+
+    async countActiveByCustomer(customerId) {
+      return prisma.shipment.count({
+        where: { customerId, status: { in: ACTIVE_SHIPMENT_STATUSES } },
+      })
+    },
+
+    async sumFinalPriceByCustomer(customerId, statuses) {
+      const result = await prisma.shipment.aggregate({
+        where: { customerId, status: { in: statuses } },
+        _sum: { finalPriceInCents: true },
+      })
+      return result._sum.finalPriceInCents ?? 0
+    },
+
+    async countActiveByCarrier(carrierId) {
+      return prisma.shipment.count({
+        where: {
+          status: { in: ACTIVE_SHIPMENT_STATUSES },
+          proposals: { some: { carrierId, status: 'ACCEPTED' } },
+        },
+      })
+    },
+
+    async sumFinalPriceByCarrier(carrierId, statuses) {
+      const result = await prisma.shipment.aggregate({
+        where: {
+          status: { in: statuses },
+          proposals: { some: { carrierId, status: 'ACCEPTED' } },
+        },
+        _sum: { finalPriceInCents: true },
+      })
+      return result._sum.finalPriceInCents ?? 0
+    },
+
+    // Total "de sempre", qualquer status — CustomerProfile/CarrierProfile
+    // .totalShipments é um campo pré-computado que nenhum use-case atualiza
+    // (sempre 0); contagem real direto do Shipment em vez de confiar nele.
+    async countByCustomer(customerId) {
+      return prisma.shipment.count({ where: { customerId } })
+    },
+
+    async countByCarrier(carrierId) {
+      return prisma.shipment.count({
+        where: { proposals: { some: { carrierId, status: 'ACCEPTED' } } },
+      })
     },
   }
 }

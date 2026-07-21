@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Button } from '~/components/ui/button'
+import { AdminMetrics } from '~/components/features/dashboard/admin-metrics'
 import { DocumentList } from '~/components/features/admin/document-list'
 
 export default function AdminDashboardPage() {
@@ -11,6 +12,8 @@ export default function AdminDashboardPage() {
           <Link href="/admin/verifications">Ver verificações</Link>
         </Button>
       </div>
+
+      <AdminMetrics />
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">

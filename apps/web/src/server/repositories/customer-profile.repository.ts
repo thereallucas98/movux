@@ -4,6 +4,9 @@ export interface CustomerProfileRepository {
   findByUserId(userId: string): Promise<{ id: string } | null>
   findUserIdById(id: string): Promise<{ userId: string } | null>
   updateRating(userId: string, avgRating: number): Promise<void>
+  findMetricsByUserId(
+    userId: string,
+  ): Promise<{ avgRating: number | null; totalShipments: number } | null>
 }
 
 export function createCustomerProfileRepository(
@@ -29,6 +32,18 @@ export function createCustomerProfileRepository(
         where: { userId },
         data: { avgRating },
       })
+    },
+
+    async findMetricsByUserId(userId) {
+      const profile = await prisma.customerProfile.findUnique({
+        where: { userId },
+        select: { avgRating: true, totalShipments: true },
+      })
+      if (!profile) return null
+      return {
+        avgRating: profile.avgRating ? Number(profile.avgRating) : null,
+        totalShipments: profile.totalShipments,
+      }
     },
   }
 }

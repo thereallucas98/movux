@@ -68,6 +68,7 @@ import './queries/browse-shipments.query'
 import './queries/queue.query'
 import './queries/proposal.query'
 import './queries/carrier-documents.query'
+import './queries/dashboard-metrics.query'
 
 // Import mutations
 import './mutations/me.mutation'
