@@ -20,7 +20,7 @@ export function AppShell({ me, children }: AppShellProps) {
       <div className="flex min-h-dvh flex-1 flex-col">
         <MobileHeader className="md:hidden" />
         <main className="flex-1 px-4 py-6 pb-20 md:px-8 md:pb-6 lg:px-10">
-          {children}
+          <div className="mx-auto max-w-[1440px]">{children}</div>
         </main>
       </div>
       <BottomTabs role={me.role} className="md:hidden" />
