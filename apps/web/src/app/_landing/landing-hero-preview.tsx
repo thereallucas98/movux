@@ -2,21 +2,19 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  BellRing,
-  CalendarDays,
   CheckCircle2,
-  Clock,
   Inbox,
   LayoutDashboard,
-  Timer,
-  Users,
+  Package,
+  Route,
+  Star,
   type LucideIcon,
 } from 'lucide-react'
 import { useState } from 'react'
 
 import { cn } from '~/lib/utils'
 
-type TabId = 'schedules' | 'requests' | 'notifications' | 'tracking'
+type TabId = 'shipments' | 'proposals' | 'transit' | 'reviews'
 
 interface TabDef {
   id: TabId
@@ -27,28 +25,28 @@ interface TabDef {
 
 const TABS: readonly TabDef[] = [
   {
-    id: 'schedules',
-    label: 'Escalas',
-    Icon: CalendarDays,
-    url: 'movux.app/escalas',
+    id: 'shipments',
+    label: 'Fretes',
+    Icon: Package,
+    url: 'movux.app/fretes',
   },
   {
-    id: 'requests',
-    label: 'Solicitações',
+    id: 'proposals',
+    label: 'Propostas',
     Icon: Inbox,
-    url: 'movux.app/solicitacoes',
+    url: 'movux.app/propostas',
   },
   {
-    id: 'notifications',
-    label: 'Notificações',
-    Icon: BellRing,
-    url: 'movux.app/notificacoes',
+    id: 'transit',
+    label: 'Em trânsito',
+    Icon: Route,
+    url: 'movux.app/transito',
   },
-  { id: 'tracking', label: 'Ponto', Icon: Timer, url: 'movux.app/ponto' },
+  { id: 'reviews', label: 'Avaliações', Icon: Star, url: 'movux.app/avaliacoes' },
 ] as const
 
 export function LandingHeroPreview() {
-  const [active, setActive] = useState<TabId>('schedules')
+  const [active, setActive] = useState<TabId>('shipments')
   const tab = TABS.find((t) => t.id === active) ?? TABS[0]
 
   return (
@@ -99,10 +97,10 @@ export function LandingHeroPreview() {
                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                 className="space-y-4"
               >
-                {active === 'schedules' && <SchedulesPanel />}
-                {active === 'requests' && <RequestsPanel />}
-                {active === 'notifications' && <NotificationsPanel />}
-                {active === 'tracking' && <TrackingPanel />}
+                {active === 'shipments' && <ShipmentsPanel />}
+                {active === 'proposals' && <ProposalsPanel />}
+                {active === 'transit' && <TransitPanel />}
+                {active === 'reviews' && <ReviewsPanel />}
               </motion.div>
             </AnimatePresence>
           </div>
@@ -124,24 +122,18 @@ function Sidebar({ active }: SidebarProps) {
     badge?: string
   }> = [
     { label: 'Dashboard', Icon: LayoutDashboard },
-    { label: 'Escalas', Icon: CalendarDays, tabId: 'schedules' },
-    { label: 'Turnos', Icon: Clock },
-    { label: 'Solicitações', Icon: Inbox, tabId: 'requests' },
-    {
-      label: 'Notificações',
-      Icon: BellRing,
-      tabId: 'notifications',
-      badge: '3',
-    },
-    { label: 'Ponto', Icon: Timer, tabId: 'tracking' },
+    { label: 'Fretes', Icon: Package, tabId: 'shipments' },
+    { label: 'Propostas', Icon: Inbox, tabId: 'proposals', badge: '3' },
+    { label: 'Em trânsito', Icon: Route, tabId: 'transit' },
+    { label: 'Avaliações', Icon: Star, tabId: 'reviews' },
   ]
   return (
     <aside className="border-border/60 bg-muted/30 hidden flex-col gap-1 border-r p-4 text-sm md:flex">
       <div className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
-        Workspace
+        Cliente
       </div>
       <div className="bg-background/80 mb-3 rounded-[8px] px-3 py-2 text-xs font-semibold">
-        Hospital Acme — Centro
+        João Pessoa — Mudança residencial
       </div>
       {items.map((item) => {
         const isActive = item.tabId !== undefined && item.tabId === active
@@ -175,58 +167,58 @@ function Sidebar({ active }: SidebarProps) {
   )
 }
 
-/* ─────────────────────────── Schedules panel ─────────────────────────── */
+/* ─────────────────────────── Shipments panel ─────────────────────────── */
 
-function SchedulesPanel() {
+function ShipmentsPanel() {
   return (
     <>
       <div className="flex items-end justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Escala UTI — Maio 2026
+            Meus fretes
           </h3>
           <p className="text-muted-foreground text-xs">
-            01/05 → 15/05 · 6 turnos · 4 colaboradores
+            3 ativos · João Pessoa
           </p>
         </div>
-        <BrandTag>PUBLICADA</BrandTag>
+        <BrandTag>3 EM ANDAMENTO</BrandTag>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {[
           {
-            title: '02/05 · Diurno',
-            tag: 'Atribuído',
-            people: '2/2',
+            title: 'Centro → Manaíra',
+            tag: 'Em trânsito',
+            price: 'R$ 420,00',
             tone: 'on' as const,
           },
           {
-            title: '03/05 · Diurno',
-            tag: 'Pendente',
-            people: '1/2',
+            title: 'Bairro dos Estados',
+            tag: 'Aguardando propostas',
+            price: 'R$ 180,00 sug.',
             tone: 'partial' as const,
           },
           {
-            title: '04/05 · Cobertura',
-            tag: 'Abertos p/ candidatos',
-            people: '0/1',
-            tone: 'open' as const,
+            title: 'Torre → Cabo Branco',
+            tag: 'Coletado',
+            price: 'R$ 65,00',
+            tone: 'on' as const,
           },
           {
-            title: '05/05 · Diurno',
-            tag: '2 candidatos na fila',
-            people: '0/2',
-            tone: 'open' as const,
+            title: 'Bessa',
+            tag: 'Entregue',
+            price: 'R$ 510,00',
+            tone: 'done' as const,
           },
         ].map((row) => (
           <div
             key={row.title}
-            className="border-border/70 bg-background flex items-center justify-between rounded-[10px] border p-3 text-sm"
+            className="border-border/70 bg-background flex flex-col gap-2 rounded-[10px] border p-3 text-sm"
           >
             <span className="text-foreground font-medium">{row.title}</span>
-            <span className="flex items-center gap-2 text-xs">
+            <span className="flex items-center justify-between gap-2 text-xs">
               <StatusPill tone={row.tone}>{row.tag}</StatusPill>
-              <span className="text-muted-foreground font-mono">
-                {row.people}
+              <span className="text-muted-foreground shrink-0 font-mono">
+                {row.price}
               </span>
             </span>
           </div>
@@ -236,18 +228,18 @@ function SchedulesPanel() {
   )
 }
 
-/* ─────────────────────────── Requests panel ─────────────────────────── */
+/* ─────────────────────────── Proposals panel ─────────────────────────── */
 
-function RequestsPanel() {
+function ProposalsPanel() {
   return (
     <>
       <div className="flex items-end justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Inbox de solicitações
+            Propostas recebidas
           </h3>
           <p className="text-muted-foreground text-xs">
-            3 pendentes · UTI Centro
+            3 pendentes · Mudança residencial
           </p>
         </div>
         <BrandTag>3 PENDENTES</BrandTag>
@@ -255,19 +247,19 @@ function RequestsPanel() {
       <ul className="flex flex-col gap-2">
         {[
           {
-            who: 'Maria Silva',
-            kind: 'Troca',
-            detail: 'Pediu troca do plantão de 02/05 com João Santos.',
+            who: 'Carlos Mendes',
+            kind: 'Proposta',
+            detail: 'Enviou proposta de R$ 400,00 — caminhão médio.',
           },
           {
-            who: 'Ana Costa',
-            kind: 'Oferta',
-            detail: 'Quer ceder a cobertura do dia 04/05.',
+            who: 'Fernanda Lima',
+            kind: 'Contraproposta',
+            detail: 'Contrapropôs R$ 380,00 após seu ajuste.',
           },
           {
-            who: 'João Santos',
-            kind: 'Folga',
-            detail: 'Solicitou folga 10–12/05 (com atestado).',
+            who: 'Roberto Alves',
+            kind: 'Proposta',
+            detail: 'Enviou proposta de R$ 450,00 — inclui embalagem.',
           },
         ].map((row) => (
           <li
@@ -275,19 +267,22 @@ function RequestsPanel() {
             className="border-border/70 flex items-start gap-3 rounded-[10px] border p-3 text-sm"
           >
             <Avatar initials={initialsOf(row.who)} />
-            <div className="flex flex-1 flex-col gap-0.5">
-              <p className="text-foreground font-semibold">
-                {row.who}
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="text-foreground font-semibold">
+                  {row.who}
+                </span>
                 <span
-                  className="ml-2 inline-block rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase"
+                  className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider whitespace-nowrap uppercase"
                   style={{
-                    background: 'rgba(31,111,67,0.12)',
+                    background:
+                      'color-mix(in srgb, var(--brand-base) 12%, transparent)',
                     color: 'var(--brand-dark)',
                   }}
                 >
                   {row.kind}
                 </span>
-              </p>
+              </span>
               <p className="text-muted-foreground text-xs">{row.detail}</p>
             </div>
           </li>
@@ -297,40 +292,42 @@ function RequestsPanel() {
   )
 }
 
-/* ─────────────────────────── Notifications panel ─────────────────────────── */
+/* ─────────────────────────── Transit panel ─────────────────────────── */
 
-function NotificationsPanel() {
+function TransitPanel() {
   return (
     <>
       <div className="flex items-end justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Notificações
+            Frete #1234 — Em trânsito
           </h3>
-          <p className="text-muted-foreground text-xs">3 não lidas</p>
+          <p className="text-muted-foreground text-xs">
+            Check-in de segurança confirmado
+          </p>
         </div>
         <BrandTag>EM TEMPO REAL</BrandTag>
       </div>
       <ul className="flex flex-col gap-2">
         {[
           {
-            who: 'Maria Silva',
-            line: 'aceitou o turno de 02/05 (Diurno UTI 1).',
-            unread: true,
+            who: 'Sistema',
+            line: 'Check-in de coleta confirmado por você e pelo transportador.',
+            unread: false,
           },
           {
-            who: 'João Santos',
-            line: 'rejeitou a atribuição de 02/05 — viajando.',
-            unread: true,
-          },
-          {
-            who: 'Ana Costa',
-            line: 'candidatou-se ao plantão aberto 05/05.',
+            who: 'Carlos Mendes',
+            line: 'atualizou o status para Em trânsito.',
             unread: true,
           },
           {
             who: 'Sistema',
-            line: 'Escala UTI — Maio 2026 foi publicada.',
+            line: 'Estimativa de entrega: hoje, até 18h.',
+            unread: true,
+          },
+          {
+            who: 'Sistema',
+            line: 'Frete #1198 foi entregue e confirmado.',
             unread: false,
           },
         ].map((row) => (
@@ -361,47 +358,47 @@ function NotificationsPanel() {
   )
 }
 
-/* ─────────────────────────── Tracking panel ─────────────────────────── */
+/* ─────────────────────────── Reviews panel ─────────────────────────── */
 
-function TrackingPanel() {
+function ReviewsPanel() {
   return (
     <>
       <div className="flex items-end justify-between">
         <div>
           <h3 className="text-foreground text-lg font-semibold">
-            Folha de ponto — semana
+            Avaliações
           </h3>
           <p className="text-muted-foreground text-xs">
-            4 colaboradores · 132h registradas
+            4 fretes concluídos · nota média 4.8
           </p>
         </div>
-        <BrandTag>CSV PRONTO</BrandTag>
+        <BrandTag>1 PENDENTE</BrandTag>
       </div>
       <ul className="flex flex-col gap-2">
         {[
           {
-            who: 'Maria Silva',
-            shift: '02/05 · 08h–17h',
-            delta: '+5min',
+            who: 'Carlos Mendes',
+            shift: 'Mudança residencial · 02/05',
+            delta: '★★★★★',
             ok: true,
           },
           {
-            who: 'João Santos',
-            shift: '02/05 · 20h–08h',
-            delta: 'no horário',
+            who: 'Fernanda Lima',
+            shift: 'Frete comercial · 28/04',
+            delta: '★★★★☆',
             ok: true,
           },
           {
-            who: 'Ana Costa',
-            shift: '04/05 · 08h–20h',
-            delta: 'aberto',
-            ok: true,
-          },
-          {
-            who: 'Lucas Andrade',
-            shift: '06/05 · 08h–20h',
-            delta: 'aguardando',
+            who: 'Roberto Alves',
+            shift: 'Entrega · 25/04',
+            delta: 'aguardando avaliação',
             ok: false,
+          },
+          {
+            who: 'Ana Torres',
+            shift: 'Mudança residencial · 20/04',
+            delta: '★★★★★',
+            ok: true,
           },
         ].map((row) => (
           <li
@@ -418,7 +415,9 @@ function TrackingPanel() {
                 'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase',
               )}
               style={{
-                background: row.ok ? 'rgba(31,111,67,0.12)' : 'var(--gray-200)',
+                background: row.ok
+                  ? 'color-mix(in srgb, var(--brand-base) 12%, transparent)'
+                  : 'var(--gray-200)',
                 color: row.ok ? 'var(--brand-dark)' : 'var(--gray-700)',
               }}
             >
@@ -441,9 +440,9 @@ interface BrandTagProps {
 function BrandTag({ children }: BrandTagProps) {
   return (
     <span
-      className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+      className="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap"
       style={{
-        background: 'rgba(31, 111, 67, 0.12)',
+        background: 'color-mix(in srgb, var(--brand-base) 12%, transparent)',
         color: 'var(--brand-dark)',
       }}
     >
@@ -453,23 +452,29 @@ function BrandTag({ children }: BrandTagProps) {
 }
 
 interface StatusPillProps {
-  tone: 'on' | 'partial' | 'open'
+  tone: 'on' | 'partial' | 'done'
   children: React.ReactNode
 }
 
 function StatusPill({ tone, children }: StatusPillProps) {
   const map: Record<StatusPillProps['tone'], { bg: string; fg: string }> = {
-    on: { bg: 'rgba(31,111,67,0.12)', fg: 'var(--brand-dark)' },
+    on: {
+      bg: 'color-mix(in srgb, var(--brand-base) 12%, transparent)',
+      fg: 'var(--brand-dark)',
+    },
     partial: {
-      bg: 'rgba(31,111,67,0.08)',
+      bg: 'color-mix(in srgb, var(--yellow-base) 20%, transparent)',
+      fg: 'var(--brand-dark)',
+    },
+    done: {
+      bg: 'color-mix(in srgb, var(--gray-700) 10%, transparent)',
       fg: 'var(--gray-700)',
     },
-    open: { bg: 'var(--gray-100)', fg: 'var(--gray-700)' },
   }
   const m = map[tone]
   return (
     <span
-      className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+      className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap"
       style={{ background: m.bg, color: m.fg }}
     >
       {children}
@@ -499,6 +504,3 @@ function initialsOf(name: string): string {
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
-
-/** Re-exported so older landing imports keep working if any survive. */
-export const _USERS_ICON: LucideIcon = Users

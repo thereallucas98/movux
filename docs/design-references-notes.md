@@ -97,6 +97,30 @@ Mesma estrutura do Detalhe, mas: campos viram inputs editáveis; "Status" vira g
 
 ---
 
+## Fonte: assets de marca (`Downloads/Splash/*`) — mark oficial + splash mobile
+
+- `Logotipo.svg` (viewBox 80×88): mark isolado, 2 paths — outline branco + preenchimento amarelo `#FFBE00`, formando uma asa/seta angular apontando canto superior-direito. Sem wordmark de texto no arquivo (apesar do nome) — é só o ícone.
+- `Loading.svg` (viewBox 375×812, tela iPhone completa): mockup de status bar + home indicator sobre fundo `#4C33CC` — não contém os paths do mark, é só chrome de tela.
+- 4 PNGs de referência (`Loading.png`, `Loading-1/2/3.png`): sequência de estados de splash — tela cheia `#4C33CC`, mark centralizado. `Loading-1` mostra o canvas vazio (sem mark); as outras 3 mostram o mark já composto em 2 tamanhos (`Loading.png` maior; `Loading-2`/`Loading-3` menor e idênticos entre si) — sugere um mark que entra por fade/scale a partir do centro, não uma animação de trajetória complexa.
+- Paleta = tokens já existentes (`--brand-base #4C33CC`); o amarelo do mark (`#FFBE00`) é um tom levemente mais escuro que `--yellow-base` (`#FFC042`, `DESIGN-SYSTEM.md` §1.4) — normalizar pro token existente em vez de introduzir um hex novo solto.
+
+**Aplica pra Movux**: o mark serve tanto de favicon (convenção nativa `app/icon.svg` do Next 16 App Router — zero código) quanto de splash de entrada (overlay full-screen client-side sobre `bg-brand-base`, montado no `layout.tsx`, reaproveitando `framer-motion` — já é dependência do projeto, `apps/web/package.json:69`, usado em `_landing/motion-section.tsx`). `Logo` (`components/ui/logo.tsx:4-7`) já reserva um prop `iconOnly` não implementado ("Reserved for parity with template callers; logo is text-only by default") — ponto de extensão pronto pra receber o mark.
+
+---
+
+## Fonte: landing de projetos irmãos (`copa-bolao-web-app` "Palpitou" + `financial-driver-web-app`)
+
+Ambos compartilham uma estrutura de landing comum (mesmo template-base: H1 `text-4xl md:text-6xl font-extrabold tracking-tight`, H2 de seção `text-3xl md:text-4xl font-bold tracking-tight`, eyebrow uppercase acima do H2) — variando conteúdo/paleta/tom:
+
+- **Palpitou** (`copa-bolao-web-app/apps/web/src/pages/landing/landing-page.tsx`): Header sticky c/ blur → Hero (badge + headline + CTA duplo + countdown) → Features (grid 2col) → HowItWorks (3 passos, screenshots reais) → Showcase (galeria) → FinalCta → Footer. Gamificado: ícone em badge circular colorido, número de passo em círculo sólido, countdown `tabular-nums`. Anima com `framer-motion` inline (`whileInView`, delay escalonado `i*0.1`).
+- **Financial-driver** (`financial-driver-web-app/apps/web/src/screens/landing/index.tsx`): Header → Hero (`AppMock` construído com tokens próprios, não screenshot) → **TrustStrip** (selos de plataformas parceiras, prova social textual) → ProblemSection (2 colunas problema×solução) → HowItWorks (4 passos numerados) → Features (grid 6) → FAQ (accordion) → FinalCta → Footer. Stat block: número grande + barra de progresso. Anima via componente `Reveal` reutilizável (mesmo padrão `whileInView`, abstraído).
+- Ambos usam **cores hardcoded no componente** pro hero (`#FFD600`, gradiente `#00875f`), não tokens CSS var — anti-padrão a **não repetir**: a landing nova do Movux usa só os tokens já mapeados em `DESIGN-SYSTEM.md` (`--brand-base`, `--yellow-base` etc.).
+- O `app/page.tsx` atual do Movux (`PARALLAX_BLOCKS` etc.) é conteúdo do domínio errado — fala de escala hospitalar/plantão (herdado do Turnora, [D-002](decisions.md)), não de frete/mudança. Precisa reescrita total de copy, não só reestilo.
+
+**Aplica pra Movux**: estrutura (Hero c/ CTA duplo → TrustStrip de segurança progressiva → HowItWorks do fluxo de frete → Features/Showcase → FAQ → FinalCta) é reaproveitável 1:1, com copy 100% do domínio Movux. A gamificação do Palpitou (badge circular colorido, círculo numerado) e o stat block do Financial já têm equivalente pronto no Movux — ícone circular por categoria (validado em S8-T4/S8-T5/S8-T6) e `MetricCard` (S8-T7) — reaproveitar em vez de criar padrão novo.
+
+---
+
 ## Próximos passos
 
-Aguardando mais referências do usuário antes de propor o alcance formal (Fast/Good/Ideal) de execução. Quando o levantamento fechar, isso vira a base do `brief.md`/`research.md` de uma task de redesign visual (nome de slug ainda não decidido).
+Levantamento fechado — vira a base de `docs/tasks/s9-t1-brand-splash/`, `docs/tasks/s9-t2-landing-redesign/` e `docs/tasks/s9-t3-public-driver-search/` (Sprint 9, ver `ROADMAP.md`).

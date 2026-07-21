@@ -6,7 +6,13 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion'
-import { BellRing, Clock, Repeat, Users, type LucideIcon } from 'lucide-react'
+import {
+  FileCheck2,
+  ShieldCheck,
+  Star,
+  Users,
+  type LucideIcon,
+} from 'lucide-react'
 import { useRef } from 'react'
 
 import { cn } from '~/lib/utils'
@@ -22,30 +28,30 @@ const CARDS: readonly StickyCardData[] = [
   {
     id: 1,
     Icon: Users,
-    title: 'A pessoa certa no turno certo',
+    title: 'Fila de propostas, sem enrolação',
     description:
-      'Atribuição direta ou fila aberta. O sistema bloqueia overlap, fecha vagas duplicadas e respeita o decision window de cada colaborador.',
+      'Transportadores verificados da região entram na fila e enviam proposta — até 5 tentativas, com prazo (SLA) calculado automaticamente pra cada um.',
   },
   {
     id: 2,
-    Icon: Repeat,
-    title: 'Trocas com aprovação rastreável',
+    Icon: ShieldCheck,
+    title: 'Segurança que acompanha o trajeto',
     description:
-      'Troca entre colegas, oferta pra coordenador encontrar substituto, folga com anexo. Cada decisão fica gravada no audit log do turno.',
+      'Check-in de segurança na coleta e na entrega, com contato de confiança acompanhando cada etapa. Nada acontece sem ficar registrado.',
   },
   {
     id: 3,
-    Icon: Clock,
-    title: 'Ponto que respeita a tolerância',
+    Icon: FileCheck2,
+    title: 'Documento verificado antes de operar',
     description:
-      'Clock-in/out com geolocalização e janela de tolerância configurável. CSV pronto pro RH no fechamento da escala.',
+      'CNH, CRLV e CPF conferidos pelo admin antes de qualquer transportador aparecer na fila de propostas de um frete.',
   },
   {
     id: 4,
-    Icon: BellRing,
-    title: 'Notificação em tempo real',
+    Icon: Star,
+    title: 'Avaliação que constrói reputação',
     description:
-      'Inbox no app com 16 tipos de evento. Coordenadores recebem cada decisão, colaboradores recebem cada atribuição.',
+      'Cliente e transportador se avaliam depois da entrega. A nota alimenta o rating público de cada um — histórico que conta pra próxima contratação.',
   },
 ] as const
 

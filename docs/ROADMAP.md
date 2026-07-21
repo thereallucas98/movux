@@ -1,7 +1,7 @@
 # Movux — Roadmap
 
-**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1–S8-T7 — redesign visual + dashboard de métricas nos 3 fluxos)
-**Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 7 (Plans & Billing) — invertendo a ordem numérica original; Billing fica por último porque depende de conta Mercado Pago configurada, mesmo padrão do Supabase/BigDataCorp/Resend
+**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1–S8-T7 — redesign visual + dashboard de métricas nos 3 fluxos) — Sprint 9 (Marca & Growth Público) ✅ concluído (S9-T1–S9-T3 — marca/splash, landing reescrita, busca pública de transportadores)
+**Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 9 (Marca & Growth Público) → Sprint 7 (Plans & Billing) — Sprint 9 entra antes de Billing pelo mesmo motivo que Billing ficou por último (não depende de conta externa ainda não configurada); pedido explícito do usuário em 2026-07-21
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -137,6 +137,20 @@ Pastas em `docs/tasks/<sprint>-<id>-<slug>/`. Tasks são marcadas aqui quando `v
 | S8-T7 | Dashboard de métricas — cards de KPI pra customer, carrier e admin | ✅ | [→](tasks/s8-t7-metrics-dashboard/) |
 
 S8-T4 é a primeira rodada do redesign visual (ver [`docs/design-references-notes.md`](design-references-notes.md)) — piloto em 1 fluxo antes de generalizar pras demais telas. S8-T5 generalizou o padrão pro carrier; S8-T6 fechou a última rodada mapeada (admin). S8-T7 é uma nova frente — dashboards com métricas agregadas, pedido explícito do usuário ("está muito seco").
+
+---
+
+## Sprint 9 — Marca & Growth Público
+
+> Objetivo: marca oficial (mark + favicon + splash animada) aplicada em todo o app; landing pública reescrita com conteúdo real de frete/mudança (referência: Palpitou + Financy); rota pública de busca de transportadores (sem conta) que funil pra cadastro.
+
+| ID | Task | Status | Doc |
+|---|---|---|---|
+| S9-T1 | Marca — mark oficial (favicon `app/icon.svg`) + splash screen animada no boot do app | ✅ | [→](tasks/s9-t1-brand-splash/) |
+| S9-T2 | Landing pública — reescrita de conteúdo (domínio frete/mudança) + estrutura Hero/TrustStrip/HowItWorks/FAQ/FinalCta | ✅ | [→](tasks/s9-t2-landing-redesign/) |
+| S9-T3 | Busca pública de transportadores (sem conta) — perfil anonimizado, CTA prefila cadastro + criação de frete | ✅ | [→](tasks/s9-t3-public-driver-search/) |
+
+Pedido explícito do usuário em 2026-07-21: assets de marca fornecidos (`Downloads/Splash/*`); referências de design são os próprios repos irmãos (`copa-bolao-web-app`, `financial-driver-web-app`) + `docs/DESIGN-SYSTEM.md`/styleguide interno — ver levantamento completo em [`docs/design-references-notes.md`](design-references-notes.md). Decisões de escopo (Fast/Good/Ideal, batidas em chat): dados públicos do carrier = perfil anonimizado (sem foto/telefone/documento); token de continuidade = prefill simples via query param, sem persistir lead novo no banco.
 
 ---
 

@@ -3,16 +3,16 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowRight,
-  HeartPulse,
-  ListChecks,
+  Package,
   Shield,
+  Truck,
   type LucideIcon,
 } from 'lucide-react'
 import { useState, type Dispatch, type SetStateAction } from 'react'
 
 import { cn } from '~/lib/utils'
 
-type RoleId = 'ADMIN' | 'COORDENADOR' | 'COLABORADOR'
+type RoleId = 'CUSTOMER' | 'CARRIER' | 'ADMIN'
 
 interface RoleStat {
   label: string
@@ -32,57 +32,57 @@ interface Role {
 
 const ROLES: readonly Role[] = [
   {
+    id: 'CUSTOMER',
+    tag: 'Cliente',
+    title: 'Pedem o frete',
+    description:
+      'Descrevem o que precisam mover, recebem propostas de transportadores verificados, acompanham o trajeto em tempo real e avaliam depois da entrega.',
+    Icon: Package,
+    perks: [
+      'Preço sugerido automático por corredor',
+      'Fila de propostas — escolhe a melhor',
+      'Check-in de segurança e avaliação após a entrega',
+    ],
+    stats: [
+      { label: 'Tentativas por proposta', value: 'até 5' },
+      { label: 'SLA calculado', value: 'automático' },
+      { label: 'Avaliação', value: 'bidirecional' },
+    ],
+  },
+  {
+    id: 'CARRIER',
+    tag: 'Transportador',
+    title: 'Assumem o frete',
+    description:
+      'Entram na fila de propostas de fretes abertos na região, enviam proposta (ou contraproposta), fazem o check-in de segurança e recebem avaliação a cada entrega.',
+    Icon: Truck,
+    perks: [
+      'Fila de fretes abertos por cidade e tipo',
+      'Até 5 tentativas de proposta por frete',
+      'Rating público constrói reputação',
+    ],
+    stats: [
+      { label: 'Documentos verificados', value: 'CNH/CRLV/CPF' },
+      { label: 'Fretes concluídos', value: 'histórico público' },
+      { label: 'Autônomo ou frota', value: 'os dois' },
+    ],
+  },
+  {
     id: 'ADMIN',
     tag: 'Admin',
-    title: 'Donos do workspace',
+    title: 'Garantem a confiança',
     description:
-      'Configuram a operação inteira: convidam membros, definem categorias e especialidades, ajustam tolerâncias de ponto e acessam todos os relatórios.',
+      'Aprovam ou rejeitam documento de transportador, rodam checagem externa, monitoram avaliação e sinalizam contas fora do padrão de segurança.',
     Icon: Shield,
     perks: [
-      'Convite de membros e definição de papéis',
-      'Categorias, especialidades e regras do workspace',
-      'Acesso total a relatórios e auditoria',
+      'Aprovação/rejeição de documento com motivo',
+      'Checagem externa (estrutura pronta pra BigDataCorp/Serpro)',
+      'Sinalização de carriers fora do padrão',
     ],
     stats: [
-      { label: 'Workspaces', value: '∞' },
-      { label: 'Categorias', value: '∞' },
-      { label: 'Tolerância CLT', value: 'configurável' },
-    ],
-  },
-  {
-    id: 'COORDENADOR',
-    tag: 'Coordenador',
-    title: 'Comandam o setor',
-    description:
-      'Montam, publicam e fecham escalas. Aprovam ou rejeitam trocas, ofertas e folgas. Recebem notificação no app de cada decisão da equipe.',
-    Icon: ListChecks,
-    perks: [
-      'Ciclo completo Rascunho → Publicada → Fechada',
-      'Inbox unificada de trocas, ofertas e folgas',
-      'Notificações em tempo real de cada decisão',
-    ],
-    stats: [
-      { label: 'Tipos de evento', value: '16' },
-      { label: 'Tempo até decisão', value: '< 1 min' },
-      { label: 'Audit log', value: 'imutável' },
-    ],
-  },
-  {
-    id: 'COLABORADOR',
-    tag: 'Colaborador',
-    title: 'Vivem o turno',
-    description:
-      'Aceitam ou recusam atribuições no prazo. Pedem troca, oferta ou folga com 1 toque. Batem ponto com geolocalização. Tudo no mesmo app.',
-    Icon: HeartPulse,
-    perks: [
-      'Aceite/recusa com janela de decisão clara',
-      'Pedidos de troca, oferta ou folga em 1 toque',
-      'Ponto com geolocalização e tolerância',
-    ],
-    stats: [
-      { label: 'Toques pra aceitar', value: '1' },
-      { label: 'Geolocalização', value: 'sim' },
-      { label: 'Histórico pessoal', value: 'completo' },
+      { label: 'Tipos de documento', value: '7' },
+      { label: 'Status de verificação', value: '3 estados' },
+      { label: 'Dashboard de métricas', value: 'em tempo real' },
     ],
   },
 ] as const
@@ -105,7 +105,7 @@ export function LandingRolesAccordion() {
             Para quem
           </p>
           <h2 className="text-foreground mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Três papéis, mesmo workspace.
+            Três papéis, uma plataforma.
           </h2>
         </div>
 
@@ -239,7 +239,7 @@ function RolePreview({ role }: RolePreviewProps) {
         />
 
         <header className="relative flex items-center justify-between gap-3 text-white">
-          <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-bold tracking-wider uppercase">
+          <span className="shrink-0 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-bold tracking-wider whitespace-nowrap uppercase">
             {role.tag}
           </span>
           <role.Icon className="size-5" aria-hidden />

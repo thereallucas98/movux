@@ -1,14 +1,14 @@
 import {
   ArrowRight,
-  CalendarCheck,
   CheckCircle2,
   FileCheck2,
-  GitBranch,
-  HeartPulse,
-  Hospital,
   MapPin,
+  Route,
+  Search,
   Shield,
   Sparkles,
+  Star,
+  Truck,
   Users,
   type LucideIcon,
 } from 'lucide-react'
@@ -25,29 +25,28 @@ import { LandingPricing } from './_landing/landing-pricing'
 import { LandingRolesAccordion } from './_landing/landing-roles-accordion'
 import { LandingSpringCards } from './_landing/landing-spring-cards'
 import { LandingStickyCards } from './_landing/landing-sticky-cards'
+import { LandingTestimonials } from './_landing/landing-testimonials'
 import { LandingTextParallax } from './_landing/landing-text-parallax'
 import { MotionSection } from './_landing/motion-section'
 
 const PARALLAX_BLOCKS = [
   {
-    // Equipe hospitalar coordenando — encaixa em qualquer setor de plantão
     imgUrl:
-      'https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?q=80&w=2670&auto=format&fit=crop',
-    subheading: 'Coordene',
-    heading: 'Tudo no mesmo lugar.',
-    title: 'Escala, decisão, ponto e prova — sob o mesmo teto.',
-    body: 'Pare de cruzar planilha, grupo de WhatsApp e e-mail pra fechar plantão. Coordenadores publicam a escala uma vez; cada movimento da equipe (aceite, recusa, troca, candidatura, ponto) gera linha gravada no audit log do turno.',
+      'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?q=80&w=2670&auto=format&fit=crop',
+    subheading: 'Peça',
+    heading: 'Do pedido à entrega, tudo no mesmo lugar.',
+    title: 'Preço, fila de propostas e trajeto — sob o mesmo teto.',
+    body: 'Pare de negociar frete por indicação, sem parâmetro de preço e sem nenhuma garantia. No Movux, você descreve o frete uma vez; transportadores verificados da região entram na fila e enviam propostas — cada etapa fica registrada.',
     ctaLabel: 'Ver como funciona',
     ctaHref: '#fluxo',
   },
   {
-    // Profissional consultando agenda — fits hospital, clínica e academia
     imgUrl:
-      'https://images.unsplash.com/photo-1666214280557-f1b5022eb634?q=80&w=2670&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=2670&auto=format&fit=crop',
     subheading: 'Confie',
-    heading: 'Cada decisão tem prova.',
-    title: 'Audit log e timeline pública por turno.',
-    body: 'Quando alguém pergunta "quem aceitou esse plantão e em que horário?", a Movux responde em segundos. A linha do tempo congelada no fechamento da escala vira documento pronto pro RH ou pra qualquer disputa trabalhista.',
+    heading: 'Segurança em camadas, não uma promessa vazia.',
+    title: 'Verificação de documento, check-in e avaliação mútua.',
+    body: 'Quando alguém pergunta "quem levou minha carga e ela chegou como combinado?", o Movux responde em segundos. Documento verificado, check-in de segurança no trajeto e avaliação depois da entrega — tudo com prova.',
     ctaLabel: 'Ver os papéis',
     ctaHref: '#papeis',
   },
@@ -73,6 +72,7 @@ export default async function LandingPage() {
     <div className="bg-background text-foreground">
       <SiteHeader />
       <Hero />
+      <LandingTestimonials />
       <TrustStrip />
       <MotionSection>
         <ProblemSection />
@@ -101,14 +101,7 @@ function SiteHeader() {
     <header className="border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <span
-            aria-hidden
-            className="flex size-8 items-center justify-center rounded-[8px] text-white"
-            style={{ background: 'var(--brand-base)' }}
-          >
-            <HeartPulse className="size-4" />
-          </span>
-          <Logo className="text-foreground" />
+          <Logo iconOnly className="text-foreground" />
         </Link>
 
         <nav
@@ -137,7 +130,7 @@ function SiteHeader() {
             Entrar
           </Link>
           <Button asChild size="md" variant="solid">
-            <Link href="/register">Comece grátis</Link>
+            <Link href="/register">Criar conta</Link>
           </Button>
         </div>
       </div>
@@ -150,13 +143,13 @@ function SiteHeader() {
 function Hero() {
   return (
     <section className="relative overflow-hidden">
-      {/* Background gradients */}
+      {/* Background gradients — tokens da marca (brand-base/yellow-base), sem hex solto */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(31, 111, 67, 0.18), transparent 60%), radial-gradient(ellipse 50% 40% at 90% 30%, rgba(37, 99, 235, 0.10), transparent 70%)',
+            'radial-gradient(ellipse 80% 60% at 50% -10%, color-mix(in srgb, var(--brand-base) 18%, transparent), transparent 60%), radial-gradient(ellipse 50% 40% at 90% 30%, color-mix(in srgb, var(--yellow-base) 16%, transparent), transparent 70%)',
         }}
       />
       <div
@@ -164,7 +157,7 @@ function Hero() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px"
         style={{
           background:
-            'linear-gradient(to right, transparent, rgba(31, 111, 67, 0.4), transparent)',
+            'linear-gradient(to right, transparent, color-mix(in srgb, var(--brand-base) 40%, transparent), transparent)',
         }}
       />
 
@@ -175,11 +168,11 @@ function Hero() {
               className="size-3.5"
               style={{ color: 'var(--brand-base)' }}
             />
-            Escalas para hospitais, clínicas e academias
+            Segurança progressiva em cada frete
           </span>
 
           <h1 className="text-foreground mt-6 text-4xl font-extrabold tracking-tight md:text-6xl lg:text-7xl">
-            Tá na{' '}
+            Chama um{' '}
             <span
               className="bg-clip-text text-transparent"
               style={{
@@ -193,9 +186,9 @@ function Hero() {
           </h1>
 
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base md:text-lg">
-            A plataforma que coloca a pessoa certa no turno certo — com respeito
-            ao tempo pessoal, à responsabilidade profissional e às regras
-            trabalhistas brasileiras.
+            Marketplace de fretes e mudanças com segurança progressiva — do
+            primeiro contato até a entrega, com transportador verificado e
+            preço justo.
           </p>
 
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -205,8 +198,8 @@ function Hero() {
               variant="solid"
               className="h-14 px-6 text-base"
             >
-              <Link href="/register" className="gap-2">
-                Criar workspace grátis
+              <Link href="/buscar-transportadores" className="gap-2">
+                Buscar transportadores
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -216,12 +209,13 @@ function Hero() {
               variant="outline"
               className="h-14 px-6 text-base"
             >
-              <Link href="/login">Já tenho conta</Link>
+              <Link href="/register?role=CARRIER">Sou transportador</Link>
             </Button>
           </div>
 
           <p className="text-muted-foreground mt-5 text-xs">
-            Sem cartão de crédito · Pronto em minutos · Português brasileiro
+            Sem taxa de cadastro · Cotação em minutos · Segurança em cada
+            etapa
           </p>
         </div>
 
@@ -240,16 +234,16 @@ function Hero() {
 
 function TrustStrip() {
   const verticals: Array<{ Icon: LucideIcon; label: string }> = [
-    { Icon: Hospital, label: 'Hospitais' },
-    { Icon: HeartPulse, label: 'Clínicas' },
-    { Icon: Users, label: 'Academias' },
-    { Icon: Shield, label: 'Conformidade CLT' },
+    { Icon: FileCheck2, label: 'Verificação de documento' },
+    { Icon: Star, label: 'Avaliação mútua' },
+    { Icon: Shield, label: 'Contato de segurança' },
+    { Icon: Search, label: 'Checagem externa' },
   ]
   return (
     <section className="border-border/60 bg-muted/30 border-y py-10">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-4 px-4 md:px-8">
         <p className="text-muted-foreground w-full text-center text-xs font-semibold tracking-wider uppercase md:w-auto">
-          Feito para
+          Segurança em camadas
         </p>
         {verticals.map(({ Icon, label }) => (
           <div
@@ -282,28 +276,27 @@ function ProblemSection() {
             O problema
           </p>
           <h2 className="text-foreground mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Planilha + WhatsApp não dá conta de plantão.
+            Contratar frete por indicação não dá nenhuma garantia.
           </h2>
           <p className="text-muted-foreground mt-5 text-base leading-relaxed">
-            Coordenadores perdem horas costurando trocas, conferindo se ninguém
-            está em folga, contando carga horária semanal — enquanto
-            colaboradores descobrem o turno por mensagem solta no grupo, sem
-            confirmar recebimento e sem rastreabilidade.
+            Grupo de WhatsApp, indicação de vizinho, motorista sem nenhuma
+            verificação — quem contrata um frete ou mudança hoje corre o
+            risco de pagar preço arbitrário, sem rastreio do trajeto e sem
+            nenhuma prova em caso de problema.
           </p>
           <ul className="mt-6 space-y-3 text-sm">
             {[
-              'Atribuições que ninguém confirma — turno chega sem cobertura.',
-              'Trocas decididas no zap sem aprovação do coordenador.',
-              'Ponto registrado fora da tolerância sem ninguém perceber.',
-              'Auditoria pós-incidente vira arqueologia digital.',
+              'Preço combinado no olho, sem nenhum parâmetro.',
+              'Nenhuma verificação de documento do motorista.',
+              'Sem acompanhamento — só descobre que deu errado tarde demais.',
+              'Se der problema, não tem nada registrado pra reclamar.',
             ].map((line) => (
               <li key={line} className="text-foreground flex items-start gap-3">
                 <span
                   aria-hidden
-                  className="mt-1 inline-flex size-5 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: 'rgba(220, 38, 38, 0.12)' }}
+                  className="bg-destructive/10 mt-1 inline-flex size-5 shrink-0 items-center justify-center rounded-full"
                 >
-                  <span className="block size-1.5 rounded-full bg-red-600" />
+                  <span className="bg-destructive block size-1.5 rounded-full" />
                 </span>
                 {line}
               </li>
@@ -317,7 +310,7 @@ function ProblemSection() {
             className="absolute -inset-4 -z-10 rounded-[28px] opacity-40 blur-2xl"
             style={{
               background:
-                'linear-gradient(135deg, rgba(31, 111, 67, 0.30), rgba(37, 99, 235, 0.20))',
+                'linear-gradient(135deg, color-mix(in srgb, var(--brand-base) 30%, transparent), color-mix(in srgb, var(--yellow-base) 24%, transparent))',
             }}
           />
           <div className="border-border/70 bg-background space-y-3 rounded-[20px] border p-6 shadow-xl">
@@ -328,16 +321,16 @@ function ProblemSection() {
               Com a Movux
             </p>
             <h3 className="text-foreground text-xl font-bold">
-              Tudo no mesmo lugar — escala, decisão, ponto, prova.
+              Tudo com prova — preço, trajeto, segurança.
             </h3>
             <ul className="space-y-3 text-sm">
               {[
-                'Escalas com ciclo Rascunho → Publicada → Fechada.',
-                'Atribuição direta OU fila aberta para candidatos.',
-                'Aceite, rejeição e transferência rastreáveis.',
-                'Ponto com geolocalização e tolerância configurável.',
-                'Linha do tempo auditável por turno.',
-                'Notificações por evento, no app.',
+                'Preço sugerido automático por corredor e tipo de frete.',
+                'Fila de propostas — até 5 tentativas, prazo (SLA) calculado.',
+                'Check-in de segurança na coleta e na entrega.',
+                'Timeline auditável de cada evento do frete.',
+                'Avaliação mútua depois da entrega.',
+                'Notificação por e-mail em cada etapa.',
               ].map((line) => (
                 <li
                   key={line}
@@ -364,27 +357,27 @@ function WorkflowSection() {
   const steps = [
     {
       n: '01',
-      Icon: FileCheck2,
-      title: 'Rascunho',
-      body: 'Coordenador monta a escala, define turnos, atribui composição esperada por especialidade.',
+      Icon: Truck,
+      title: 'Peça seu frete',
+      body: 'Descreva o que precisa mover, origem e destino — o preço sugerido sai na hora, calculado pelo motor de precificação.',
     },
     {
       n: '02',
-      Icon: CalendarCheck,
-      title: 'Publicada',
-      body: 'Membros recebem notificação. Atribuições viram pendentes — aceite ou recuse no prazo.',
+      Icon: Users,
+      title: 'Receba propostas',
+      body: 'Transportadores verificados da região entram na fila e enviam propostas — você escolhe a melhor.',
     },
     {
       n: '03',
-      Icon: GitBranch,
-      title: 'Em operação',
-      body: 'Trocas, ofertas, folgas e candidatos rodam vivos. Ponto bate dentro da tolerância.',
+      Icon: Route,
+      title: 'Acompanhe em trânsito',
+      body: 'Check-in de segurança na coleta e a cada etapa do trajeto, até a entrega ser confirmada.',
     },
     {
       n: '04',
-      Icon: Shield,
-      title: 'Fechada',
-      body: 'Coord fecha o período. Timeline congelada. Auditoria pronta para o RH.',
+      Icon: Star,
+      title: 'Avalie',
+      body: 'Depois da entrega, cliente e transportador se avaliam — a nota alimenta o rating público de cada um.',
     },
   ]
   return (
@@ -400,11 +393,11 @@ function WorkflowSection() {
           Como funciona
         </p>
         <h2 className="text-foreground mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-          Do rascunho ao fechamento — sem fricção.
+          Do pedido à entrega — em 4 passos.
         </h2>
         <p className="text-muted-foreground mt-4 text-base">
-          Cada estado da escala tem regras claras. Tudo o que acontece fica
-          gravado.
+          Cada etapa do frete tem regra clara. Tudo o que acontece fica
+          registrado.
         </p>
       </div>
 
@@ -424,7 +417,8 @@ function WorkflowSection() {
               <span
                 className="inline-flex size-9 items-center justify-center rounded-[10px]"
                 style={{
-                  background: 'rgba(31, 111, 67, 0.12)',
+                  background:
+                    'color-mix(in srgb, var(--brand-base) 12%, transparent)',
                   color: 'var(--brand-base)',
                 }}
               >
@@ -464,17 +458,20 @@ function FinalCta() {
         <div
           aria-hidden
           className="absolute -bottom-24 -left-24 size-72 rounded-full opacity-20 blur-3xl"
-          style={{ background: 'rgba(37, 99, 235, 0.5)' }}
+          style={{
+            background:
+              'color-mix(in srgb, var(--yellow-base) 60%, transparent)',
+          }}
         />
 
         <div className="relative mx-auto max-w-2xl">
           <MapPin className="mx-auto size-7 text-white/80" />
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-white md:text-4xl">
-            Comece em minutos. Sem cartão.
+            Peça seu frete em minutos. Sem burocracia.
           </h2>
           <p className="mt-4 text-base text-white/80">
-            Crie seu primeiro workspace, importe sua equipe e tenha a próxima
-            escala publicada antes do fim do dia.
+            Busque transportadores verificados na sua cidade, veja avaliação
+            real e crie sua conta só quando decidir contratar.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
@@ -483,8 +480,8 @@ function FinalCta() {
               variant="solid"
               className="text-foreground h-14 bg-white px-6 text-base hover:bg-white/90"
             >
-              <Link href="/register" className="gap-2">
-                Criar workspace grátis
+              <Link href="/buscar-transportadores" className="gap-2">
+                Buscar transportadores
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -509,7 +506,7 @@ function SiteFooter() {
       <div className="text-muted-foreground mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-xs md:flex-row md:px-8">
         <div className="flex items-center gap-2">
           <Logo className="text-foreground text-sm" />
-          <span>· Tá na Movux.</span>
+          <span>· Chama um Movux.</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <span>© 2026 Movux — feito no Brasil</span>

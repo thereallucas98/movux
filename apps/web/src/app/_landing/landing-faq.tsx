@@ -14,28 +14,28 @@ interface QA {
 
 const FAQ: QA[] = [
   {
-    q: 'A Movux funciona offline?',
-    a: 'Não. Como o ponto usa geolocalização e a inbox de notificações puxa eventos em tempo real, todo o app exige conexão. Em troca, qualquer mudança aparece imediatamente para a equipe.',
+    q: 'Como funciona a verificação de transportador?',
+    a: 'Todo transportador envia CNH, CRLV, CPF (e contrato social, se for empresa) — o admin aprova ou rejeita cada documento com motivo. Só depois de aprovado o transportador aparece na fila de propostas de qualquer frete.',
   },
   {
-    q: 'Posso ter vários setores no mesmo workspace?',
-    a: 'Sim. Categorias (Setores) ficam dentro do workspace e cada escala fica vinculada a uma categoria. UTI e Pronto-Socorro convivem no mesmo Hospital sem misturar turnos ou atribuições.',
+    q: 'O que é segurança progressiva?',
+    a: 'É a soma de camadas de confiança que acompanham o frete do início ao fim: documento verificado antes de operar, contato de segurança acompanhando o trajeto, check-in na coleta e na entrega, e avaliação mútua no final.',
   },
   {
-    q: 'Como os colaboradores entram no app?',
-    a: 'O Admin convida por e-mail. Cada pessoa cria a senha no primeiro acesso e cai direto no workspace correto. Coordenadores podem alterar o papel depois (COORDENADOR / COLABORADOR).',
+    q: 'Posso ser transportador autônomo ou preciso de empresa?',
+    a: 'Os dois. Um transportador autônomo cadastra o próprio veículo; uma empresa (frota) cadastra vários veículos e gerencia os motoristas vinculados a ela. A verificação de documento é a mesma nos dois casos.',
   },
   {
-    q: 'Tem versão mobile nativa?',
-    a: 'Hoje a Movux é uma web app responsiva — funciona perfeitamente no Safari iOS e Chrome Android. Versão instalável (PWA) e push real estão na fase 2.',
+    q: 'Como é calculado o preço do frete?',
+    a: 'Um motor de precificação sugere o valor com base no corredor (origem → destino), tipo de frete e tipo de veículo — você vê o valor sugerido antes mesmo de publicar. Transportadores ainda podem propor um valor diferente na fila de propostas.',
   },
   {
-    q: 'Consigo exportar relatórios para o RH?',
-    a: 'Sim. Time entries (ponto) saem em CSV pronto para importar no Excel ou no sistema de folha. A timeline de cada turno fica congelada no fechamento da escala.',
+    q: 'O que acontece se o transportador não aparecer?',
+    a: 'Cada proposta aceita tem um prazo (SLA) calculado automaticamente. Se o prazo expira sem confirmação, a proposta é liberada e o frete volta pra fila — sem ficar travado esperando alguém que sumiu.',
   },
   {
-    q: 'Quanto custa?',
-    a: 'A versão atual está aberta para teste gratuito sem cartão. Os planos pagos com limites de membros/escalas estão sendo finalizados — quando disponíveis você será avisado dentro do app.',
+    q: 'Como funciona a avaliação?',
+    a: 'Depois da entrega confirmada, cliente e transportador avaliam um ao outro com nota e tags pré-definidas. A nota alimenta o rating público de cada perfil — histórico que pesa na próxima contratação.',
   },
 ]
 
@@ -54,7 +54,7 @@ export function LandingFAQ() {
             Perguntas frequentes
           </p>
           <h2 className="text-foreground mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Tudo que coordenadores costumam perguntar.
+            Tudo que clientes e transportadores costumam perguntar.
           </h2>
         </div>
         <div className="mt-12 flex flex-col">
@@ -84,11 +84,15 @@ function Question({ qa, defaultOpen }: { qa: QA; defaultOpen?: boolean }) {
       >
         <motion.span
           variants={{
-            open: { color: 'var(--brand-base)' },
+            open: { color: 'transparent' },
             closed: { color: 'var(--gray-800)' },
           }}
           transition={{ duration: 0.2 }}
-          className="text-base font-semibold md:text-lg"
+          style={{
+            backgroundImage:
+              'linear-gradient(90deg, var(--brand-base), var(--brand-dark))',
+          }}
+          className="bg-clip-text text-left text-base font-semibold md:text-lg"
         >
           {qa.q}
         </motion.span>

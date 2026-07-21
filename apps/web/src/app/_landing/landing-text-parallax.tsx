@@ -72,7 +72,7 @@ function StickyImage({ imgUrl }: StickyImageProps) {
         style={{
           opacity,
           background:
-            'linear-gradient(180deg, rgba(18, 75, 43, 0.75) 0%, rgba(18, 75, 43, 0.65) 60%, rgba(18, 75, 43, 0.55) 100%)',
+            'linear-gradient(180deg, color-mix(in srgb, var(--brand-dark) 75%, transparent) 0%, color-mix(in srgb, var(--brand-dark) 65%, transparent) 60%, color-mix(in srgb, var(--brand-dark) 55%, transparent) 100%)',
         }}
         className="absolute inset-0"
       />

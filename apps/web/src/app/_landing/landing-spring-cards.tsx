@@ -3,11 +3,11 @@
 import { motion, MotionConfig } from 'framer-motion'
 import {
   ArrowUpRight,
-  BellRing,
-  CalendarRange,
-  Clock,
-  ListChecks,
-  Repeat,
+  FileCheck2,
+  Mail,
+  ShieldCheck,
+  Star,
+  Truck,
   Users,
   type LucideIcon,
 } from 'lucide-react'
@@ -26,39 +26,39 @@ type CardTone = 'white' | 'mint' | 'brand'
 
 const CARDS: ReadonlyArray<SpringCardData & { tone: CardTone }> = [
   {
-    Icon: CalendarRange,
-    title: 'Escalas Vivas',
-    body: 'Rascunho → Publicada → Fechada. Cada estado com regras claras; trocas só rodam em escala publicada.',
+    Icon: Truck,
+    title: 'Preço Justo Automático',
+    body: 'Motor de precificação calcula o valor sugerido por corredor, tipo de frete e veículo — sem negociação no escuro.',
     tone: 'white',
   },
   {
     Icon: Users,
-    title: 'Atribuição Flexível',
-    body: 'Direta ou fila aberta para candidatos. O sistema cuida de overlap entre turnos automaticamente.',
+    title: 'Fila de Propostas',
+    body: 'Transportadores da região entram na fila e enviam até 5 tentativas de proposta, com prazo (SLA) calculado automaticamente.',
     tone: 'mint',
   },
   {
-    Icon: Repeat,
-    title: 'Trocas e Folgas',
-    body: 'Troca entre colegas, oferta para coord, folga com anexo. Tudo passa por aprovação rastreável.',
+    Icon: ShieldCheck,
+    title: 'Segurança em Trânsito',
+    body: 'Check-in de segurança na coleta e na entrega, com contato de confiança acompanhando o trajeto.',
     tone: 'brand',
   },
   {
-    Icon: Clock,
-    title: 'Ponto Geolocalizado',
-    body: 'Clock-in/out com tolerância configurável. CSV pronto pro RH no fechamento.',
+    Icon: FileCheck2,
+    title: 'Verificação de Documento',
+    body: 'CNH, CRLV e CPF conferidos pelo admin antes do transportador operar na plataforma.',
     tone: 'white',
   },
   {
-    Icon: ListChecks,
-    title: 'Timeline Auditável',
-    body: 'Cada turno tem linha do tempo — quem atribuiu, quem aceitou, quem trocou. Notas públicas pra handoff.',
+    Icon: Star,
+    title: 'Avaliação Bidirecional',
+    body: 'Cliente e transportador se avaliam depois da entrega — a nota alimenta o rating público de cada um.',
     tone: 'mint',
   },
   {
-    Icon: BellRing,
-    title: 'Notificações Por Evento',
-    body: 'Inbox no app com 16 tipos de evento. Configure por canal — in-app hoje, e-mail/push em breve.',
+    Icon: Mail,
+    title: 'Notificação por E-mail',
+    body: 'Cada mudança de status do frete — nova proposta, aceite, chegada — vira e-mail automático.',
     tone: 'brand',
   },
 ] as const
@@ -78,24 +78,24 @@ const TONE_STYLES: Record<CardTone, ToneStyle> = {
   white: {
     surface: 'var(--neutral-white)',
     fg: 'var(--brand-dark)',
-    iconBg: 'rgba(31, 111, 67, 0.10)',
+    iconBg: 'color-mix(in srgb, var(--brand-base) 10%, transparent)',
     iconFg: 'var(--brand-base)',
     arrowFg: 'var(--brand-base)',
     bodyFg: 'var(--gray-700)',
-    ring: 'rgba(31, 111, 67, 0.18)',
+    ring: 'color-mix(in srgb, var(--brand-base) 18%, transparent)',
     shadow:
-      '0 1px 2px rgba(31, 111, 67, 0.04), 0 8px 24px -8px rgba(31, 111, 67, 0.10)',
+      '0 1px 2px color-mix(in srgb, var(--brand-base) 4%, transparent), 0 8px 24px -8px color-mix(in srgb, var(--brand-base) 10%, transparent)',
   },
   mint: {
-    surface: 'rgba(31, 111, 67, 0.06)',
+    surface: 'color-mix(in srgb, var(--brand-base) 6%, transparent)',
     fg: 'var(--brand-dark)',
     iconBg: 'var(--neutral-white)',
     iconFg: 'var(--brand-base)',
     arrowFg: 'var(--brand-dark)',
     bodyFg: 'var(--gray-700)',
-    ring: 'rgba(31, 111, 67, 0.22)',
+    ring: 'color-mix(in srgb, var(--brand-base) 22%, transparent)',
     shadow:
-      '0 1px 2px rgba(31, 111, 67, 0.06), 0 12px 28px -10px rgba(31, 111, 67, 0.18)',
+      '0 1px 2px color-mix(in srgb, var(--brand-base) 6%, transparent), 0 12px 28px -10px color-mix(in srgb, var(--brand-base) 18%, transparent)',
   },
   brand: {
     surface: 'var(--brand-base)',
@@ -106,7 +106,7 @@ const TONE_STYLES: Record<CardTone, ToneStyle> = {
     bodyFg: 'rgba(255, 255, 255, 0.85)',
     ring: 'rgba(255, 255, 255, 0.35)',
     shadow:
-      '0 4px 12px rgba(18, 75, 43, 0.18), 0 16px 36px -12px rgba(18, 75, 43, 0.35)',
+      '0 4px 12px color-mix(in srgb, var(--brand-dark) 18%, transparent), 0 16px 36px -12px color-mix(in srgb, var(--brand-dark) 35%, transparent)',
   },
 }
 
@@ -125,10 +125,10 @@ export function LandingSpringCards() {
             O que vem dentro
           </p>
           <h2 className="text-foreground mt-3 text-3xl font-bold tracking-tight md:text-4xl">
-            Seis sistemas que conversam entre si.
+            Seis diferenciais que trabalham juntos.
           </h2>
           <p className="text-muted-foreground mt-4 text-base">
-            Não é app de “comunicação”. É a operação inteira da escala —
+            Não é só um chat com motorista. É a operação inteira do frete —
             integrada e rastreável.
           </p>
         </div>
@@ -215,7 +215,7 @@ function SpringCard({ card }: SpringCardProps) {
             background:
               card.tone === 'brand'
                 ? 'rgba(255, 255, 255, 0.20)'
-                : 'rgba(31, 111, 67, 0.12)',
+                : 'color-mix(in srgb, var(--brand-base) 12%, transparent)',
           }}
         />
       </motion.article>
