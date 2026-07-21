@@ -1,22 +1,21 @@
 'use client'
 
-import { Check, Clock, Sparkles } from 'lucide-react'
+import { CheckCircle2, Sparkles, XSquare } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 
-interface Feature {
+interface ChecklistItem {
   label: string
-  /** When true, renders an "em breve" pill — planos pagos ainda não existem (Sprint 7). */
-  comingSoon?: boolean
+  included: boolean
 }
 
 interface PricingTier {
   name: string
   price: string
   tagline: string
-  features: Feature[]
+  items: ChecklistItem[]
   ctaLabel: string
   ctaHref: string
   highlight?: boolean
@@ -27,11 +26,11 @@ const TIERS: PricingTier[] = [
     name: 'Cliente',
     price: 'Grátis',
     tagline: 'Peça fretes e mudanças — sempre grátis pra quem contrata.',
-    features: [
-      { label: 'Criação de frete ilimitada' },
-      { label: 'Preço sugerido automático por corredor' },
-      { label: 'Acompanhamento em tempo real do trajeto' },
-      { label: 'Avaliação depois de cada entrega' },
+    items: [
+      { label: 'Criação de frete ilimitada', included: true },
+      { label: 'Preço sugerido automático por corredor', included: true },
+      { label: 'Acompanhamento em tempo real do trajeto', included: true },
+      { label: 'Avaliação depois de cada entrega', included: true },
     ],
     ctaLabel: 'Criar conta',
     ctaHref: '/register?role=CUSTOMER',
@@ -40,11 +39,11 @@ const TIERS: PricingTier[] = [
     name: 'Transportador Autônomo',
     price: 'Grátis por enquanto',
     tagline: 'Para quem dirige o próprio veículo.',
-    features: [
-      { label: 'Fila de propostas sem limite' },
-      { label: 'Verificação de documento incluída' },
-      { label: 'Rating público constrói reputação' },
-      { label: 'Prioridade na fila de propostas', comingSoon: true },
+    items: [
+      { label: 'Fila de propostas sem limite', included: true },
+      { label: 'Verificação de documento incluída', included: true },
+      { label: 'Rating público constrói reputação', included: true },
+      { label: 'Prioridade na fila de propostas', included: false },
     ],
     ctaLabel: 'Cadastrar como transportador',
     ctaHref: '/register?role=CARRIER',
@@ -54,11 +53,11 @@ const TIERS: PricingTier[] = [
     name: 'Frota',
     price: 'Em breve',
     tagline: 'Para empresa com mais de um veículo.',
-    features: [
-      { label: 'Múltiplos veículos por conta' },
-      { label: 'Motoristas vinculados à empresa' },
-      { label: 'Plano com limite de propostas ativas', comingSoon: true },
-      { label: 'Relatório financeiro consolidado', comingSoon: true },
+    items: [
+      { label: 'Múltiplos veículos por conta', included: true },
+      { label: 'Motoristas vinculados à empresa', included: true },
+      { label: 'Plano com limite de propostas ativas', included: false },
+      { label: 'Relatório financeiro consolidado', included: false },
     ],
     ctaLabel: 'Cadastrar empresa',
     ctaHref: '/register?role=CARRIER',
@@ -85,34 +84,20 @@ export function LandingPricing() {
         </p>
       </header>
 
-      {/* Desktop grid */}
-      <div className="hidden gap-4 md:grid md:grid-cols-3 lg:gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
         {TIERS.map((tier) => (
           <PricingCard key={tier.name} tier={tier} />
         ))}
       </div>
 
-      {/* Mobile carousel */}
-      <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:hidden">
-        {TIERS.map((tier) => (
-          <PricingCard
-            key={tier.name}
-            tier={tier}
-            className="shrink-0 basis-[300px] snap-center"
-          />
-        ))}
-      </div>
-
-      <p className="text-muted-foreground mt-8 text-center text-sm">
-        Ninguém é cobrado até que os planos pagos existam. Itens marcados
-        como{' '}
-        <span className="border-warning/40 bg-warning-light text-yellow-dark inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] font-medium whitespace-nowrap">
-          <Clock className="h-3 w-3" aria-hidden /> em breve
-        </span>{' '}
-        ainda não têm data — só usamos essa página pra deixar claro que o
-        modelo de negócio não é surpresa.
+      <p className="text-muted-foreground mt-10 text-center text-sm">
+        Ninguém é cobrado até que os planos pagos existam — itens com{' '}
+        <XSquare
+          className="text-muted-foreground/60 -mt-0.5 inline size-3.5"
+          aria-hidden
+        />{' '}
+        ainda não têm data.
       </p>
-
       <p className="text-muted-foreground mt-3 text-center text-xs">
         Frota grande ou operação logística com requisitos específicos?{' '}
         <Link
@@ -127,49 +112,50 @@ export function LandingPricing() {
   )
 }
 
-function PricingCard({
-  tier,
-  className,
-}: {
-  tier: PricingTier
-  className?: string
-}) {
+function PricingCard({ tier }: { tier: PricingTier }) {
   return (
-    <article
+    <div
+      style={
+        tier.highlight
+          ? { boxShadow: '0px 6px 0px var(--brand-dark)' }
+          : undefined
+      }
       className={cn(
-        'border-border bg-card flex flex-col gap-5 rounded-xl border p-6',
-        tier.highlight && 'border-primary ring-primary/30 shadow-lg ring-2',
-        className,
+        'rounded-card bg-background relative flex flex-col gap-5 p-6',
+        tier.highlight ? 'border-primary border-2' : 'border-border border',
       )}
     >
-      <header className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-lg font-semibold">{tier.name}</h3>
-          {tier.highlight && (
-            <span className="bg-primary text-primary-foreground shrink-0 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap">
-              Mais comum
-            </span>
-          )}
-        </div>
-        <p className="text-3xl font-bold tracking-tight">{tier.price}</p>
-        <p className="text-muted-foreground text-sm">{tier.tagline}</p>
-      </header>
+      {tier.highlight && (
+        <span className="bg-primary text-primary-foreground absolute top-0 right-4 -translate-y-1/2 rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap">
+          Mais comum
+        </span>
+      )}
+
+      <div>
+        <p className="text-lg font-semibold">{tier.name}</p>
+        <p className="mt-2 text-3xl font-bold tracking-tight">{tier.price}</p>
+        <p className="text-muted-foreground mt-2 text-sm">{tier.tagline}</p>
+      </div>
 
       <ul className="flex flex-col gap-2 text-sm">
-        {tier.features.map((f) => (
-          <li key={f.label} className="flex flex-col gap-1">
-            <span className="flex items-start gap-2">
-              <Check
-                className="text-primary mt-0.5 h-4 w-4 shrink-0"
+        {tier.items.map((item) => (
+          <li key={item.label} className="flex items-center gap-2">
+            {item.included ? (
+              <CheckCircle2
+                className="text-primary size-4 shrink-0"
                 aria-hidden
               />
-              <span className="flex-1">{f.label}</span>
-            </span>
-            {f.comingSoon && (
-              <span className="border-warning/40 bg-warning-light text-yellow-dark ml-6 inline-flex w-fit shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium tracking-wide whitespace-nowrap uppercase">
-                <Clock className="h-2.5 w-2.5" aria-hidden /> em breve
-              </span>
+            ) : (
+              <XSquare
+                className="text-muted-foreground/50 size-4 shrink-0"
+                aria-hidden
+              />
             )}
+            <span
+              className={item.included ? undefined : 'text-muted-foreground/70'}
+            >
+              {item.label}
+            </span>
           </li>
         ))}
       </ul>
@@ -182,6 +168,6 @@ function PricingCard({
       >
         <Link href={tier.ctaHref}>{tier.ctaLabel}</Link>
       </Button>
-    </article>
+    </div>
   )
 }

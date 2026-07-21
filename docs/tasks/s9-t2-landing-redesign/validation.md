@@ -40,6 +40,13 @@ Confirmado novamente em 1440px e 375px após a correção.
 
 Confirmado visualmente (carrossel rolando, imagens corretas, gradiente aparecendo na pergunta aberta).
 
+### Terceira rodada — pricing neubrutalista (usuário, em chat)
+
+| Item | Ação |
+|---|---|
+| Pricing reescrito com card neubrutalista (sombra sólida `boxShadow`, borda 2px no destaque) + checklist ✓/✗ por item | Adaptado de referência do usuário (`NeuPricing`); ícones `CheckCircle2`/`XSquare` do `lucide-react` (já dependência), sem lib nova. Confirmado visualmente — badge "Mais comum" não quebra linha (regressão do fix anterior evitada), ícone `XSquare` renderiza corretamente. |
+| Toggle mensal/anual do exemplo | Deliberadamente **não** implementado — Movux não tem plano pago real (Sprint 7 ainda não existe); um toggle sem nada real pra alternar seria enganoso, mesma lógica já registrada no `research.md` sobre não inventar número de billing. |
+
 ## Typecheck / Lint / Build
 
 - **Lint isolado dos arquivos desta task**: limpo.

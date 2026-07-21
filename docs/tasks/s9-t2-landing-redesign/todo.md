@@ -42,6 +42,7 @@
 - [x] **7.1** `landing-text-parallax.tsx` — véu escuro do `StickyImage` estava hardcoded em `rgba(18, 75, 43, ...)` (verde do Turnora, comentário enganoso dizia "uses brand-dark"); trocado por `color-mix(in srgb, var(--brand-dark) X%, transparent)`
 - [x] **7.2** `landing-testimonials.tsx` (novo) — carrossel infinito de depoimentos (3 fileiras, `framer-motion`), adaptado de referência fornecida pelo usuário; imagens reais de frete/mudança buscadas e confirmadas visualmente (Unsplash), depoimentos mistos (cliente sobre transportador + transportador sobre a plataforma); inserido logo após o `Hero`, antes do `TrustStrip`
 - [x] **7.3** `landing-faq.tsx` — texto da pergunta ganha efeito de gradiente (`bg-clip-text` + `color: transparent` no estado aberto), adaptado de referência fornecida pelo usuário; resto do componente (`useMeasure`, altura animada, chevron) mantido como estava
+- [x] **7.4** `landing-pricing.tsx` — reescrito com estilo neubrutalista (sombra sólida `boxShadow` no card em destaque, badge "Mais comum" flutuando na borda) e checklist ✓/✗ por item (`CheckCircle2`/`XSquare` do `lucide-react`, sem lib nova), adaptado de referência fornecida pelo usuário. Toggle mensal/anual do exemplo **não** implementado — Movux não tem preço pago real ainda (Sprint 7), então não haveria o que alternar; manteria a mesma decisão do `research.md` de não inventar número de billing
 
 ### Step 6: Validation
 
