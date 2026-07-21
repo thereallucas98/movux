@@ -1,0 +1,12 @@
+query ProposalsForShipment($shipmentId: ID!) {
+  proposalsForShipment(shipmentId: $shipmentId) {
+    id
+    status
+    carrierId
+    carrierName
+    priceInCents
+    currentAttempt
+    expiresAt
+    createdAt
+  }
+}

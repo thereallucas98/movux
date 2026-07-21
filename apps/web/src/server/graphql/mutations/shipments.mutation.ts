@@ -1,4 +1,4 @@
-import { createShipment } from '~/server/use-cases'
+import { createShipment, publishShipment } from '~/server/use-cases'
 import { builder } from '../builder'
 import {
   ShipmentTypeEnum,
@@ -88,6 +88,30 @@ builder.mutationField('createShipment', (t) =>
       if (!result.success) throw gqlErrorFromResult(result)
 
       return toGraphQLShipment(result.shipment)
+    },
+  }),
+)
+
+builder.mutationField('publishShipment', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: { shipmentId: t.arg.id({ required: true }) },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
+      if (ctx.principal.role !== 'CUSTOMER') throw gqlError('FORBIDDEN')
+
+      const result = await publishShipment(
+        {
+          customerProfileRepo: ctx.repos.customerProfileRepo,
+          shipmentRepo: ctx.repos.shipmentRepo,
+          shipmentEventRepo: ctx.repos.shipmentEventRepo,
+        },
+        ctx.principal.userId,
+        String(args.shipmentId),
+      )
+      if (!result.success) throw gqlErrorFromResult(result)
+
+      return true
     },
   }),
 )

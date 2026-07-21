@@ -1,0 +1,3 @@
+mutation MarkInTransit($shipmentId: ID!) {
+  markInTransit(shipmentId: $shipmentId)
+}

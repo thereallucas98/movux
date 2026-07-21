@@ -1,0 +1,8 @@
+query ReviewsForShipment($shipmentId: ID!) {
+  reviewsForShipment(shipmentId: $shipmentId) {
+    id
+    reviewerRole
+    rating
+    createdAt
+  }
+}

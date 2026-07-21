@@ -1,0 +1,3 @@
+mutation MarkDelivered($shipmentId: ID!) {
+  markDelivered(shipmentId: $shipmentId)
+}

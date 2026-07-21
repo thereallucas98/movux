@@ -1,0 +1,7 @@
+mutation ConfirmSafetyCheckIn($shipmentId: ID!) {
+  confirmSafetyCheckIn(shipmentId: $shipmentId) {
+    id
+    role
+    confirmedAt
+  }
+}

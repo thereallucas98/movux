@@ -1,0 +1,8 @@
+query DeliveryConfirmationStatus($shipmentId: ID!) {
+  deliveryConfirmationStatus(shipmentId: $shipmentId) {
+    id
+    confirmed
+    issueDescription
+    confirmedAt
+  }
+}

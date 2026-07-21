@@ -1,5 +1,7 @@
 import {
+  acceptProposal,
   addProposalAttempt,
+  rejectProposal,
   submitProposal,
   withdrawProposal,
 } from '~/server/use-cases'
@@ -107,6 +109,69 @@ builder.mutationField('withdrawProposal', (t) =>
         },
         ctx.principal.userId,
         String(args.shipmentId),
+      )
+      if (!result.success) throw gqlErrorFromResult(result)
+
+      return true
+    },
+  }),
+)
+
+builder.mutationField('acceptProposal', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      shipmentId: t.arg.id({ required: true }),
+      proposalId: t.arg.id({ required: true }),
+    },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
+      if (ctx.principal.role !== 'CUSTOMER') throw gqlError('FORBIDDEN')
+
+      const result = await acceptProposal(
+        {
+          customerProfileRepo: ctx.repos.customerProfileRepo,
+          shipmentRepo: ctx.repos.shipmentRepo,
+          proposalRepo: ctx.repos.proposalRepo,
+          queueRepo: ctx.repos.proposalQueueRepo,
+          shipmentEventRepo: ctx.repos.shipmentEventRepo,
+          userRepo: ctx.repos.userRepo,
+          notificationLogRepo: ctx.repos.notificationLogRepo,
+        },
+        ctx.principal.userId,
+        String(args.shipmentId),
+        String(args.proposalId),
+      )
+      if (!result.success) throw gqlErrorFromResult(result)
+
+      return true
+    },
+  }),
+)
+
+builder.mutationField('rejectProposal', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      shipmentId: t.arg.id({ required: true }),
+      proposalId: t.arg.id({ required: true }),
+    },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
+      if (ctx.principal.role !== 'CUSTOMER') throw gqlError('FORBIDDEN')
+
+      const result = await rejectProposal(
+        {
+          customerProfileRepo: ctx.repos.customerProfileRepo,
+          shipmentRepo: ctx.repos.shipmentRepo,
+          proposalRepo: ctx.repos.proposalRepo,
+          queueRepo: ctx.repos.proposalQueueRepo,
+          userRepo: ctx.repos.userRepo,
+          notificationLogRepo: ctx.repos.notificationLogRepo,
+        },
+        ctx.principal.userId,
+        String(args.shipmentId),
+        String(args.proposalId),
       )
       if (!result.success) throw gqlErrorFromResult(result)
 

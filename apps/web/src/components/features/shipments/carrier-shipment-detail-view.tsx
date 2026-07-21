@@ -8,6 +8,7 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { ShipmentActionButton } from '~/components/features/proposals/shipment-action-button'
 import { useShipmentForCarrier } from '~/graphql/hooks/use-shipment-for-carrier'
 import { formatPriceInCents } from '~/lib/format-price'
+import { CarrierShipmentTransitActions } from './carrier-shipment-transit-actions'
 import { SHIPMENT_TYPE_LABELS, TIME_WINDOW_LABELS } from './shipment-labels'
 import { ShipmentTypeIcon } from './shipment-type-icon'
 
@@ -110,6 +111,13 @@ export function CarrierShipmentDetailView({
           {shipment.id && <ShipmentActionButton shipmentId={shipment.id} />}
         </CardContent>
       </Card>
+
+      {shipment.id && shipment.status && (
+        <CarrierShipmentTransitActions
+          shipmentId={shipment.id}
+          status={shipment.status}
+        />
+      )}
     </div>
   )
 }

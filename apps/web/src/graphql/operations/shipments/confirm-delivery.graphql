@@ -1,0 +1,8 @@
+mutation ConfirmDelivery($shipmentId: ID!, $input: ConfirmDeliveryInput!) {
+  confirmDelivery(shipmentId: $shipmentId, input: $input) {
+    id
+    confirmed
+    issueDescription
+    confirmedAt
+  }
+}

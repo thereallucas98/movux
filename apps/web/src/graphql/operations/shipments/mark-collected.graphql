@@ -1,0 +1,3 @@
+mutation MarkCollected($shipmentId: ID!) {
+  markCollected(shipmentId: $shipmentId)
+}

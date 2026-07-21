@@ -449,7 +449,7 @@ function AddressFieldset({
       })
     }
 
-    if (result.data.neighborhood) {
+    if (result.data.neighborhood && !form.getValues(`${prefix}.neighborhoodId`)) {
       const target = normalizeCityName(result.data.neighborhood)
       const matched = neighborhoods.find(
         (n) => normalizeCityName(n.name) === target,

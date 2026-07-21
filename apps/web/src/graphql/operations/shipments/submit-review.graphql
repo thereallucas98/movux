@@ -1,0 +1,8 @@
+mutation SubmitReview($shipmentId: ID!, $rating: Int!) {
+  submitReview(shipmentId: $shipmentId, rating: $rating) {
+    id
+    reviewerRole
+    rating
+    createdAt
+  }
+}

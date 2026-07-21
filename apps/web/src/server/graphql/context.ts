@@ -7,6 +7,7 @@ import {
   carrierProfileRepository,
   categoryRepository,
   customerProfileRepository,
+  deliveryConfirmationRepository,
   geographyRepository,
   notificationLogRepository,
   notificationPreferenceRepository,
@@ -15,6 +16,9 @@ import {
   proposalQueueRepository,
   proposalRepository,
   requestRepository,
+  reviewRepository,
+  reviewTagRepository,
+  safetyCheckInRepository,
   scheduleRepository,
   shiftCandidateRepository,
   shiftExpectedCompositionRepository,
@@ -76,6 +80,10 @@ export interface GraphQLContext {
     carrierProfileRepo: typeof carrierProfileRepository
     carrierDocumentRepo: typeof carrierDocumentRepository
     vehicleRepo: typeof vehicleRepository
+    safetyCheckInRepo: typeof safetyCheckInRepository
+    deliveryConfirmationRepo: typeof deliveryConfirmationRepository
+    reviewRepo: typeof reviewRepository
+    reviewTagRepo: typeof reviewTagRepository
   }
 }
 
@@ -149,6 +157,10 @@ export async function createGraphQLContext(
       carrierProfileRepo: carrierProfileRepository,
       carrierDocumentRepo: carrierDocumentRepository,
       vehicleRepo: vehicleRepository,
+      safetyCheckInRepo: safetyCheckInRepository,
+      deliveryConfirmationRepo: deliveryConfirmationRepository,
+      reviewRepo: reviewRepository,
+      reviewTagRepo: reviewTagRepository,
     },
   }
 }

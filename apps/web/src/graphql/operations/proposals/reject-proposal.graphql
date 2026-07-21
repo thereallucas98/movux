@@ -1,0 +1,3 @@
+mutation RejectProposal($shipmentId: ID!, $proposalId: ID!) {
+  rejectProposal(shipmentId: $shipmentId, proposalId: $proposalId)
+}

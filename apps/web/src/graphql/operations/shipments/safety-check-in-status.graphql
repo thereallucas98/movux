@@ -1,0 +1,14 @@
+query SafetyCheckInStatus($shipmentId: ID!) {
+  safetyCheckInStatus(shipmentId: $shipmentId) {
+    customer {
+      id
+      role
+      confirmedAt
+    }
+    carrier {
+      id
+      role
+      confirmedAt
+    }
+  }
+}
