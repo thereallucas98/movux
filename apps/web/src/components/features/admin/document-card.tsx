@@ -18,6 +18,7 @@ import {
   externalValidationResultLabel,
 } from './carrier-document-labels'
 import { DocumentStatusBadge } from './document-status-badge'
+import { DocumentTypeIcon } from './document-type-icon'
 import { ExternalValidationDialog } from './external-validation-dialog'
 import { RejectDocumentDialog } from './reject-document-dialog'
 
@@ -42,9 +43,12 @@ export function DocumentCard({ document }: { document: CarrierDocumentItem }) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-base">
-          {document.type ? CARRIER_DOCUMENT_TYPE_LABELS[document.type] : '—'}
-        </CardTitle>
+        <div className="flex items-center gap-3">
+          {document.type && <DocumentTypeIcon type={document.type} />}
+          <CardTitle className="text-base">
+            {document.type ? CARRIER_DOCUMENT_TYPE_LABELS[document.type] : '—'}
+          </CardTitle>
+        </div>
         {document.status && <DocumentStatusBadge status={document.status} />}
       </CardHeader>
       <CardContent className="space-y-2 text-sm">
