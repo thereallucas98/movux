@@ -60,3 +60,15 @@ export const ProposalForCustomerType = builder.simpleObject(
     }),
   },
 )
+
+// Cartão de contato da contraparte (D-007) — nome/nota sempre vêm
+// preenchidos assim que o transportador é selecionado; telefone vem junto
+// na mesma query (a revelação atrás do clique "Mostrar telefone" é só de
+// UI, não é mascarado no backend).
+export const CounterpartInfoType = builder.simpleObject('CounterpartInfo', {
+  fields: (t) => ({
+    fullName: t.string(),
+    avgRating: t.float({ nullable: true }),
+    phone: t.string({ nullable: true }),
+  }),
+})

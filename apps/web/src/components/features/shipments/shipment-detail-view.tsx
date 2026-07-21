@@ -8,6 +8,8 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { useShipment } from '~/graphql/hooks/use-shipment'
 import { formatPriceInCents } from '~/lib/format-price'
 import { CustomerShipmentActions } from './customer-shipment-actions'
+import { ShipmentCounterpartCard } from './shipment-counterpart-card'
+import { ShipmentEventTimeline } from './shipment-event-timeline'
 import { ShipmentStatusBadge } from './shipment-status-badge'
 import { SHIPMENT_TYPE_LABELS, TIME_WINDOW_LABELS } from './shipment-labels'
 import { ShipmentTypeIcon } from './shipment-type-icon'
@@ -117,12 +119,18 @@ export function ShipmentDetailView({ shipmentId }: { shipmentId: string }) {
         </CardContent>
       </Card>
 
+      {shipment.id && (
+        <ShipmentCounterpartCard shipmentId={shipment.id} role="CUSTOMER" />
+      )}
+
       {shipment.id && shipment.status && (
         <CustomerShipmentActions
           shipmentId={shipment.id}
           status={shipment.status}
         />
       )}
+
+      {shipment.id && <ShipmentEventTimeline shipmentId={shipment.id} />}
     </div>
   )
 }

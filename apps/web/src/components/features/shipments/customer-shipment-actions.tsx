@@ -179,6 +179,8 @@ function SafetyCheckInCard({ shipmentId }: { shipmentId: string }) {
 function DeliveryConfirmationCard({ shipmentId }: { shipmentId: string }) {
   const { data: confirmation } = useDeliveryConfirmationStatus(shipmentId)
   const confirmDelivery = useConfirmDelivery()
+  const [reportingIssue, setReportingIssue] = useState(false)
+  const [issueDescription, setIssueDescription] = useState('')
 
   if (confirmation) {
     return (
@@ -205,33 +207,64 @@ function DeliveryConfirmationCard({ shipmentId }: { shipmentId: string }) {
           O transportador marcou esse frete como entregue. Confirma que
           chegou tudo certo?
         </p>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            disabled={confirmDelivery.isPending}
-            onClick={() =>
-              confirmDelivery.mutate({ shipmentId, input: { confirmed: true } })
-            }
-          >
-            Confirmar entrega
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={confirmDelivery.isPending}
-            onClick={() =>
-              confirmDelivery.mutate({
-                shipmentId,
-                input: {
-                  confirmed: false,
-                  issueDescription: 'Problema reportado pelo cliente',
-                },
-              })
-            }
-          >
-            Reportar problema
-          </Button>
-        </div>
+        {reportingIssue ? (
+          <div className="space-y-2">
+            <textarea
+              className="border-input min-h-24 w-full rounded-[10px] border bg-transparent p-3 text-sm"
+              placeholder="Descreva o que aconteceu…"
+              value={issueDescription}
+              onChange={(e) => setIssueDescription(e.target.value)}
+            />
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={
+                  confirmDelivery.isPending || issueDescription.trim() === ''
+                }
+                onClick={() =>
+                  confirmDelivery.mutate({
+                    shipmentId,
+                    input: { confirmed: false, issueDescription },
+                  })
+                }
+              >
+                Enviar problema
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={confirmDelivery.isPending}
+                onClick={() => setReportingIssue(false)}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              disabled={confirmDelivery.isPending}
+              onClick={() =>
+                confirmDelivery.mutate({
+                  shipmentId,
+                  input: { confirmed: true },
+                })
+              }
+            >
+              Confirmar entrega
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={confirmDelivery.isPending}
+              onClick={() => setReportingIssue(true)}
+            >
+              Reportar problema
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

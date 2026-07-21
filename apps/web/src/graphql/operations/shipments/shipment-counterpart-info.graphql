@@ -1,0 +1,7 @@
+query ShipmentCounterpartInfo($shipmentId: ID!) {
+  shipmentCounterpartInfo(shipmentId: $shipmentId) {
+    fullName
+    avgRating
+    phone
+  }
+}

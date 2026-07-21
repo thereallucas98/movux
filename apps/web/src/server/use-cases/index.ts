@@ -114,6 +114,12 @@ export type { GetDeliveryConfirmationStatusResult } from './shipments/delivery/g
 export { getShipmentEvents } from './shipments/get-shipment-events.use-case'
 export type { GetShipmentEventsResult } from './shipments/get-shipment-events.use-case'
 
+export { getShipmentCounterpartInfo } from './shipments/get-shipment-counterpart-info.use-case'
+export type {
+  GetShipmentCounterpartInfoResult,
+  ShipmentCounterpartInfo,
+} from './shipments/get-shipment-counterpart-info.use-case'
+
 export { submitReview } from './shipments/reviews/submit-review.use-case'
 export type { SubmitReviewResult } from './shipments/reviews/submit-review.use-case'
 

@@ -9,6 +9,8 @@ import { ShipmentActionButton } from '~/components/features/proposals/shipment-a
 import { useShipmentForCarrier } from '~/graphql/hooks/use-shipment-for-carrier'
 import { formatPriceInCents } from '~/lib/format-price'
 import { CarrierShipmentTransitActions } from './carrier-shipment-transit-actions'
+import { ShipmentCounterpartCard } from './shipment-counterpart-card'
+import { ShipmentEventTimeline } from './shipment-event-timeline'
 import { SHIPMENT_TYPE_LABELS, TIME_WINDOW_LABELS } from './shipment-labels'
 import { ShipmentTypeIcon } from './shipment-type-icon'
 
@@ -112,12 +114,18 @@ export function CarrierShipmentDetailView({
         </CardContent>
       </Card>
 
+      {shipment.id && (
+        <ShipmentCounterpartCard shipmentId={shipment.id} role="CARRIER" />
+      )}
+
       {shipment.id && shipment.status && (
         <CarrierShipmentTransitActions
           shipmentId={shipment.id}
           status={shipment.status}
         />
       )}
+
+      {shipment.id && <ShipmentEventTimeline shipmentId={shipment.id} />}
     </div>
   )
 }

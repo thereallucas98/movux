@@ -9,6 +9,9 @@ export interface CarrierProfileRepository {
   findMetricsByUserId(
     userId: string,
   ): Promise<{ avgRating: number | null; totalShipments: number } | null>
+  findContactInfoByUserId(
+    userId: string,
+  ): Promise<{ phone: string; avgRating: number | null } | null>
   countFlagged(): Promise<number>
   countActive(): Promise<number>
   countByVerificationStatus(status: VerificationStatus): Promise<number>
@@ -54,6 +57,18 @@ export function createCarrierProfileRepository(
       return {
         avgRating: profile.avgRating ? Number(profile.avgRating) : null,
         totalShipments: profile.totalShipments,
+      }
+    },
+
+    async findContactInfoByUserId(userId) {
+      const profile = await prisma.carrierProfile.findUnique({
+        where: { userId },
+        select: { phone: true, avgRating: true },
+      })
+      if (!profile) return null
+      return {
+        phone: profile.phone,
+        avgRating: profile.avgRating ? Number(profile.avgRating) : null,
       }
     },
 

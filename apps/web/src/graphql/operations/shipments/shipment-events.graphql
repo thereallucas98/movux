@@ -1,0 +1,8 @@
+query ShipmentEvents($shipmentId: ID!) {
+  shipmentEvents(shipmentId: $shipmentId) {
+    id
+    eventType
+    description
+    occurredAt
+  }
+}
