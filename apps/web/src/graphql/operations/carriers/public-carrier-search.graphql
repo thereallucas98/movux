@@ -1,0 +1,8 @@
+query PublicCarrierSearch($cityId: ID!, $vehicleType: VehicleType) {
+  publicCarrierSearch(cityId: $cityId, vehicleType: $vehicleType) {
+    firstName
+    vehicleType
+    avgRating
+    totalShipments
+  }
+}

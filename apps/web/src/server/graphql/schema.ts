@@ -69,6 +69,8 @@ import './queries/queue.query'
 import './queries/proposal.query'
 import './queries/carrier-documents.query'
 import './queries/dashboard-metrics.query'
+import './queries/public-carrier-search.query'
+import './queries/public-cities.query'
 
 // Import mutations
 import './mutations/me.mutation'

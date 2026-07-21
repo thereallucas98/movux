@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
 import { RegisterForm } from '~/components/features/auth/register-form'
 import { getServerPrincipal } from '~/lib/get-server-principal'
@@ -30,7 +31,9 @@ export default async function RegisterPage() {
         </p>
       </header>
 
-      <RegisterForm />
+      <Suspense fallback={null}>
+        <RegisterForm />
+      </Suspense>
     </div>
   )
 }

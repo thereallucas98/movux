@@ -52,6 +52,7 @@ export interface ProposalRepository {
     exceptProposalId: string,
   ): Promise<{ id: string; currentAttempt: number; queueEntryId: string }[]>
   findAcceptedByShipment(shipmentId: string): Promise<{ carrierId: string } | null>
+  findDistinctCarrierIdsAcceptedInCity(cityId: string): Promise<string[]>
 }
 
 export function createProposalRepository(prisma: PrismaClient): ProposalRepository {
@@ -148,6 +149,21 @@ export function createProposalRepository(prisma: PrismaClient): ProposalReposito
         where: { shipmentId, status: 'ACCEPTED' },
         select: { carrierId: true },
       })
+    },
+
+    // Busca pública (S9-T3) — carriers sem CarrierProfile.cityId direto, a
+    // única forma de inferir "atende a cidade X" é via histórico de proposta
+    // aceita num frete com endereço de origem naquela cidade.
+    async findDistinctCarrierIdsAcceptedInCity(cityId) {
+      const rows = await prisma.proposal.findMany({
+        where: {
+          status: 'ACCEPTED',
+          shipment: { addresses: { some: { type: 'ORIGIN', cityId } } },
+        },
+        select: { carrierId: true },
+        distinct: ['carrierId'],
+      })
+      return rows.map((row) => row.carrierId)
     },
   }
 }

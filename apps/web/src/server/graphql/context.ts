@@ -30,6 +30,7 @@ import {
   transferRequestRepository,
   userRepository,
   userSpecialtyRepository,
+  vehicleRepository,
   workspaceMembershipRepository,
   workspaceRepository,
 } from '~/server/repositories'
@@ -74,6 +75,7 @@ export interface GraphQLContext {
     shipmentEventRepo: typeof shipmentEventRepository
     carrierProfileRepo: typeof carrierProfileRepository
     carrierDocumentRepo: typeof carrierDocumentRepository
+    vehicleRepo: typeof vehicleRepository
   }
 }
 
@@ -146,6 +148,7 @@ export async function createGraphQLContext(
       shipmentEventRepo: shipmentEventRepository,
       carrierProfileRepo: carrierProfileRepository,
       carrierDocumentRepo: carrierDocumentRepository,
+      vehicleRepo: vehicleRepository,
     },
   }
 }

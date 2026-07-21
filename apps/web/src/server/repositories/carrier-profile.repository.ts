@@ -12,6 +12,11 @@ export interface CarrierProfileRepository {
   countFlagged(): Promise<number>
   countActive(): Promise<number>
   countByVerificationStatus(status: VerificationStatus): Promise<number>
+  findEligiblePublicProfiles(
+    userIds: string[],
+  ): Promise<
+    Array<{ userId: string; fullName: string; avgRating: number | null }>
+  >
 }
 
 export function createCarrierProfileRepository(
@@ -64,6 +69,28 @@ export function createCarrierProfileRepository(
       return prisma.carrierProfile.count({
         where: { verificationStatus: status },
       })
+    },
+
+    // Busca pública (S9-T3) — só carriers aprovados/ativos/não sinalizados
+    // entram na vitrine; totalShipments do CarrierProfile fica de fora
+    // deliberadamente (campo nunca atualizado, sempre 0 — ver comentário em
+    // shipment.repository.ts) e é recalculado pelo use-case via shipmentRepo.
+    async findEligiblePublicProfiles(userIds) {
+      if (userIds.length === 0) return []
+      const profiles = await prisma.carrierProfile.findMany({
+        where: {
+          userId: { in: userIds },
+          verificationStatus: 'APPROVED',
+          isActive: true,
+          isFlagged: false,
+        },
+        include: { user: { select: { fullName: true } } },
+      })
+      return profiles.map((profile) => ({
+        userId: profile.userId,
+        fullName: profile.user.fullName,
+        avgRating: profile.avgRating ? Number(profile.avgRating) : null,
+      }))
     },
   }
 }

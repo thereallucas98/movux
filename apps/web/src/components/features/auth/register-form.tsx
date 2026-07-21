@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff, Lock, LogIn, Mail, Phone, UserRound } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -44,8 +44,16 @@ const ROLE_OPTIONS: { value: 'CUSTOMER' | 'CARRIER'; label: string }[] = [
 
 export function RegisterForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+
+  // Continuidade da busca pública de transportadores (S9-T3) — prefill
+  // simples via query string, sem persistir nenhum lead no banco.
+  const roleFromQuery =
+    searchParams.get('role') === 'CARRIER' ? 'CARRIER' : 'CUSTOMER'
+  const cityIdFromQuery = searchParams.get('cityId')
+  const vehicleTypeFromQuery = searchParams.get('vehicleType')
 
   const {
     register,
@@ -64,7 +72,7 @@ export function RegisterForm() {
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'CUSTOMER',
+      role: roleFromQuery,
       phone: '',
     },
   })
@@ -91,7 +99,21 @@ export function RegisterForm() {
         role: values.role,
         phone: values.phone?.trim() || undefined,
       })
-      router.push(user.role === 'CARRIER' ? '/carrier/dashboard' : '/customer/dashboard')
+      if (user.role === 'CARRIER') {
+        router.push('/carrier/dashboard')
+        return
+      }
+
+      if (cityIdFromQuery) {
+        const params = new URLSearchParams({ cityId: cityIdFromQuery })
+        if (vehicleTypeFromQuery) {
+          params.set('vehicleTypeRequired', vehicleTypeFromQuery)
+        }
+        router.push(`/customer/shipments/new?${params.toString()}`)
+        return
+      }
+
+      router.push('/customer/dashboard')
     } catch (err) {
       const message =
         err instanceof ApiClientError ? err.message : t('auth.register.error')

@@ -136,6 +136,14 @@ export { listCarrierDocumentsForAdmin } from './carrier-documents/list-carrier-d
 export { recordExternalValidation } from './carrier-documents/record-external-validation.use-case'
 export type { RecordExternalValidationResult } from './carrier-documents/record-external-validation.use-case'
 
+// ─── Carriers — Public Search (S9-T3) ────────────────────────────────────────
+
+export { searchPublicCarriers } from './carriers/search-public-carriers.use-case'
+export type {
+  PublicCarrierResult,
+  SearchPublicCarriersInput,
+} from './carriers/search-public-carriers.use-case'
+
 export { listNotificationsForAdmin } from './notifications/list-notifications-for-admin.use-case'
 
 export { retryNotification } from './notifications/retry-notification.use-case'

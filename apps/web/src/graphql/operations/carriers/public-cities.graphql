@@ -1,0 +1,7 @@
+query PublicCities {
+  publicCities {
+    id
+    name
+    stateUf
+  }
+}

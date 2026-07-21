@@ -29,6 +29,7 @@ import { createTimeEntryRepository } from './time-entry.repository'
 import { createTransferRequestRepository } from './transfer-request.repository'
 import { createSpecialtyRepository } from './specialty.repository'
 import { createUserSpecialtyRepository } from './user-specialty.repository'
+import { createVehicleRepository } from './vehicle.repository'
 import { createTenantMembershipRepository } from './tenant-membership.repository'
 import { createTenantRepository } from './tenant.repository'
 import { createUserRepository } from './user.repository'
@@ -76,3 +77,4 @@ export const notificationRepository = createNotificationRepository(prisma)
 export const notificationPreferenceRepository =
   createNotificationPreferenceRepository(prisma)
 export const notificationLogRepository = createNotificationLogRepository(prisma)
+export const vehicleRepository = createVehicleRepository(prisma)

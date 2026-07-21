@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
@@ -106,13 +106,28 @@ const VOLUME_RANGE_OPTIONS = [
 
 export function CreateShipmentForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const createShipment = useCreateShipment()
   const { data: neighborhoods = [], isLoading: isLoadingNeighborhoods } =
     useNeighborhoods()
 
+  // Continuidade da busca pública de transportadores (S9-T3) — só
+  // `vehicleTypeRequired` é prefilável de fato: `origin.cityId` não tem campo
+  // próprio nesta tela (endereço é escolhido por bairro, que já deriva a
+  // cidade), então prefill de cidade ficaria incompleto sem selecionar um
+  // bairro específico — fora do escopo de "prefill simples" decidido.
+  const vehicleTypeFromQuery = searchParams.get('vehicleTypeRequired')
+  const isValidVehicleType = (value: string | null): value is CreateShipmentFormValues['vehicleTypeRequired'] =>
+    Object.keys(VEHICLE_TYPE_LABELS).includes(value ?? '')
+
   const form = useForm<CreateShipmentFormValues>({
     resolver: zodResolver(CreateShipmentSchema),
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: {
+      ...DEFAULT_VALUES,
+      vehicleTypeRequired: isValidVehicleType(vehicleTypeFromQuery)
+        ? vehicleTypeFromQuery
+        : DEFAULT_VALUES.vehicleTypeRequired,
+    },
     mode: 'onChange',
   })
 
