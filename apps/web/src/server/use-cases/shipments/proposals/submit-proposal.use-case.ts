@@ -1,5 +1,6 @@
 import { ProposalReceived } from '~/lib/email/templates/proposal-received'
 import { sendEmailNotification } from '../../../notifications/send-email-notification'
+import type { CarrierProfileRepository } from '../../../repositories/carrier-profile.repository'
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
 import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
@@ -23,7 +24,12 @@ export type SubmitProposalResult =
   | { success: true; proposal: ProposalWithAttempts }
   | {
       success: false
-      code: 'NOT_FOUND' | 'NOT_CALLED' | 'ALREADY_PROPOSED' | 'INVALID_STATE_TRANSITION'
+      code:
+        | 'NOT_FOUND'
+        | 'NOT_CALLED'
+        | 'ALREADY_PROPOSED'
+        | 'INVALID_STATE_TRANSITION'
+        | 'CARRIER_NOT_VERIFIED'
     }
 
 interface SubmitProposalRepos {
@@ -32,6 +38,7 @@ interface SubmitProposalRepos {
   proposalRepo: ProposalRepository
   shipmentEventRepo: ShipmentEventRepository
   customerProfileRepo: CustomerProfileRepository
+  carrierProfileRepo: CarrierProfileRepository
   userRepo: UserRepository
   notificationLogRepo: NotificationLogRepository
 }
@@ -58,17 +65,34 @@ export async function submitProposal(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  const queueEntry = await repos.queueRepo.findByShipmentAndCarrier(shipmentId, carrierId)
+  // Achado #12 da QA momento-zero: só o envio de proposta é bloqueado pra
+  // carrier não verificado — entrar na fila (join-proposal-queue.use-case.ts)
+  // continua livre, ele só não consegue de fato propor até ser aprovado.
+  const verificationStatus =
+    await repos.carrierProfileRepo.findVerificationStatusByUserId(carrierId)
+  if (verificationStatus !== 'APPROVED') {
+    return { success: false, code: 'CARRIER_NOT_VERIFIED' }
+  }
+
+  const queueEntry = await repos.queueRepo.findByShipmentAndCarrier(
+    shipmentId,
+    carrierId,
+  )
   if (!queueEntry || queueEntry.status !== 'CALLED') {
     return { success: false, code: 'NOT_CALLED' }
   }
 
-  const existing = await repos.proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
+  const existing = await repos.proposalRepo.findByShipmentAndCarrier(
+    shipmentId,
+    carrierId,
+  )
   if (existing) {
     return { success: false, code: 'ALREADY_PROPOSED' }
   }
 
-  const agreedSlaHours = Math.ceil((shipment.customerSlaHours + input.carrierSlaHours) / 2)
+  const agreedSlaHours = Math.ceil(
+    (shipment.customerSlaHours + input.carrierSlaHours) / 2,
+  )
   const expiresAt = new Date(Date.now() + agreedSlaHours * 60 * 60 * 1000)
 
   const proposal = await repos.proposalRepo.create({
@@ -84,17 +108,29 @@ export async function submitProposal(
   })
 
   await repos.queueRepo.updateStatus(queueEntry.id, 'ACTIVE')
-  await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
+  await refillCalledGroup(
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   if (shipment.status === 'OPEN') {
     await repos.shipmentRepo.updateStatus(shipmentId, 'PROPOSALS_RECEIVED')
   }
 
-  await repos.shipmentEventRepo.create(shipmentId, 'PROPOSAL_RECEIVED', carrierId, {
-    proposalId: proposal.id,
-  })
+  await repos.shipmentEventRepo.create(
+    shipmentId,
+    'PROPOSAL_RECEIVED',
+    carrierId,
+    {
+      proposalId: proposal.id,
+    },
+  )
 
-  const customer = await repos.customerProfileRepo.findUserIdById(shipment.customerId)
+  const customer = await repos.customerProfileRepo.findUserIdById(
+    shipment.customerId,
+  )
   if (customer) {
     const customerUser = await repos.userRepo.findById(customer.userId)
     if (customerUser) {

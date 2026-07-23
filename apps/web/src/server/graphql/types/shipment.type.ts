@@ -3,7 +3,6 @@ import {
   ShipmentStatusEnum,
   ShipmentTypeEnum,
   TimeWindowEnum,
-  VehicleTypeEnum,
 } from '../enums/shipment.enum'
 
 export const ShipmentAddressType = builder.simpleObject('ShipmentAddress', {
@@ -29,13 +28,15 @@ export const ShipmentType = builder.simpleObject('Shipment', {
     description: t.string(),
     estimatedWeightKg: t.float({ nullable: true }),
     estimatedVolumeM3: t.float({ nullable: true }),
-    vehicleTypeRequired: t.field({ type: VehicleTypeEnum }),
+    requiredCategoryId: t.id({ nullable: true }),
     scheduledDate: t.field({ type: 'DateTime' }),
     timeWindow: t.field({ type: TimeWindowEnum }),
     specificTime: t.field({ type: 'DateTime', nullable: true }),
     customerSlaHours: t.int(),
     suggestedPriceInCents: t.int(),
     finalPriceInCents: t.int({ nullable: true }),
+    collectionEtaMinutes: t.int({ nullable: true }),
+    deliveryEtaMinutes: t.int({ nullable: true }),
     addresses: t.field({ type: [ShipmentAddressType] }),
     createdAt: t.field({ type: 'DateTime' }),
   }),

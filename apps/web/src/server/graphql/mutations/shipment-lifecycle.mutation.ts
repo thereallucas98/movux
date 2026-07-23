@@ -4,10 +4,12 @@ import {
   markCollected,
   markDelivered,
   markInTransit,
+  setShipmentEta,
   submitReview,
 } from '~/server/use-cases'
 import { builder } from '../builder'
 import { gqlError, gqlErrorFromResult } from '../errors'
+import { EtaStageEnum } from '../enums/shipment.enum'
 import {
   DeliveryConfirmationType,
   ReviewType,
@@ -20,7 +22,10 @@ builder.mutationField('confirmSafetyCheckIn', (t) =>
     args: { shipmentId: t.arg.id({ required: true }) },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 
@@ -87,6 +92,35 @@ builder.mutationField('markInTransit', (t) =>
         },
         ctx.principal.userId,
         String(args.shipmentId),
+      )
+      if (!result.success) throw gqlErrorFromResult(result)
+
+      return true
+    },
+  }),
+)
+
+builder.mutationField('setShipmentEta', (t) =>
+  t.field({
+    type: 'Boolean',
+    args: {
+      shipmentId: t.arg.id({ required: true }),
+      stage: t.arg({ type: EtaStageEnum, required: true }),
+      etaMinutes: t.arg.int({ required: true }),
+    },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
+      if (ctx.principal.role !== 'CARRIER') throw gqlError('FORBIDDEN')
+
+      const result = await setShipmentEta(
+        {
+          shipmentRepo: ctx.repos.shipmentRepo,
+          proposalRepo: ctx.repos.proposalRepo,
+        },
+        ctx.principal.userId,
+        String(args.shipmentId),
+        args.stage,
+        args.etaMinutes,
       )
       if (!result.success) throw gqlErrorFromResult(result)
 
@@ -164,10 +198,14 @@ builder.mutationField('submitReview', (t) =>
     args: {
       shipmentId: t.arg.id({ required: true }),
       rating: t.arg.int({ required: true }),
+      tagIds: t.arg.idList({ required: false }),
     },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 
@@ -183,11 +221,19 @@ builder.mutationField('submitReview', (t) =>
         ctx.principal.userId,
         ctx.principal.role,
         String(args.shipmentId),
-        { rating: args.rating },
+        {
+          rating: args.rating,
+          tagIds: args.tagIds?.map(String) ?? undefined,
+        },
       )
       if (!result.success) throw gqlErrorFromResult(result)
 
-      return result.review
+      return {
+        ...result.review,
+        tags: result.review.tagSelections.map(
+          (selection) => selection.tag.label,
+        ),
+      }
     },
   }),
 )

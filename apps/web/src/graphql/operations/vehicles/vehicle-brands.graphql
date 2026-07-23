@@ -1,0 +1,6 @@
+query VehicleBrands($categoryId: ID!) {
+  vehicleBrands(categoryId: $categoryId) {
+    id
+    name
+  }
+}

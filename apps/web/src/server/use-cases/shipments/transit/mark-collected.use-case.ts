@@ -6,7 +6,10 @@ import { resolveSelectedCarrier } from './resolve-selected-carrier'
 
 export type MarkCollectedResult =
   | { success: true }
-  | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'SAFETY_NOT_CONFIRMED' }
+  | {
+      success: false
+      code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'SAFETY_NOT_CONFIRMED'
+    }
 
 interface MarkCollectedRepos {
   shipmentRepo: ShipmentRepository

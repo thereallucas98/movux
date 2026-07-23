@@ -30,11 +30,16 @@ export async function approveCarrierDocument(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  await repos.carrierDocumentRepo.updateStatus(documentId, 'APPROVED', adminUserId)
-
-  const approvedTypes = await repos.carrierDocumentRepo.findApprovedTypesByCarrier(
-    document.carrierId,
+  await repos.carrierDocumentRepo.updateStatus(
+    documentId,
+    'APPROVED',
+    adminUserId,
   )
+
+  const approvedTypes =
+    await repos.carrierDocumentRepo.findApprovedTypesByCarrier(
+      document.carrierId,
+    )
   const hasAllRequiredTypes = CARRIER_DOCUMENT_TYPES.every((type) =>
     approvedTypes.includes(type),
   )
@@ -48,7 +53,10 @@ export async function approveCarrierDocument(
       userId: carrier.id,
       to: carrier.email,
       subject: 'Documento aprovado — Movux',
-      react: DocumentApproved({ carrierName: carrier.fullName, documentType: document.type }),
+      react: DocumentApproved({
+        carrierName: carrier.fullName,
+        documentType: document.type,
+      }),
       templateCode: 'DOCUMENT_APPROVED',
     })
   }

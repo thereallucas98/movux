@@ -9,7 +9,7 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:seed": "dotenv -e .env -- tsx prisma/seed/geography.ts && dotenv -e .env -- tsx prisma/seed/pricing.ts && dotenv -e .env -- tsx prisma/seed/review-tags.ts",
+    "db:seed": "dotenv -e .env -- tsx prisma/seed/geography.ts && dotenv -e .env -- tsx prisma/seed/pricing.ts && dotenv -e .env -- tsx prisma/seed/review-tags.ts && dotenv -e .env -- tsx prisma/seed/vehicle-taxonomy.ts",
     "codegen": "dotenv -e .env -- tsx scripts/export-graphql-schema.ts && graphql-codegen --config codegen.ts",
     "dev": "next dev --port 3001",
     "build": "prisma generate && next build",

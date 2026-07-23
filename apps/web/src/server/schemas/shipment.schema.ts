@@ -9,14 +9,6 @@ const shipmentTypeSchema = z.enum([
   'OTHER',
 ])
 
-const vehicleTypeSchema = z.enum([
-  'ANY',
-  'MOTORCYCLE',
-  'VAN',
-  'TRUCK_SMALL',
-  'TRUCK_LARGE',
-])
-
 const timeWindowSchema = z.enum(['MORNING', 'AFTERNOON', 'EVENING', 'SPECIFIC'])
 
 const modifierCodeSchema = z.enum([
@@ -66,7 +58,7 @@ export const CreateShipmentSchema = z
     description: z.string().min(1, 'Descreva o que será transportado'),
     estimatedWeightKg: z.number().positive().optional(),
     estimatedVolumeM3: z.number().positive().optional(),
-    vehicleTypeRequired: vehicleTypeSchema,
+    requiredCategoryId: z.uuid().optional(),
     scheduledDate: z.iso
       .date({ error: 'Selecione uma data' })
       .refine((value) => value >= todayInBrazil(), {

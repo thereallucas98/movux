@@ -43,6 +43,12 @@ export function useConfirmSafetyCheckIn() {
       queryClient.invalidateQueries({
         queryKey: ['safety-check-in-status', shipmentId],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-counterpart-info', shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-events', shipmentId],
+      })
     },
     meta: { successMessage: 'Check-in de segurança confirmado' },
   })

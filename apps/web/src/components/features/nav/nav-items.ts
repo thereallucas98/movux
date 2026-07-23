@@ -1,5 +1,7 @@
 import {
+  Car,
   ClipboardList,
+  FileText,
   LayoutDashboard,
   PackagePlus,
   ShieldCheck,
@@ -27,6 +29,8 @@ export const CARRIER_NAV_ITEMS: NavItem[] = [
     label: 'Minhas propostas',
     icon: ClipboardList,
   },
+  { href: '/carrier/vehicles', label: 'Meus veículos', icon: Car },
+  { href: '/carrier/documents', label: 'Meus documentos', icon: FileText },
 ]
 
 export const ADMIN_NAV_ITEMS: NavItem[] = [

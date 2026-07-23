@@ -1,4 +1,12 @@
-import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components'
 
 interface DocumentRejectedProps {
   carrierName: string
@@ -25,11 +33,15 @@ export function DocumentRejected({
             padding: 32,
           }}
         >
-          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>Documento rejeitado</Heading>
+          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>
+            Documento rejeitado
+          </Heading>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
             Olá, {carrierName}. Seu documento ({documentType}) não foi aprovado.
           </Text>
-          <Text style={{ color: '#718096', fontSize: 12 }}>Motivo: {rejectionReason}</Text>
+          <Text style={{ color: '#718096', fontSize: 12 }}>
+            Motivo: {rejectionReason}
+          </Text>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
             Envie um novo documento corrigido na Movux.
           </Text>

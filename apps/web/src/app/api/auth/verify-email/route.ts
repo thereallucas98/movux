@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import { userRepository } from '~/server/repositories'
 import { VerifyEmailSchema } from '~/server/schemas/auth.schema'
 import { verifyEmail } from '~/server/use-cases'

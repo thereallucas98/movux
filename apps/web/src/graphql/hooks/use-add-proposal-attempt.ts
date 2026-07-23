@@ -13,6 +13,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   TOO_MANY_ATTEMPTS: 'Você já usou as 5 tentativas de proposta permitidas.',
   INVALID_STATE_TRANSITION: 'Essa proposta não pode mais ser renegociada.',
   NOT_FOUND: 'Proposta não encontrada.',
+  ATTEMPT_STILL_PENDING:
+    'Aguarde o cliente responder sua proposta atual antes de enviar outra.',
 }
 
 export function addProposalAttemptErrorMessage(error: unknown): string {

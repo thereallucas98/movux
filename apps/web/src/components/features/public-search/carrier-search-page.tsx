@@ -2,13 +2,12 @@
 
 import { useState } from 'react'
 
-import type { VehicleType } from '~/graphql/generated/types'
 import { CarrierSearchForm } from './carrier-search-form'
 import { CarrierSearchResults } from './carrier-search-results'
 
 interface SearchFilter {
   cityId: string
-  vehicleType?: VehicleType
+  vehicleCategoryId?: string
 }
 
 export function CarrierSearchPage() {
@@ -30,7 +29,7 @@ export function CarrierSearchPage() {
       {filter && (
         <CarrierSearchResults
           cityId={filter.cityId}
-          vehicleType={filter.vehicleType}
+          vehicleCategoryId={filter.vehicleCategoryId}
         />
       )}
     </div>

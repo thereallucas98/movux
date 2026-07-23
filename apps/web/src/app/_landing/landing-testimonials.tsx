@@ -85,7 +85,10 @@ function TestimonialList({
             <span className="text-foreground mb-1 block text-base font-semibold">
               {t.name}
             </span>
-            <span className="mb-2 block text-xs font-medium" style={{ color: 'var(--brand-base)' }}>
+            <span
+              className="mb-2 block text-xs font-medium"
+              style={{ color: 'var(--brand-base)' }}
+            >
               {t.role}
             </span>
             <span className="text-muted-foreground block text-sm">
@@ -98,7 +101,10 @@ function TestimonialList({
   )
 }
 
-const TESTIMONIALS: Record<'top' | 'middle' | 'bottom', readonly Testimonial[]> = {
+const TESTIMONIALS: Record<
+  'top' | 'middle' | 'bottom',
+  readonly Testimonial[]
+> = {
   top: [
     {
       id: 1,

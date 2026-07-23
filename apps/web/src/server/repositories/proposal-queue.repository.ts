@@ -34,6 +34,11 @@ export interface ProposalQueueRepository {
     carrierId: string,
     position: number,
   ): Promise<QueueEntry>
+  // Achado #18 da QA momento-zero — reentrada na fila depois de "Sair da
+  // fila": `@@unique([shipmentId, carrierId])` no schema impede um segundo
+  // `create`, então a entrada WITHDRAWN existente é reaproveitada em vez de
+  // criar uma nova linha.
+  reactivate(id: string, position: number): Promise<QueueEntry>
   updateStatus(
     id: string,
     status: QueueEntryStatus,
@@ -79,6 +84,18 @@ export function createProposalQueueRepository(
     async create(shipmentId, carrierId, position) {
       return prisma.proposalQueueEntry.create({
         data: { shipmentId, carrierId, position, status: 'WAITING' },
+      })
+    },
+
+    async reactivate(id, position) {
+      return prisma.proposalQueueEntry.update({
+        where: { id },
+        data: {
+          status: 'WAITING',
+          position,
+          calledAt: null,
+          exhaustedAt: null,
+        },
       })
     },
 

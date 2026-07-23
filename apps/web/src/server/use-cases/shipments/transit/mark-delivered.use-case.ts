@@ -39,7 +39,9 @@ export async function markDelivered(
 
   const shipment = await repos.shipmentRepo.findStatusById(shipmentId)
   if (shipment) {
-    const customer = await repos.customerProfileRepo.findUserIdById(shipment.customerId)
+    const customer = await repos.customerProfileRepo.findUserIdById(
+      shipment.customerId,
+    )
     if (customer) {
       const customerUser = await repos.userRepo.findById(customer.userId)
       if (customerUser) {

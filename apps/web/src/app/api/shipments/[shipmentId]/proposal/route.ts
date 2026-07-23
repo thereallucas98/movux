@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
 import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
+import {
+  carrierProfileRepository,
   customerProfileRepository,
   notificationLogRepository,
   proposalQueueRepository,
@@ -36,6 +40,7 @@ export async function POST(req: Request, context: RouteContext) {
       proposalRepo: proposalRepository,
       shipmentEventRepo: shipmentEventRepository,
       customerProfileRepo: customerProfileRepository,
+      carrierProfileRepo: carrierProfileRepository,
       userRepo: userRepository,
       notificationLogRepo: notificationLogRepository,
     },

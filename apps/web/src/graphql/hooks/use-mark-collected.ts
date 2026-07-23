@@ -40,7 +40,15 @@ export function useMarkCollected() {
       }
     },
     onSuccess: (_data, shipmentId) => {
-      queryClient.invalidateQueries({ queryKey: ['shipment-for-carrier', shipmentId] })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-for-carrier', shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-counterpart-info', shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-events', shipmentId],
+      })
     },
     meta: { successMessage: 'Frete marcado como coletado' },
   })

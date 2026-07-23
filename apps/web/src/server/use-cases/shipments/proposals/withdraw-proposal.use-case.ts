@@ -29,7 +29,10 @@ export async function withdrawProposal(
     shipmentId,
   )
 
-  const proposal = await repos.proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
+  const proposal = await repos.proposalRepo.findByShipmentAndCarrier(
+    shipmentId,
+    carrierId,
+  )
   if (!proposal) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -39,7 +42,12 @@ export async function withdrawProposal(
 
   await repos.proposalRepo.updateStatus(proposal.id, 'WITHDRAWN')
   await repos.queueRepo.updateStatus(proposal.queueEntryId, 'WITHDRAWN')
-  await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
+  await refillCalledGroup(
+    repos.queueRepo,
+    repos.userRepo,
+    repos.notificationLogRepo,
+    shipmentId,
+  )
 
   return { success: true }
 }

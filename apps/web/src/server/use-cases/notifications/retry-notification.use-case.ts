@@ -18,7 +18,11 @@ interface RetryableMetadata {
 function isRetryableMetadata(metadata: unknown): metadata is RetryableMetadata {
   if (!metadata || typeof metadata !== 'object') return false
   const m = metadata as Record<string, unknown>
-  return typeof m.to === 'string' && typeof m.subject === 'string' && typeof m.html === 'string'
+  return (
+    typeof m.to === 'string' &&
+    typeof m.subject === 'string' &&
+    typeof m.html === 'string'
+  )
 }
 
 export async function retryNotification(

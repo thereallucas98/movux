@@ -27,6 +27,9 @@ export async function listShipmentsForCustomer(
     return { success: false, code: 'CUSTOMER_PROFILE_NOT_FOUND' }
   }
 
-  const { data, nextCursor } = await repos.shipmentRepo.listForCustomer(customerProfile.id, input)
+  const { data, nextCursor } = await repos.shipmentRepo.listForCustomer(
+    customerProfile.id,
+    input,
+  )
   return { success: true, data, nextCursor }
 }

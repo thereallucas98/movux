@@ -51,11 +51,15 @@ export interface ProposalRepository {
     shipmentId: string,
     exceptProposalId: string,
   ): Promise<{ id: string; currentAttempt: number; queueEntryId: string }[]>
-  findAcceptedByShipment(shipmentId: string): Promise<{ carrierId: string } | null>
+  findAcceptedByShipment(
+    shipmentId: string,
+  ): Promise<{ carrierId: string } | null>
   findDistinctCarrierIdsAcceptedInCity(cityId: string): Promise<string[]>
 }
 
-export function createProposalRepository(prisma: PrismaClient): ProposalRepository {
+export function createProposalRepository(
+  prisma: PrismaClient,
+): ProposalRepository {
   return {
     async findByShipmentAndCarrier(shipmentId, carrierId) {
       return prisma.proposal.findUnique({
@@ -87,7 +91,13 @@ export function createProposalRepository(prisma: PrismaClient): ProposalReposito
       })
     },
 
-    async addAttempt(proposalId, attemptNumber, priceInCents, expiresAt, message) {
+    async addAttempt(
+      proposalId,
+      attemptNumber,
+      priceInCents,
+      expiresAt,
+      message,
+    ) {
       await prisma.$transaction([
         prisma.proposalAttempt.create({
           data: { proposalId, attemptNumber, priceInCents, message },

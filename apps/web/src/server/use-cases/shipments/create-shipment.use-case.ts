@@ -2,7 +2,6 @@ import type {
   ModifierCode,
   ShipmentType,
   TimeWindow,
-  VehicleType,
 } from '~/generated/prisma/client'
 import type { CustomerProfileRepository } from '../../repositories/customer-profile.repository'
 import type { PricingRepository } from '../../repositories/pricing.repository'
@@ -31,7 +30,7 @@ export interface CreateShipmentInput {
   description: string
   estimatedWeightKg?: number
   estimatedVolumeM3?: number
-  vehicleTypeRequired: VehicleType
+  requiredCategoryId?: string
   scheduledDate: string
   timeWindow: TimeWindow
   specificTime?: string
@@ -45,7 +44,10 @@ export type CreateShipmentResult =
   | { success: true; shipment: ShipmentWithDetails }
   | {
       success: false
-      code: 'CUSTOMER_PROFILE_NOT_FOUND' | 'INVALID_ADDRESS' | 'NO_PRICING_AVAILABLE'
+      code:
+        | 'CUSTOMER_PROFILE_NOT_FOUND'
+        | 'INVALID_ADDRESS'
+        | 'NO_PRICING_AVAILABLE'
     }
 
 interface CreateShipmentRepos {
@@ -128,7 +130,8 @@ export async function createShipment(
     }
   })
 
-  const suggestedPriceInCents = snapshot.basePriceInCents + modifiersTotalInCents
+  const suggestedPriceInCents =
+    snapshot.basePriceInCents + modifiersTotalInCents
 
   const shipment = await repos.shipmentRepo.createDraft({
     customerId: customerProfile.id,
@@ -136,7 +139,7 @@ export async function createShipment(
     description: input.description,
     estimatedWeightKg: input.estimatedWeightKg,
     estimatedVolumeM3: input.estimatedVolumeM3,
-    vehicleTypeRequired: input.vehicleTypeRequired,
+    requiredCategoryId: input.requiredCategoryId,
     scheduledDate: new Date(input.scheduledDate),
     timeWindow: input.timeWindow,
     specificTime: input.specificTime

@@ -19,7 +19,10 @@ export async function resolveSafetyParticipant(
     const customerProfile = await repos.customerProfileRepo.findByUserId(userId)
     if (!customerProfile) return null
 
-    const shipment = await repos.shipmentRepo.findStatusForOwner(shipmentId, customerProfile.id)
+    const shipment = await repos.shipmentRepo.findStatusForOwner(
+      shipmentId,
+      customerProfile.id,
+    )
     if (!shipment) return null
 
     return { status: shipment.status, role: 'CUSTOMER' }

@@ -26,6 +26,7 @@ import {
   useNeighborhoods,
   type NeighborhoodOption,
 } from '~/graphql/hooks/use-neighborhoods'
+import { useVehicleTaxonomy } from '~/graphql/hooks/use-vehicle-taxonomy'
 import { CreateShipmentSchema } from '~/server/schemas/shipment.schema'
 import { lookupCep, normalizeCep, normalizeCityName } from '~/lib/via-cep'
 import { NeighborhoodSelectField } from './neighborhood-select-field'
@@ -33,7 +34,6 @@ import {
   CUSTOMER_SLA_HOURS_OPTIONS,
   SHIPMENT_TYPE_LABELS,
   TIME_WINDOW_LABELS,
-  VEHICLE_TYPE_LABELS,
 } from './shipment-labels'
 
 // z.input (não z.infer/z.output) — o form manipula o formato ANTES do
@@ -53,7 +53,7 @@ const EMPTY_ADDRESS = {
 const DEFAULT_VALUES: CreateShipmentFormValues = {
   type: 'RESIDENTIAL_MOVING',
   description: '',
-  vehicleTypeRequired: 'ANY',
+  requiredCategoryId: undefined,
   scheduledDate: '',
   timeWindow: 'MORNING',
   customerSlaHours: 24,
@@ -63,12 +63,6 @@ const DEFAULT_VALUES: CreateShipmentFormValues = {
 }
 
 const SHIPMENT_TYPE_OPTIONS = Object.entries(SHIPMENT_TYPE_LABELS).map(
-  ([value, label]) => ({
-    value,
-    label,
-  }),
-)
-const VEHICLE_TYPE_OPTIONS = Object.entries(VEHICLE_TYPE_LABELS).map(
   ([value, label]) => ({
     value,
     label,
@@ -110,26 +104,36 @@ export function CreateShipmentForm() {
   const createShipment = useCreateShipment()
   const { data: neighborhoods = [], isLoading: isLoadingNeighborhoods } =
     useNeighborhoods()
+  const {
+    data: vehicleCategories = [],
+    isLoading: isLoadingVehicleCategories,
+  } = useVehicleTaxonomy()
 
   // Continuidade da busca pública de transportadores (S9-T3) — só
-  // `vehicleTypeRequired` é prefilável de fato: `origin.cityId` não tem campo
+  // `requiredCategoryId` é prefilável de fato: `origin.cityId` não tem campo
   // próprio nesta tela (endereço é escolhido por bairro, que já deriva a
   // cidade), então prefill de cidade ficaria incompleto sem selecionar um
   // bairro específico — fora do escopo de "prefill simples" decidido.
-  const vehicleTypeFromQuery = searchParams.get('vehicleTypeRequired')
-  const isValidVehicleType = (value: string | null): value is CreateShipmentFormValues['vehicleTypeRequired'] =>
-    Object.keys(VEHICLE_TYPE_LABELS).includes(value ?? '')
+  const categoryIdFromQuery = searchParams.get('requiredCategoryId')
 
   const form = useForm<CreateShipmentFormValues>({
     resolver: zodResolver(CreateShipmentSchema),
-    defaultValues: {
-      ...DEFAULT_VALUES,
-      vehicleTypeRequired: isValidVehicleType(vehicleTypeFromQuery)
-        ? vehicleTypeFromQuery
-        : DEFAULT_VALUES.vehicleTypeRequired,
-    },
+    defaultValues: DEFAULT_VALUES,
     mode: 'onChange',
   })
+
+  // Categoria só pode ser validada depois que a taxonomia carrega — sem uma
+  // lista fixa de valores válidos localmente, diferente do antigo enum.
+  useEffect(() => {
+    if (
+      categoryIdFromQuery &&
+      vehicleCategories.some((c) => c?.id === categoryIdFromQuery)
+    ) {
+      form.setValue('requiredCategoryId', categoryIdFromQuery, {
+        shouldValidate: true,
+      })
+    }
+  }, [categoryIdFromQuery, vehicleCategories])
 
   const timeWindow = form.watch('timeWindow')
   const scheduledDate = form.watch('scheduledDate')
@@ -166,7 +170,7 @@ export function CreateShipmentForm() {
         description: values.description,
         estimatedWeightKg: values.estimatedWeightKg,
         estimatedVolumeM3: values.estimatedVolumeM3,
-        vehicleTypeRequired: values.vehicleTypeRequired,
+        requiredCategoryId: values.requiredCategoryId,
         scheduledDate: values.scheduledDate,
         timeWindow: values.timeWindow,
         specificTime: values.specificTime,
@@ -294,17 +298,22 @@ export function CreateShipmentForm() {
 
         <FormField
           control={form.control}
-          name="vehicleTypeRequired"
+          name="requiredCategoryId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Veículo necessário</FormLabel>
               <FormControl>
                 <AdaptiveSelect
-                  options={VEHICLE_TYPE_OPTIONS}
-                  getOptionValue={(o) => o.value}
-                  getOptionLabel={(o) => o.label}
+                  options={vehicleCategories}
+                  getOptionValue={(o) => o?.id ?? ''}
+                  getOptionLabel={(o) => o?.name ?? ''}
                   value={field.value}
                   onValueChange={field.onChange}
+                  placeholder={
+                    isLoadingVehicleCategories
+                      ? 'Carregando…'
+                      : 'Sem preferência'
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -449,7 +458,10 @@ function AddressFieldset({
       })
     }
 
-    if (result.data.neighborhood && !form.getValues(`${prefix}.neighborhoodId`)) {
+    if (
+      result.data.neighborhood &&
+      !form.getValues(`${prefix}.neighborhoodId`)
+    ) {
       const target = normalizeCityName(result.data.neighborhood)
       const matched = neighborhoods.find(
         (n) => normalizeCityName(n.name) === target,
@@ -471,6 +483,28 @@ function AddressFieldset({
   return (
     <fieldset className="space-y-4">
       <legend className="text-base font-semibold">{title}</legend>
+
+      <FormField
+        control={form.control}
+        name={`${prefix}.zipCode`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>CEP</FormLabel>
+            <FormControl>
+              <CepInput
+                className="min-h-12"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={() => {
+                  field.onBlur()
+                  handleCepBlur().catch(() => {})
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <NeighborhoodSelectField
         form={form}
@@ -509,42 +543,19 @@ function AddressFieldset({
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField
-          control={form.control}
-          name={`${prefix}.complement`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Complemento</FormLabel>
-              <FormControl>
-                <Input className="min-h-12" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name={`${prefix}.zipCode`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>CEP</FormLabel>
-              <FormControl>
-                <CepInput
-                  className="min-h-12"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={() => {
-                    field.onBlur()
-                    handleCepBlur().catch(() => {})
-                  }}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <FormField
+        control={form.control}
+        name={`${prefix}.complement`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Complemento</FormLabel>
+            <FormControl>
+              <Input className="min-h-12" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </fieldset>
   )
 }

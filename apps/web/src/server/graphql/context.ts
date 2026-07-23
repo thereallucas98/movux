@@ -1,42 +1,23 @@
 import { prisma } from '~/lib/db'
 import { getAccessTokenFromCookie, verifyAccessToken } from '~/lib/session'
 import {
-  assignmentRepository,
-  auditLogRepository,
   carrierDocumentRepository,
   carrierProfileRepository,
-  categoryRepository,
   customerProfileRepository,
   deliveryConfirmationRepository,
   geographyRepository,
   notificationLogRepository,
-  notificationPreferenceRepository,
-  notificationRepository,
   pricingRepository,
   proposalQueueRepository,
   proposalRepository,
-  requestRepository,
   reviewRepository,
   reviewTagRepository,
   safetyCheckInRepository,
-  scheduleRepository,
-  shiftCandidateRepository,
-  shiftExpectedCompositionRepository,
-  shiftPatternRepository,
-  shiftRepository,
-  shiftTimelineNoteRepository,
   shipmentEventRepository,
   shipmentRepository,
-  specialtyRepository,
-  tenantMembershipRepository,
-  tenantRepository,
-  timeEntryRepository,
-  transferRequestRepository,
   userRepository,
-  userSpecialtyRepository,
   vehicleRepository,
-  workspaceMembershipRepository,
-  workspaceRepository,
+  vehicleTaxonomyRepository,
 } from '~/server/repositories'
 
 export interface Principal {
@@ -49,26 +30,6 @@ export interface GraphQLContext {
   principal: Principal | null
   repos: {
     userRepo: typeof userRepository
-    tenantRepo: typeof tenantRepository
-    tenantMembershipRepo: typeof tenantMembershipRepository
-    workspaceRepo: typeof workspaceRepository
-    workspaceMembershipRepo: typeof workspaceMembershipRepository
-    categoryRepo: typeof categoryRepository
-    specialtyRepo: typeof specialtyRepository
-    userSpecialtyRepo: typeof userSpecialtyRepository
-    scheduleRepo: typeof scheduleRepository
-    shiftRepo: typeof shiftRepository
-    shiftPatternRepo: typeof shiftPatternRepository
-    shiftCompositionRepo: typeof shiftExpectedCompositionRepository
-    assignmentRepo: typeof assignmentRepository
-    transferRequestRepo: typeof transferRequestRepository
-    shiftCandidateRepo: typeof shiftCandidateRepository
-    requestRepo: typeof requestRepository
-    timeEntryRepo: typeof timeEntryRepository
-    shiftTimelineNoteRepo: typeof shiftTimelineNoteRepository
-    auditLogRepo: typeof auditLogRepository
-    notificationRepo: typeof notificationRepository
-    notificationPreferenceRepo: typeof notificationPreferenceRepository
     shipmentRepo: typeof shipmentRepository
     customerProfileRepo: typeof customerProfileRepository
     pricingRepo: typeof pricingRepository
@@ -80,6 +41,7 @@ export interface GraphQLContext {
     carrierProfileRepo: typeof carrierProfileRepository
     carrierDocumentRepo: typeof carrierDocumentRepository
     vehicleRepo: typeof vehicleRepository
+    vehicleTaxonomyRepo: typeof vehicleTaxonomyRepository
     safetyCheckInRepo: typeof safetyCheckInRepository
     deliveryConfirmationRepo: typeof deliveryConfirmationRepository
     reviewRepo: typeof reviewRepository
@@ -126,26 +88,6 @@ export async function createGraphQLContext(
     principal,
     repos: {
       userRepo: userRepository,
-      tenantRepo: tenantRepository,
-      tenantMembershipRepo: tenantMembershipRepository,
-      workspaceRepo: workspaceRepository,
-      workspaceMembershipRepo: workspaceMembershipRepository,
-      categoryRepo: categoryRepository,
-      specialtyRepo: specialtyRepository,
-      userSpecialtyRepo: userSpecialtyRepository,
-      scheduleRepo: scheduleRepository,
-      shiftRepo: shiftRepository,
-      shiftPatternRepo: shiftPatternRepository,
-      shiftCompositionRepo: shiftExpectedCompositionRepository,
-      assignmentRepo: assignmentRepository,
-      transferRequestRepo: transferRequestRepository,
-      shiftCandidateRepo: shiftCandidateRepository,
-      requestRepo: requestRepository,
-      timeEntryRepo: timeEntryRepository,
-      shiftTimelineNoteRepo: shiftTimelineNoteRepository,
-      auditLogRepo: auditLogRepository,
-      notificationRepo: notificationRepository,
-      notificationPreferenceRepo: notificationPreferenceRepository,
       shipmentRepo: shipmentRepository,
       customerProfileRepo: customerProfileRepository,
       pricingRepo: pricingRepository,
@@ -157,6 +99,7 @@ export async function createGraphQLContext(
       carrierProfileRepo: carrierProfileRepository,
       carrierDocumentRepo: carrierDocumentRepository,
       vehicleRepo: vehicleRepository,
+      vehicleTaxonomyRepo: vehicleTaxonomyRepository,
       safetyCheckInRepo: safetyCheckInRepository,
       deliveryConfirmationRepo: deliveryConfirmationRepository,
       reviewRepo: reviewRepository,

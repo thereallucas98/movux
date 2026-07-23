@@ -11,6 +11,8 @@ import { useDeliveryConfirmationStatus } from '~/graphql/hooks/use-delivery-conf
 import { usePublishShipment } from '~/graphql/hooks/use-publish-shipment'
 import { useProposalsForShipment } from '~/graphql/hooks/use-proposals-for-shipment'
 import { useRejectProposal } from '~/graphql/hooks/use-reject-proposal'
+import { ProposalDetailDialog } from './proposal-detail-dialog'
+import { ReviewTagPicker } from './review-tag-picker'
 import { useReviewsForShipment } from '~/graphql/hooks/use-reviews-for-shipment'
 import { useSafetyCheckInStatus } from '~/graphql/hooks/use-safety-check-in-status'
 import { useSubmitReview } from '~/graphql/hooks/use-submit-review'
@@ -63,8 +65,8 @@ function PublishCard({ shipmentId }: { shipmentId: string }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-muted-foreground text-sm">
-          Esse frete ainda está em rascunho — transportadores só veem depois
-          de publicado.
+          Esse frete ainda está em rascunho — transportadores só veem depois de
+          publicado.
         </p>
         <Button
           size="sm"
@@ -79,9 +81,16 @@ function PublishCard({ shipmentId }: { shipmentId: string }) {
 }
 
 function ProposalsCard({ shipmentId }: { shipmentId: string }) {
-  const { data: proposals = [], isLoading } = useProposalsForShipment(shipmentId)
+  const { data: proposals = [], isLoading } =
+    useProposalsForShipment(shipmentId)
   const accept = useAcceptProposal()
   const reject = useRejectProposal()
+  const [selectedProposalId, setSelectedProposalId] = useState<string | null>(
+    null,
+  )
+
+  const selectedProposal =
+    proposals.find((proposal) => proposal?.id === selectedProposalId) ?? null
 
   return (
     <Card>
@@ -94,15 +103,21 @@ function ProposalsCard({ shipmentId }: { shipmentId: string }) {
         )}
         {!isLoading && proposals.length === 0 && (
           <p className="text-muted-foreground text-sm">
-            Nenhuma proposta ainda — transportadores da região já podem ver
-            esse frete.
+            Nenhuma proposta ainda — transportadores da região já podem ver esse
+            frete.
           </p>
         )}
         {proposals.map((proposal) =>
           proposal ? (
-            <div
+            <button
               key={proposal.id}
-              className="border-border flex items-center justify-between gap-3 rounded-[10px] border p-3 text-sm"
+              type="button"
+              disabled={
+                proposal.status !== 'ACTIVE' ||
+                proposal.currentAttemptResponseType !== 'PENDING'
+              }
+              onClick={() => setSelectedProposalId(proposal.id ?? null)}
+              className="border-border hover:bg-muted focus-visible:ring-ring flex w-full items-center justify-between gap-3 rounded-[10px] border p-3 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               <div>
                 <p className="font-semibold">{proposal.carrierName}</p>
@@ -110,39 +125,40 @@ function ProposalsCard({ shipmentId }: { shipmentId: string }) {
                   {formatPriceInCents(proposal.priceInCents ?? 0)}
                 </p>
               </div>
-              {proposal.status === 'ACTIVE' && (
-                <div className="flex shrink-0 gap-2">
-                  <Button
-                    size="sm"
-                    disabled={accept.isPending}
-                    onClick={() =>
-                      accept.mutate({
-                        shipmentId,
-                        proposalId: proposal.id ?? '',
-                      })
-                    }
-                  >
-                    Aceitar
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={reject.isPending}
-                    onClick={() =>
-                      reject.mutate({
-                        shipmentId,
-                        proposalId: proposal.id ?? '',
-                      })
-                    }
-                  >
-                    Recusar
-                  </Button>
-                </div>
-              )}
-            </div>
+              {proposal.status === 'ACTIVE' &&
+                proposal.currentAttemptResponseType === 'REJECTED' && (
+                  <span className="text-muted-foreground text-xs">
+                    Recusada — aguardando nova oferta
+                  </span>
+                )}
+            </button>
           ) : null,
         )}
       </CardContent>
+
+      <ProposalDetailDialog
+        open={selectedProposalId !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedProposalId(null)
+        }}
+        proposal={selectedProposal}
+        isAccepting={accept.isPending}
+        isRejecting={reject.isPending}
+        onAccept={() => {
+          if (!selectedProposal) return
+          accept.mutate(
+            { shipmentId, proposalId: selectedProposal.id ?? '' },
+            { onSuccess: () => setSelectedProposalId(null) },
+          )
+        }}
+        onReject={() => {
+          if (!selectedProposal) return
+          reject.mutate(
+            { shipmentId, proposalId: selectedProposal.id ?? '' },
+            { onSuccess: () => setSelectedProposalId(null) },
+          )
+        }}
+      />
     </Card>
   )
 }
@@ -204,8 +220,8 @@ function DeliveryConfirmationCard({ shipmentId }: { shipmentId: string }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-muted-foreground text-sm">
-          O transportador marcou esse frete como entregue. Confirma que
-          chegou tudo certo?
+          O transportador marcou esse frete como entregue. Confirma que chegou
+          tudo certo?
         </p>
         {reportingIssue ? (
           <div className="space-y-2">
@@ -280,6 +296,7 @@ function ReviewCard({
   const { data: reviews = [] } = useReviewsForShipment(shipmentId)
   const submitReview = useSubmitReview()
   const [rating, setRating] = useState(0)
+  const [tagIds, setTagIds] = useState<string[]>([])
 
   const alreadyReviewed = reviews.some((r) => r?.reviewerRole === role)
 
@@ -320,10 +337,16 @@ function ReviewCard({
             </button>
           ))}
         </div>
+        <ReviewTagPicker
+          targetRole="CARRIER"
+          value={tagIds}
+          onChange={setTagIds}
+          disabled={submitReview.isPending}
+        />
         <Button
           size="sm"
           disabled={rating === 0 || submitReview.isPending}
-          onClick={() => submitReview.mutate({ shipmentId, rating })}
+          onClick={() => submitReview.mutate({ shipmentId, rating, tagIds })}
         >
           Enviar avaliação
         </Button>

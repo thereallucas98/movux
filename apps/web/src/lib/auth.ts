@@ -31,13 +31,21 @@ type EmailVerificationPayload = {
 }
 
 export function signEmailVerificationToken(userId: string): string {
-  const payload: EmailVerificationPayload = { sub: userId, purpose: 'email-verification' }
+  const payload: EmailVerificationPayload = {
+    sub: userId,
+    purpose: 'email-verification',
+  }
   return jwt.sign(payload, requireJwtSecret(), { expiresIn: '24h' })
 }
 
-export function verifyEmailVerificationToken(token: string): { userId: string } | null {
+export function verifyEmailVerificationToken(
+  token: string,
+): { userId: string } | null {
   try {
-    const decoded = jwt.verify(token, requireJwtSecret()) as EmailVerificationPayload
+    const decoded = jwt.verify(
+      token,
+      requireJwtSecret(),
+    ) as EmailVerificationPayload
     if (decoded.purpose !== 'email-verification') return null
     return { userId: decoded.sub }
   } catch {

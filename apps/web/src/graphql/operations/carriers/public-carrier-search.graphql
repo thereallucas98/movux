@@ -1,7 +1,8 @@
-query PublicCarrierSearch($cityId: ID!, $vehicleType: VehicleType) {
-  publicCarrierSearch(cityId: $cityId, vehicleType: $vehicleType) {
+query PublicCarrierSearch($cityId: ID!, $vehicleCategoryId: ID) {
+  publicCarrierSearch(cityId: $cityId, vehicleCategoryId: $vehicleCategoryId) {
+    userId
     firstName
-    vehicleType
+    vehicleCategoryName
     avgRating
     totalShipments
   }

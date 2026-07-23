@@ -2,35 +2,35 @@
 
 import { Package, Star, Truck } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import { Button } from '~/components/ui/button'
 import { Card, CardContent } from '~/components/ui/card'
 import { EmptyState } from '~/components/ui/empty-state'
-import { VEHICLE_TYPE_LABELS } from '~/components/features/shipments/shipment-labels'
-import type { VehicleType } from '~/graphql/generated/types'
 import { usePublicCarrierSearch } from '~/graphql/hooks/use-public-carrier-search'
 
 interface CarrierSearchResultsProps {
   cityId: string
-  vehicleType?: VehicleType
+  vehicleCategoryId?: string
 }
 
-function registerHref(cityId: string, vehicleType?: VehicleType) {
+function registerHref(cityId: string, vehicleCategoryId?: string) {
   const params = new URLSearchParams({ role: 'CUSTOMER', cityId })
-  if (vehicleType) params.set('vehicleType', vehicleType)
+  if (vehicleCategoryId) params.set('requiredCategoryId', vehicleCategoryId)
   return `/register?${params.toString()}`
 }
 
 export function CarrierSearchResults({
   cityId,
-  vehicleType,
+  vehicleCategoryId,
 }: CarrierSearchResultsProps) {
   const { data: results = [], isLoading } = usePublicCarrierSearch({
     cityId,
-    vehicleType,
+    vehicleCategoryId,
   })
+  const router = useRouter()
 
-  const href = registerHref(cityId, vehicleType)
+  const href = registerHref(cityId, vehicleCategoryId)
 
   if (isLoading) {
     return (
@@ -53,8 +53,26 @@ export function CarrierSearchResults({
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {results.map((carrier, index) => (
-        <Card key={index}>
+      {results.map((carrier) => (
+        <Card
+          key={carrier?.userId}
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            if (carrier?.userId) {
+              router.push(`/buscar-transportadores/${carrier.userId}`)
+            }
+          }}
+          onKeyDown={(event) => {
+            if (
+              carrier?.userId &&
+              (event.key === 'Enter' || event.key === ' ')
+            ) {
+              router.push(`/buscar-transportadores/${carrier.userId}`)
+            }
+          }}
+          className="hover:bg-muted/50 cursor-pointer transition-colors"
+        >
           <CardContent className="flex flex-col gap-3 p-4">
             <div className="flex items-center gap-3">
               <div className="bg-brand-light text-brand-dark flex size-10 shrink-0 items-center justify-center rounded-full">
@@ -65,9 +83,7 @@ export function CarrierSearchResults({
                   {carrier?.firstName}
                 </p>
                 <p className="text-muted-foreground truncate text-xs">
-                  {carrier?.vehicleType
-                    ? VEHICLE_TYPE_LABELS[carrier.vehicleType]
-                    : '—'}
+                  {carrier?.vehicleCategoryName ?? '—'}
                 </p>
               </div>
             </div>
@@ -85,7 +101,12 @@ export function CarrierSearchResults({
               </span>
             </div>
 
-            <Button asChild size="sm" variant="outline">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              onClick={(event) => event.stopPropagation()}
+            >
               <Link href={href}>Quero contratar</Link>
             </Button>
           </CardContent>

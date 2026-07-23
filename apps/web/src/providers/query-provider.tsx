@@ -54,10 +54,21 @@ function createQueryClient(): QueryClient {
         toFriendlyMessage(error, 'Não foi possível completar a operação.'),
       )
     },
-    onSuccess: (_, __, ___, mutation) => {
-      // permite configurar mensagens de sucesso customizadas
-      if (mutation.meta?.successMessage) {
-        toast.success(mutation.meta.successMessage as string)
+    onSuccess: (data, variables, _context, mutation) => {
+      // permite configurar mensagens de sucesso customizadas — string fixa
+      // ou função (data, variables) => string, pra mutations cujo resultado
+      // depende do que foi enviado (ex. achado #20: confirmar entrega vs.
+      // reportar problema usam a mesma mutation, mensagens diferentes)
+      const successMessage = mutation.meta?.successMessage
+      if (typeof successMessage === 'function') {
+        toast.success(
+          (successMessage as (data: unknown, variables: unknown) => string)(
+            data,
+            variables,
+          ),
+        )
+      } else if (successMessage) {
+        toast.success(successMessage as string)
       }
     },
   })

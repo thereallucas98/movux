@@ -47,8 +47,10 @@ enum ShipmentType {
   OTHER
 }
 
-// Includes ANY for "required" fields (shipment.vehicleTypeRequired,
-// pricingTemplate.vehicleType); vehicle.type never uses ANY.
+// S10-T1: sobrevive só por causa de pricingTemplate.vehicleType, que o
+// pricing engine sempre lê como 'ANY' (nunca o valor real do frete) — ver
+// docs/tasks/s10-t1-fleet-taxonomy/exploration.md. Vehicle.type e
+// Shipment.vehicleTypeRequired migraram pra VehicleCategory/VehicleSpec.
 enum VehicleType {
   ANY
   MOTORCYCLE
@@ -153,6 +155,7 @@ enum EventType {
   PUBLISHED
   CARRIER_CALLED
   PROPOSAL_RECEIVED
+  PROPOSAL_REJECTED
   CARRIER_SELECTED
   SAFETY_CONFIRMED
   COLLECTED
@@ -412,25 +415,102 @@ model CompanyMembership {
   @@map("companyMembership")
 }
 
+// Taxonomia de frota (S10-T1) — categoria (ex. "Caminhão") → especificação
+// com capacidade real (ex. "Caminhão Toco", maxWeightKg/maxVolumeM3).
+// Substitui o enum VehicleType em Vehicle.type/Shipment.vehicleTypeRequired.
+// Ver docs/tasks/s10-t1-fleet-taxonomy/research.md — decisão de 2 níveis,
+// mesmo padrão estrutural do SpecialtyGroup/SpecialtyItem do build-track.
+model VehicleCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  // Mapeia pro tipo de veículo da API da FIPE ('cars' | 'motorcycles' |
+  // 'trucks') — usado só pra filtrar VehicleBrand por categoria, sem
+  // relação FK direta (marcas/modelos são importados de fonte externa).
+  fipeVehicleType String  @map("fipe_vehicle_type")
+  isActive        Boolean @default(true) @map("is_active")
+
+  specs     VehicleSpec[]
+  shipments Shipment[]
+
+  @@map("vehicleCategory")
+}
+
+// Catálogo real de marca/modelo (S10-T1, importado uma vez da API da FIPE
+// — ver prisma/seed/vehicle-brands-models.ts) — evita que o carrier digite
+// o mesmo fabricante de formas diferentes. Ortogonal a VehicleCategory/
+// VehicleSpec: marca/modelo é identidade do veículo, categoria/spec é
+// capacidade de carga.
+model VehicleBrand {
+  id              String  @id @default(uuid())
+  fipeVehicleType String  @map("fipe_vehicle_type")
+  name            String
+  isActive        Boolean @default(true) @map("is_active")
+
+  models VehicleModel[]
+
+  @@unique([fipeVehicleType, name])
+  @@map("vehicleBrand")
+}
+
+model VehicleModel {
+  id       String  @id @default(uuid())
+  brandId  String  @map("brand_id")
+  name     String
+  isActive Boolean @default(true) @map("is_active")
+
+  brand    VehicleBrand @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  vehicles Vehicle[]
+
+  @@unique([brandId, name])
+  @@map("vehicleModel")
+}
+
+// Um veículo físico tem exatamente uma especificação real — frota mista é
+// resolvida por várias linhas de Vehicle por dono, não many-to-many aqui.
+model VehicleSpec {
+  id          String  @id @default(uuid())
+  categoryId  String  @map("category_id")
+  name        String
+  maxWeightKg Decimal @map("max_weight_kg") @db.Decimal(8, 2)
+  maxVolumeM3 Decimal @map("max_volume_m3") @db.Decimal(8, 2)
+  isActive    Boolean @default(true) @map("is_active")
+
+  category VehicleCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  vehicles Vehicle[]
+
+  @@unique([categoryId, name])
+  @@map("vehicleSpec")
+}
+
 // Owned by a carrier (autônomo) or a company (frota) — exactly one of
 // ownerId/companyId must be set, never both; enforced at the use-case layer
 // (no DB CHECK constraint, per DATABASE-DESIGN.md §3.6).
 model Vehicle {
-  id           String      @id @default(uuid())
-  ownerId      String?     @map("owner_id")
-  companyId    String?     @map("company_id")
+  id           String   @id @default(uuid())
+  ownerId      String?  @map("owner_id")
+  companyId    String?  @map("company_id")
+  // Sem @unique aqui de propósito (achado #17 da QA momento-zero): a placa
+  // só precisa ser única entre veículos ATIVOS, pra liberar reuso depois de
+  // desativar. Prisma não expressa unique index parcial (`WHERE is_active`)
+  // na DSL — a constraint real é um índice parcial `vehicle_plate_active_unique_idx`
+  // (`CREATE UNIQUE INDEX ... ON vehicle(plate) WHERE is_active`) aplicado
+  // via SQL puro, fora do `db push`/migrate (que não sabe representá-lo);
+  // reforçado também no use-case (`createVehicle`) checando vehicles ativos
+  // antes do insert.
   plate        String
-  type         VehicleType
-  brand        String
-  model        String
+  specId       String   @map("spec_id")
+  modelId      String   @map("model_id")
   year         Int
-  crlvUrl      String?     @map("crlv_url")
-  crlvApproved Boolean     @default(false) @map("crlv_approved")
-  isActive     Boolean     @default(true) @map("is_active")
-  createdAt    DateTime    @default(now()) @map("created_at")
+  crlvUrl      String?  @map("crlv_url")
+  crlvApproved Boolean  @default(false) @map("crlv_approved")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-  owner   User?    @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  company Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  owner   User?        @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  company Company?     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  spec    VehicleSpec  @relation(fields: [specId], references: [id], onDelete: Restrict)
+  model   VehicleModel @relation(fields: [modelId], references: [id], onDelete: Restrict)
 
   @@map("vehicle")
 }
@@ -616,13 +696,14 @@ model Shipment {
   description           String
   estimatedWeightKg     Decimal?       @map("estimated_weight_kg") @db.Decimal(8, 2)
   estimatedVolumeM3     Decimal?       @map("estimated_volume_m3") @db.Decimal(8, 2)
-  vehicleTypeRequired   VehicleType    @map("vehicle_type_required")
+  requiredCategoryId    String?        @map("required_category_id")
   scheduledDate         DateTime       @map("scheduled_date") @db.Date
   timeWindow            TimeWindow     @map("time_window")
   specificTime          DateTime?      @map("specific_time") @db.Time
   suggestedPriceInCents Int            @map("suggested_price_in_cents")
   finalPriceInCents     Int?           @map("final_price_in_cents")
-  etaMinutes            Int?           @map("eta_minutes")
+  collectionEtaMinutes  Int?           @map("collection_eta_minutes")
+  deliveryEtaMinutes    Int?           @map("delivery_eta_minutes")
   windowExpiresAt       DateTime?      @map("window_expires_at")
   customerSlaHours      Int            @map("customer_sla_hours")
   collectedAt           DateTime?      @map("collected_at")
@@ -634,7 +715,8 @@ model Shipment {
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
 
-  customer CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customer        CustomerProfile  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  requiredCategory VehicleCategory? @relation(fields: [requiredCategoryId], references: [id], onDelete: SetNull)
 
   addresses            ShipmentAddress[]
   modifiers            ShipmentModifier[]

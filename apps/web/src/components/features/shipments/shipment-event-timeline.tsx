@@ -29,7 +29,10 @@ export function ShipmentEventTimeline({ shipmentId }: { shipmentId: string }) {
         <ol className="space-y-3">
           {events.map((event) =>
             event ? (
-              <li key={event.id} className="border-border border-l-2 pl-3 text-sm">
+              <li
+                key={event.id}
+                className="border-border border-l-2 pl-3 text-sm"
+              >
                 <p>{event.description}</p>
                 <p className="text-muted-foreground text-xs">
                   {event.occurredAt && formatEventTimestamp(event.occurredAt)}

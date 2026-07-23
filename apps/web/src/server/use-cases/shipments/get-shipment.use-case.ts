@@ -1,5 +1,8 @@
 import type { CustomerProfileRepository } from '../../repositories/customer-profile.repository'
-import type { ShipmentRepository, ShipmentWithDetails } from '../../repositories/shipment.repository'
+import type {
+  ShipmentRepository,
+  ShipmentWithDetails,
+} from '../../repositories/shipment.repository'
 
 export type GetShipmentResult =
   | { success: true; shipment: ShipmentWithDetails }
@@ -20,7 +23,10 @@ export async function getShipment(
     return { success: false, code: 'NOT_FOUND' }
   }
 
-  const shipment = await repos.shipmentRepo.findByIdForOwner(shipmentId, customerProfile.id)
+  const shipment = await repos.shipmentRepo.findByIdForOwner(
+    shipmentId,
+    customerProfile.id,
+  )
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
   }

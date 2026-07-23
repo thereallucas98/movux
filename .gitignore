@@ -25,6 +25,9 @@ coverage
 # Cursor
 .cursor
 
+# Local storage adapter uploads (dev/testing only, never committed)
+apps/web/public/uploads/
+
 # Prisma generated client
 apps/web/src/generated/
 

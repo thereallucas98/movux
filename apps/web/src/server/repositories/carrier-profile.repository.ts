@@ -6,6 +6,9 @@ import type {
 export interface CarrierProfileRepository {
   updateRating(userId: string, avgRating: number): Promise<void>
   markVerified(userId: string, verifiedBy: string): Promise<void>
+  findVerificationStatusByUserId(
+    userId: string,
+  ): Promise<VerificationStatus | null>
   findMetricsByUserId(
     userId: string,
   ): Promise<{ avgRating: number | null; totalShipments: number } | null>
@@ -20,6 +23,12 @@ export interface CarrierProfileRepository {
   ): Promise<
     Array<{ userId: string; fullName: string; avgRating: number | null }>
   >
+  findPublicProfileByUserId(userId: string): Promise<{
+    userId: string
+    fullName: string
+    bio: string | null
+    avgRating: number | null
+  } | null>
 }
 
 export function createCarrierProfileRepository(
@@ -35,6 +44,14 @@ export function createCarrierProfileRepository(
           ...(avgRating < 3.5 ? { isActive: false } : {}),
         },
       })
+    },
+
+    async findVerificationStatusByUserId(userId) {
+      const profile = await prisma.carrierProfile.findUnique({
+        where: { userId },
+        select: { verificationStatus: true },
+      })
+      return profile?.verificationStatus ?? null
     },
 
     async markVerified(userId, verifiedBy) {
@@ -106,6 +123,27 @@ export function createCarrierProfileRepository(
         fullName: profile.user.fullName,
         avgRating: profile.avgRating ? Number(profile.avgRating) : null,
       }))
+    },
+
+    // Portfólio público (achado #15) — mesmo guard de elegibilidade do
+    // findEligiblePublicProfiles, só que pra um único carrier por id.
+    async findPublicProfileByUserId(userId) {
+      const profile = await prisma.carrierProfile.findFirst({
+        where: {
+          userId,
+          verificationStatus: 'APPROVED',
+          isActive: true,
+          isFlagged: false,
+        },
+        include: { user: { select: { fullName: true } } },
+      })
+      if (!profile) return null
+      return {
+        userId: profile.userId,
+        fullName: profile.user.fullName,
+        bio: profile.bio,
+        avgRating: profile.avgRating ? Number(profile.avgRating) : null,
+      }
     },
   }
 }

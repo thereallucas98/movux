@@ -5,6 +5,7 @@ export const ShipmentEventTypeEnum = builder.enumType('ShipmentEventType', {
     'PUBLISHED',
     'CARRIER_CALLED',
     'PROPOSAL_RECEIVED',
+    'PROPOSAL_REJECTED',
     'CARRIER_SELECTED',
     'SAFETY_CONFIRMED',
     'COLLECTED',

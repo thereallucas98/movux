@@ -6,16 +6,17 @@ import {
   PublicCarrierSearchDocument,
   type PublicCarrierSearchQuery,
   type PublicCarrierSearchQueryVariables,
-  type VehicleType,
 } from '~/graphql/generated/types'
 import { graphqlClient } from '~/lib/graphql-client'
 
 export interface UsePublicCarrierSearchFilter {
   cityId: string
-  vehicleType?: VehicleType
+  vehicleCategoryId?: string
 }
 
-export function usePublicCarrierSearch(filter: UsePublicCarrierSearchFilter | null) {
+export function usePublicCarrierSearch(
+  filter: UsePublicCarrierSearchFilter | null,
+) {
   return useQuery({
     queryKey: ['public-carrier-search', filter],
     queryFn: async () => {

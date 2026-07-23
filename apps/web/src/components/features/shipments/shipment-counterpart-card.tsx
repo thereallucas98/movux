@@ -2,9 +2,11 @@
 
 import { Phone, Star } from 'lucide-react'
 import { useState } from 'react'
+import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { useShipmentCounterpartInfo } from '~/graphql/hooks/use-shipment-counterpart-info'
+import { getReputationTier } from '~/lib/reputation-tier'
 
 interface Props {
   shipmentId: string
@@ -28,6 +30,8 @@ export function ShipmentCounterpartCard({ shipmentId, role }: Props) {
 
   if (!info) return null
 
+  const tier = getReputationTier(info.avgRating)
+
   return (
     <Card>
       <CardHeader>
@@ -43,6 +47,14 @@ export function ShipmentCounterpartCard({ shipmentId, role }: Props) {
             </span>
           )}
         </div>
+        {(tier || info.topTagLabel) && (
+          <div className="flex flex-wrap gap-2">
+            {tier && <Badge variant={tier.variant}>{tier.label}</Badge>}
+            {info.topTagLabel && (
+              <Badge variant="outline">{info.topTagLabel}</Badge>
+            )}
+          </div>
+        )}
         {info.phone &&
           (phoneRevealed ? (
             <p className="flex items-center gap-2">

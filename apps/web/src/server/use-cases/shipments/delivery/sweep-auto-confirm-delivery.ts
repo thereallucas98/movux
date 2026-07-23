@@ -21,7 +21,9 @@ export async function sweepAutoConfirmDelivery(
 ): Promise<void> {
   if (shipment.status !== 'DELIVERED' || !shipment.deliveredAt) return
 
-  const deadline = new Date(shipment.deliveredAt.getTime() + AUTO_CONFIRM_WINDOW_MS)
+  const deadline = new Date(
+    shipment.deliveredAt.getTime() + AUTO_CONFIRM_WINDOW_MS,
+  )
   if (new Date() < deadline) return
 
   const existing = await deliveryConfirmationRepo.findByShipment(shipmentId)

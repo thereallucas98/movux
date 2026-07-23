@@ -9,10 +9,12 @@ import {
 import { builder } from '../builder'
 import { gqlError, gqlErrorFromResult } from '../errors'
 import { SHIPMENT_EVENT_DESCRIPTIONS } from '../shipment-event-descriptions'
+import { ReviewerRoleEnum } from '../enums/shipment-lifecycle.enum'
 import {
   CounterpartInfoType,
   DeliveryConfirmationType,
   ProposalForCustomerType,
+  ReviewTagOptionType,
   ReviewType,
   SafetyCheckInStatusType,
 } from '../types/shipment-lifecycle.type'
@@ -42,15 +44,23 @@ builder.queryField('proposalsForShipment', (t) =>
 
       return Promise.all(
         result.data.map(async (proposal) => {
-          const carrier = await ctx.repos.userRepo.findById(proposal.carrierId)
+          const [carrier, contact] = await Promise.all([
+            ctx.repos.userRepo.findById(proposal.carrierId),
+            ctx.repos.carrierProfileRepo.findContactInfoByUserId(
+              proposal.carrierId,
+            ),
+          ])
           const latestAttempt = proposal.attempts[proposal.attempts.length - 1]
           return {
             id: proposal.id,
             status: proposal.status,
             carrierId: proposal.carrierId,
             carrierName: carrier?.fullName ?? 'Transportador',
+            carrierPhone: contact?.phone ?? null,
+            carrierAvgRating: contact?.avgRating ?? null,
             priceInCents: latestAttempt?.priceInCents ?? 0,
             currentAttempt: proposal.currentAttempt,
+            currentAttemptResponseType: latestAttempt?.responseType ?? null,
             expiresAt: proposal.expiresAt,
             createdAt: proposal.createdAt,
           }
@@ -66,7 +76,10 @@ builder.queryField('safetyCheckInStatus', (t) =>
     args: { shipmentId: t.arg.id({ required: true }) },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 
@@ -95,7 +108,10 @@ builder.queryField('deliveryConfirmationStatus', (t) =>
     args: { shipmentId: t.arg.id({ required: true }) },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 
@@ -123,7 +139,10 @@ builder.queryField('reviewsForShipment', (t) =>
     args: { shipmentId: t.arg.id({ required: true }) },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 
@@ -140,7 +159,31 @@ builder.queryField('reviewsForShipment', (t) =>
       )
       if (!result.success) throw gqlErrorFromResult(result)
 
-      return result.reviews
+      return result.reviews.map((review) => ({
+        ...review,
+        tags: review.tagSelections.map((selection) => selection.tag.label),
+      }))
+    },
+  }),
+)
+
+// Achado #10 da QA momento-zero — tags disponíveis pro picker de avaliação,
+// filtradas pelo papel de quem está SENDO avaliado (targetRole), não de quem
+// avalia. Leitura pura, sem use-case (mesmo padrão de vehicle-taxonomy.query.ts).
+builder.queryField('reviewTagOptions', (t) =>
+  t.field({
+    type: [ReviewTagOptionType],
+    args: { targetRole: t.arg({ type: ReviewerRoleEnum, required: true }) },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
+        throw gqlError('FORBIDDEN')
+      }
+
+      return ctx.repos.reviewTagRepo.findActiveByTargetRole(args.targetRole)
     },
   }),
 )
@@ -152,7 +195,10 @@ builder.queryField('shipmentCounterpartInfo', (t) =>
     args: { shipmentId: t.arg.id({ required: true }) },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 
@@ -163,6 +209,7 @@ builder.queryField('shipmentCounterpartInfo', (t) =>
           proposalRepo: ctx.repos.proposalRepo,
           carrierProfileRepo: ctx.repos.carrierProfileRepo,
           userRepo: ctx.repos.userRepo,
+          reviewRepo: ctx.repos.reviewRepo,
         },
         ctx.principal.userId,
         ctx.principal.role,
@@ -181,7 +228,10 @@ builder.queryField('shipmentEvents', (t) =>
     args: { shipmentId: t.arg.id({ required: true }) },
     resolve: async (_root, args, ctx) => {
       if (!ctx.principal) throw gqlError('UNAUTHENTICATED')
-      if (ctx.principal.role !== 'CUSTOMER' && ctx.principal.role !== 'CARRIER') {
+      if (
+        ctx.principal.role !== 'CUSTOMER' &&
+        ctx.principal.role !== 'CARRIER'
+      ) {
         throw gqlError('FORBIDDEN')
       }
 

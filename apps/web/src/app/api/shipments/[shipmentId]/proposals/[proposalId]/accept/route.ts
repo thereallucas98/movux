@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import {
   customerProfileRepository,
   notificationLogRepository,
@@ -13,7 +16,9 @@ import {
 import { ProposalIdParamSchema } from '~/server/schemas/proposal.schema'
 import { acceptProposal } from '~/server/use-cases'
 
-type RouteContext = { params: Promise<{ shipmentId: string; proposalId: string }> }
+type RouteContext = {
+  params: Promise<{ shipmentId: string; proposalId: string }>
+}
 
 export async function POST(req: Request, context: RouteContext) {
   const principal = await getPrincipal(req)

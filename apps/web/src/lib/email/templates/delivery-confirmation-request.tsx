@@ -1,4 +1,12 @@
-import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components'
 
 interface DeliveryConfirmationRequestProps {
   customerName: string
@@ -23,11 +31,14 @@ export function DeliveryConfirmationRequest({
             padding: 32,
           }}
         >
-          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>Seu frete foi entregue</Heading>
+          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>
+            Seu frete foi entregue
+          </Heading>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
-            Olá, {customerName}! O transportador marcou o frete &ldquo;{shipmentDescription}
-            &rdquo; como entregue. Confirme o recebimento na Movux — se não responder em 24h, a
-            entrega é confirmada automaticamente.
+            Olá, {customerName}! O transportador marcou o frete &ldquo;
+            {shipmentDescription}
+            &rdquo; como entregue. Confirme o recebimento na Movux — se não
+            responder em 24h, a entrega é confirmada automaticamente.
           </Text>
         </Container>
       </Body>

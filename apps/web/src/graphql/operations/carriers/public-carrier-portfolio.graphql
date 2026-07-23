@@ -1,0 +1,16 @@
+query PublicCarrierPortfolio($userId: ID!) {
+  publicCarrierPortfolio(userId: $userId) {
+    fullName
+    bio
+    avgRating
+    totalShipments
+    topTagLabel
+    vehicles {
+      id
+      categoryName
+      brandName
+      modelName
+      year
+    }
+  }
+}

@@ -2,7 +2,10 @@ import type { CarrierProfileRepository } from '../../../repositories/carrier-pro
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
 import type { ReviewTagRepository } from '../../../repositories/review-tag.repository'
-import type { ReviewRepository, ReviewWithTags } from '../../../repositories/review.repository'
+import type {
+  ReviewRepository,
+  ReviewWithTags,
+} from '../../../repositories/review.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { resolveSafetyParticipant } from '../safety/resolve-safety-participant'
 
@@ -15,7 +18,11 @@ export type SubmitReviewResult =
   | { success: true; review: ReviewWithTags }
   | {
       success: false
-      code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'ALREADY_REVIEWED' | 'VALIDATION_ERROR'
+      code:
+        | 'NOT_FOUND'
+        | 'INVALID_STATE_TRANSITION'
+        | 'ALREADY_REVIEWED'
+        | 'VALIDATION_ERROR'
     }
 
 interface SubmitReviewRepos {
@@ -34,7 +41,12 @@ export async function submitReview(
   shipmentId: string,
   input: SubmitReviewInput,
 ): Promise<SubmitReviewResult> {
-  const participant = await resolveSafetyParticipant(repos, userId, principalRole, shipmentId)
+  const participant = await resolveSafetyParticipant(
+    repos,
+    userId,
+    principalRole,
+    shipmentId,
+  )
   if (!participant) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -42,7 +54,10 @@ export async function submitReview(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  const existing = await repos.reviewRepo.findByShipmentAndRole(shipmentId, participant.role)
+  const existing = await repos.reviewRepo.findByShipmentAndRole(
+    shipmentId,
+    participant.role,
+  )
   if (existing) {
     return { success: false, code: 'ALREADY_REVIEWED' }
   }
@@ -59,7 +74,9 @@ export async function submitReview(
     if (!shipment) {
       return { success: false, code: 'NOT_FOUND' }
     }
-    const customer = await repos.customerProfileRepo.findUserIdById(shipment.customerId)
+    const customer = await repos.customerProfileRepo.findUserIdById(
+      shipment.customerId,
+    )
     if (!customer) {
       return { success: false, code: 'NOT_FOUND' }
     }
@@ -70,7 +87,10 @@ export async function submitReview(
   if (tagIds.length > 0) {
     const targetRole = participant.role === 'CUSTOMER' ? 'CARRIER' : 'CUSTOMER'
     const tags = await repos.reviewTagRepo.findByIds(tagIds)
-    if (tags.length !== tagIds.length || tags.some((tag) => tag.targetRole !== targetRole)) {
+    if (
+      tags.length !== tagIds.length ||
+      tags.some((tag) => tag.targetRole !== targetRole)
+    ) {
       return { success: false, code: 'VALIDATION_ERROR' }
     }
   }

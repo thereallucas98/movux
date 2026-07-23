@@ -44,6 +44,12 @@ export function useAcceptProposal() {
       queryClient.invalidateQueries({
         queryKey: ['proposals-for-shipment', variables.shipmentId],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-counterpart-info', variables.shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-events', variables.shipmentId],
+      })
     },
     meta: { successMessage: 'Proposta aceita' },
   })

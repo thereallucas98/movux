@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getClientIp } from '~/lib/get-client-ip'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import {
   customerProfileRepository,
   proposalRepository,

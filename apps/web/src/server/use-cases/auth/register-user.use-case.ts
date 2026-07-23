@@ -1,5 +1,9 @@
 import { env } from '@movux/env'
-import { hashPassword, signAccessToken, signEmailVerificationToken } from '~/lib/auth'
+import {
+  hashPassword,
+  signAccessToken,
+  signEmailVerificationToken,
+} from '~/lib/auth'
 import { VerifyEmail } from '~/lib/email/templates/verify-email'
 import { sendEmailNotification } from '../../notifications/send-email-notification'
 import type { NotificationLogRepository } from '../../repositories/notification-log.repository'

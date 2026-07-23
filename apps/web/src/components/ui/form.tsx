@@ -60,6 +60,7 @@ const useFormField = () => {
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
+    isSubmitted: formState.isSubmitted,
     ...fieldState,
   }
 }
@@ -90,12 +91,13 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField()
+  const { error, formItemId, isTouched, isSubmitted } = useFormField()
+  const showAsInvalid = (isTouched || isSubmitted) && !!error
 
   return (
     <Label
       ref={ref}
-      className={cn(error && 'text-destructive', className)}
+      className={cn(showAsInvalid && 'text-destructive', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -107,7 +109,17 @@ const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+  const {
+    error,
+    formItemId,
+    formDescriptionId,
+    formMessageId,
+    isTouched,
+    isSubmitted,
+  } = useFormField()
+  // Mesmo gate do FormMessage — não marca o campo como inválido (borda
+  // vermelha via aria-invalid) antes do usuário interagir com ele.
+  const showAsInvalid = (isTouched || isSubmitted) && !!error
 
   return (
     <Slot
@@ -118,7 +130,7 @@ const FormControl = React.forwardRef<
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={!!error}
+      aria-invalid={showAsInvalid}
       {...props}
     />
   )
@@ -146,8 +158,14 @@ const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
-  const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? '') : children
+  const { error, formMessageId, isTouched, isSubmitted } = useFormField()
+  // Só mostra erro depois que o usuário interagiu com o campo (ou tentou
+  // submeter) — evita a tela inteira acender vermelho num form vazio recém
+  // aberto, mesmo com `mode: 'onChange'` + `form.trigger()` no mount (usado
+  // só pra calcular `isValid` e desabilitar o botão de submit).
+  const shouldShowError = isTouched || isSubmitted
+  const body =
+    shouldShowError && error ? String(error?.message ?? '') : children
 
   if (!body) {
     return null

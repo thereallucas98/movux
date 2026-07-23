@@ -1,0 +1,3 @@
+mutation DeactivateVehicle($vehicleId: ID!) {
+  deactivateVehicle(vehicleId: $vehicleId)
+}

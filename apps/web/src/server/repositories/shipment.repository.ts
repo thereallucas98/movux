@@ -7,7 +7,6 @@ import type {
   ShipmentStatus,
   ShipmentType,
   TimeWindow,
-  VehicleType,
 } from '~/generated/prisma/client'
 
 export interface AddressInput {
@@ -37,7 +36,7 @@ export interface CreateDraftInput {
   description: string
   estimatedWeightKg?: number
   estimatedVolumeM3?: number
-  vehicleTypeRequired: VehicleType
+  requiredCategoryId?: string
   scheduledDate: Date
   timeWindow: TimeWindow
   specificTime?: Date
@@ -81,7 +80,7 @@ export type BrowseShipmentItem = Pick<
   | 'description'
   | 'estimatedWeightKg'
   | 'estimatedVolumeM3'
-  | 'vehicleTypeRequired'
+  | 'requiredCategoryId'
   | 'scheduledDate'
   | 'timeWindow'
   | 'specificTime'
@@ -124,6 +123,11 @@ export interface ShipmentRepository {
   markCollected(id: string): Promise<void>
   markInTransit(id: string): Promise<void>
   markDelivered(id: string): Promise<void>
+  updateEta(
+    id: string,
+    stage: 'COLLECTION' | 'DELIVERY',
+    etaMinutes: number,
+  ): Promise<void>
   listForCustomer(
     customerId: string,
     filter: ListShipmentsFilter,
@@ -159,7 +163,7 @@ export const SHIPMENT_BROWSE_SELECT = {
   description: true,
   estimatedWeightKg: true,
   estimatedVolumeM3: true,
-  vehicleTypeRequired: true,
+  requiredCategoryId: true,
   scheduledDate: true,
   timeWindow: true,
   specificTime: true,
@@ -184,7 +188,7 @@ export function createShipmentRepository(
           description: data.description,
           estimatedWeightKg: data.estimatedWeightKg,
           estimatedVolumeM3: data.estimatedVolumeM3,
-          vehicleTypeRequired: data.vehicleTypeRequired,
+          requiredCategoryId: data.requiredCategoryId,
           scheduledDate: data.scheduledDate,
           timeWindow: data.timeWindow,
           specificTime: data.specificTime,
@@ -282,6 +286,16 @@ export function createShipmentRepository(
       await prisma.shipment.update({
         where: { id },
         data: { status: 'DELIVERED', deliveredAt: new Date() },
+      })
+    },
+
+    async updateEta(id, stage, etaMinutes) {
+      await prisma.shipment.update({
+        where: { id },
+        data:
+          stage === 'COLLECTION'
+            ? { collectionEtaMinutes: etaMinutes }
+            : { deliveryEtaMinutes: etaMinutes },
       })
     },
 

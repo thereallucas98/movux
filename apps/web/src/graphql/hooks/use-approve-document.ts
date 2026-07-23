@@ -39,6 +39,7 @@ export function useApproveDocument() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['carrier-documents'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-metrics'] })
     },
     meta: { successMessage: 'Documento aprovado' },
   })

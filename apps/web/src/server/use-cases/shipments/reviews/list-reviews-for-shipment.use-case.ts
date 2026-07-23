@@ -1,6 +1,9 @@
 import type { CustomerProfileRepository } from '../../../repositories/customer-profile.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
-import type { ReviewRepository, ReviewWithTags } from '../../../repositories/review.repository'
+import type {
+  ReviewRepository,
+  ReviewWithTags,
+} from '../../../repositories/review.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import { resolveSafetyParticipant } from '../safety/resolve-safety-participant'
 
@@ -21,7 +24,12 @@ export async function listReviewsForShipment(
   principalRole: 'CUSTOMER' | 'CARRIER',
   shipmentId: string,
 ): Promise<ListReviewsForShipmentResult> {
-  const participant = await resolveSafetyParticipant(repos, userId, principalRole, shipmentId)
+  const participant = await resolveSafetyParticipant(
+    repos,
+    userId,
+    principalRole,
+    shipmentId,
+  )
   if (!participant) {
     return { success: false, code: 'NOT_FOUND' }
   }

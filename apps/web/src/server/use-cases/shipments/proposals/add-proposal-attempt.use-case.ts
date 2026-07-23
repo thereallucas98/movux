@@ -16,7 +16,14 @@ export interface AddProposalAttemptInput {
 
 export type AddProposalAttemptResult =
   | { success: true; proposal: ProposalWithAttempts }
-  | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'TOO_MANY_ATTEMPTS' }
+  | {
+      success: false
+      code:
+        | 'NOT_FOUND'
+        | 'INVALID_STATE_TRANSITION'
+        | 'TOO_MANY_ATTEMPTS'
+        | 'ATTEMPT_STILL_PENDING'
+    }
 
 interface AddProposalAttemptRepos {
   proposalRepo: ProposalRepository
@@ -39,7 +46,10 @@ export async function addProposalAttempt(
     shipmentId,
   )
 
-  const proposal = await repos.proposalRepo.findByShipmentAndCarrier(shipmentId, carrierId)
+  const proposal = await repos.proposalRepo.findByShipmentAndCarrier(
+    shipmentId,
+    carrierId,
+  )
   if (!proposal) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -50,8 +60,21 @@ export async function addProposalAttempt(
     return { success: false, code: 'TOO_MANY_ATTEMPTS' }
   }
 
+  // Achado #6 da QA momento-zero: carrier não pode mandar outra tentativa
+  // enquanto o cliente ainda não respondeu a atual (`PENDING`) — só depois
+  // que ele recusar (vira `REJECTED`) ou a tentativa expirar (o sweep acima
+  // já teria avançado `status` pra fora de `ACTIVE` nesse caso).
+  const currentAttempt = proposal.attempts.find(
+    (attempt) => attempt.attemptNumber === proposal.currentAttempt,
+  )
+  if (currentAttempt?.responseType === 'PENDING') {
+    return { success: false, code: 'ATTEMPT_STILL_PENDING' }
+  }
+
   const attemptNumber = proposal.currentAttempt + 1
-  const expiresAt = new Date(Date.now() + proposal.agreedSlaHours * 60 * 60 * 1000)
+  const expiresAt = new Date(
+    Date.now() + proposal.agreedSlaHours * 60 * 60 * 1000,
+  )
 
   const updated = await repos.proposalRepo.addAttempt(
     proposal.id,

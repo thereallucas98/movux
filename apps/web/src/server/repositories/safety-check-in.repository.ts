@@ -1,8 +1,15 @@
-import type { PrismaClient, ReviewerRole, SafetyCheckIn } from '~/generated/prisma/client'
+import type {
+  PrismaClient,
+  ReviewerRole,
+  SafetyCheckIn,
+} from '~/generated/prisma/client'
 
 export interface SafetyCheckInRepository {
   findByShipment(shipmentId: string): Promise<SafetyCheckIn[]>
-  findByShipmentAndRole(shipmentId: string, role: ReviewerRole): Promise<SafetyCheckIn | null>
+  findByShipmentAndRole(
+    shipmentId: string,
+    role: ReviewerRole,
+  ): Promise<SafetyCheckIn | null>
   create(
     shipmentId: string,
     userId: string,
@@ -11,7 +18,9 @@ export interface SafetyCheckInRepository {
   ): Promise<SafetyCheckIn>
 }
 
-export function createSafetyCheckInRepository(prisma: PrismaClient): SafetyCheckInRepository {
+export function createSafetyCheckInRepository(
+  prisma: PrismaClient,
+): SafetyCheckInRepository {
   return {
     async findByShipment(shipmentId) {
       return prisma.safetyCheckIn.findMany({ where: { shipmentId } })

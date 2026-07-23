@@ -1,11 +1,22 @@
-import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components'
 
 interface DocumentApprovedProps {
   carrierName: string
   documentType: string
 }
 
-export function DocumentApproved({ carrierName, documentType }: DocumentApprovedProps) {
+export function DocumentApproved({
+  carrierName,
+  documentType,
+}: DocumentApprovedProps) {
   return (
     <Html lang="pt-BR">
       <Head />
@@ -20,9 +31,12 @@ export function DocumentApproved({ carrierName, documentType }: DocumentApproved
             padding: 32,
           }}
         >
-          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>Documento aprovado</Heading>
+          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>
+            Documento aprovado
+          </Heading>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
-            Olá, {carrierName}! Seu documento ({documentType}) foi aprovado pela nossa equipe.
+            Olá, {carrierName}! Seu documento ({documentType}) foi aprovado pela
+            nossa equipe.
           </Text>
         </Container>
       </Body>

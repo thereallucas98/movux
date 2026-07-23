@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { StorageAdapter } from './types'
 
 let cachedClient: SupabaseClient | null = null
 
@@ -88,4 +89,10 @@ export async function fileExists(
     .list(folder, { limit: 1, search: filename })
 
   return !error && Array.isArray(data) && data.length > 0
+}
+
+export const supabaseStorageAdapter: StorageAdapter = {
+  uploadFile,
+  deleteFile,
+  fileExists,
 }

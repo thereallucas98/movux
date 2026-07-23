@@ -42,9 +42,17 @@ const CODE_TO_MESSAGE: Record<ErrorCode, string> = {
   NOT_CALLED: 'Carrier must be CALLED in the queue to submit a proposal',
   ALREADY_PROPOSED: 'Carrier already has a proposal for this shipment',
   TOO_MANY_ATTEMPTS: 'Proposal already has the maximum of 5 attempts',
+  ATTEMPT_STILL_PENDING:
+    'Customer has not responded to the current attempt yet',
+  CARRIER_NOT_VERIFIED: 'Carrier must be verified to submit a proposal',
   ALREADY_CONFIRMED: 'Safety check-in already confirmed for this role',
-  SAFETY_NOT_CONFIRMED: 'Both customer and carrier must confirm the safety check-in first',
+  SAFETY_NOT_CONFIRMED:
+    'Both customer and carrier must confirm the safety check-in first',
   ALREADY_REVIEWED: 'This role has already reviewed this shipment',
+  INVALID_SPEC: 'Vehicle spec not found',
+  INVALID_MODEL: 'Vehicle model not found',
+  DUPLICATE_PLATE: 'Plate already registered',
+  VEHICLE_LIMIT_REACHED: 'Carrier already has the maximum of 2 active vehicles',
 }
 
 /**

@@ -22,7 +22,12 @@ export async function getShipmentEvents(
   principalRole: 'CUSTOMER' | 'CARRIER',
   shipmentId: string,
 ): Promise<GetShipmentEventsResult> {
-  const participant = await resolveSafetyParticipant(repos, userId, principalRole, shipmentId)
+  const participant = await resolveSafetyParticipant(
+    repos,
+    userId,
+    principalRole,
+    shipmentId,
+  )
   if (!participant) {
     return { success: false, code: 'NOT_FOUND' }
   }

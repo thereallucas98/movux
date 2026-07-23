@@ -42,7 +42,12 @@ const TABS: readonly TabDef[] = [
     Icon: Route,
     url: 'movux.app/transito',
   },
-  { id: 'reviews', label: 'Avaliações', Icon: Star, url: 'movux.app/avaliacoes' },
+  {
+    id: 'reviews',
+    label: 'Avaliações',
+    Icon: Star,
+    url: 'movux.app/avaliacoes',
+  },
 ] as const
 
 export function LandingHeroPreview() {
@@ -174,9 +179,7 @@ function ShipmentsPanel() {
     <>
       <div className="flex items-end justify-between">
         <div>
-          <h3 className="text-foreground text-lg font-semibold">
-            Meus fretes
-          </h3>
+          <h3 className="text-foreground text-lg font-semibold">Meus fretes</h3>
           <p className="text-muted-foreground text-xs">
             3 ativos · João Pessoa
           </p>
@@ -269,9 +272,7 @@ function ProposalsPanel() {
             <Avatar initials={initialsOf(row.who)} />
             <div className="flex flex-1 flex-col gap-1">
               <span className="flex flex-wrap items-center gap-2">
-                <span className="text-foreground font-semibold">
-                  {row.who}
-                </span>
+                <span className="text-foreground font-semibold">{row.who}</span>
                 <span
                   className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider whitespace-nowrap uppercase"
                   style={{
@@ -365,9 +366,7 @@ function ReviewsPanel() {
     <>
       <div className="flex items-end justify-between">
         <div>
-          <h3 className="text-foreground text-lg font-semibold">
-            Avaliações
-          </h3>
+          <h3 className="text-foreground text-lg font-semibold">Avaliações</h3>
           <p className="text-muted-foreground text-xs">
             4 fretes concluídos · nota média 4.8
           </p>

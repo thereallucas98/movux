@@ -23,7 +23,12 @@ export async function getDeliveryConfirmationStatus(
   principalRole: 'CUSTOMER' | 'CARRIER',
   shipmentId: string,
 ): Promise<GetDeliveryConfirmationStatusResult> {
-  const participant = await resolveSafetyParticipant(repos, userId, principalRole, shipmentId)
+  const participant = await resolveSafetyParticipant(
+    repos,
+    userId,
+    principalRole,
+    shipmentId,
+  )
   if (!participant) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -42,7 +47,8 @@ export async function getDeliveryConfirmationStatus(
     customerId: shipment.customerId,
   })
 
-  const confirmation = await repos.deliveryConfirmationRepo.findByShipment(shipmentId)
+  const confirmation =
+    await repos.deliveryConfirmationRepo.findByShipment(shipmentId)
 
   return { success: true, confirmation }
 }

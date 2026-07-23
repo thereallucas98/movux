@@ -15,11 +15,17 @@ export interface PricingRepository {
     shipmentType: ShipmentType,
   ): Promise<{ basePriceInCents: number } | null>
   findModifiersByCodes(codes: ModifierCode[]): Promise<
-    Array<{ code: ModifierCode; valueType: ModifierValueType; valueInCents: number }>
+    Array<{
+      code: ModifierCode
+      valueType: ModifierValueType
+      valueInCents: number
+    }>
   >
 }
 
-export function createPricingRepository(prisma: PrismaClient): PricingRepository {
+export function createPricingRepository(
+  prisma: PrismaClient,
+): PricingRepository {
   return {
     async resolveNeighborhood(neighborhoodId) {
       const neighborhood = await prisma.neighborhood.findUnique({
@@ -34,7 +40,11 @@ export function createPricingRepository(prisma: PrismaClient): PricingRepository
       return { name: neighborhood.name, clusterId }
     },
 
-    async findSnapshotForCorridor(originClusterId, destinationClusterId, shipmentType) {
+    async findSnapshotForCorridor(
+      originClusterId,
+      destinationClusterId,
+      shipmentType,
+    ) {
       const template = await prisma.pricingTemplate.findUnique({
         where: {
           originClusterId_destinationClusterId_shipmentType_vehicleType: {

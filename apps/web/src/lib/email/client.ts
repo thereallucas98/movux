@@ -33,8 +33,18 @@ class ResendClient implements EmailClient {
     }
     const response = await client.emails.send(
       'react' in input
-        ? { from: env.EMAIL_FROM, to: input.to, subject: input.subject, react: input.react }
-        : { from: env.EMAIL_FROM, to: input.to, subject: input.subject, html: input.html },
+        ? {
+            from: env.EMAIL_FROM,
+            to: input.to,
+            subject: input.subject,
+            react: input.react,
+          }
+        : {
+            from: env.EMAIL_FROM,
+            to: input.to,
+            subject: input.subject,
+            html: input.html,
+          },
     )
     return { id: response.data?.id ?? null }
   }

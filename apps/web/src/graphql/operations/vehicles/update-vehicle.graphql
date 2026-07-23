@@ -1,0 +1,22 @@
+mutation UpdateVehicle($vehicleId: ID!, $input: UpdateVehicleInput!) {
+  updateVehicle(vehicleId: $vehicleId, input: $input) {
+    id
+    plate
+    year
+    isActive
+    spec {
+      id
+      name
+      maxWeightKg
+      maxVolumeM3
+    }
+    model {
+      id
+      name
+      brand {
+        id
+        name
+      }
+    }
+  }
+}

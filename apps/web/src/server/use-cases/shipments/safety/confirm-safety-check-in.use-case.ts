@@ -8,7 +8,10 @@ import { resolveSafetyParticipant } from './resolve-safety-participant'
 
 export type ConfirmSafetyCheckInResult =
   | { success: true; checkIn: SafetyCheckIn }
-  | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'ALREADY_CONFIRMED' }
+  | {
+      success: false
+      code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'ALREADY_CONFIRMED'
+    }
 
 interface ConfirmSafetyCheckInRepos {
   customerProfileRepo: CustomerProfileRepository
@@ -25,7 +28,12 @@ export async function confirmSafetyCheckIn(
   shipmentId: string,
   ipAddress: string | null,
 ): Promise<ConfirmSafetyCheckInResult> {
-  const participant = await resolveSafetyParticipant(repos, userId, principalRole, shipmentId)
+  const participant = await resolveSafetyParticipant(
+    repos,
+    userId,
+    principalRole,
+    shipmentId,
+  )
   if (!participant) {
     return { success: false, code: 'NOT_FOUND' }
   }

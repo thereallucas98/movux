@@ -37,10 +37,15 @@ export function ShipmentActionButton({ shipmentId }: { shipmentId: string }) {
   const [withdrawProposalDialogOpen, setWithdrawProposalDialogOpen] =
     useState(false)
 
+  const currentAttemptData = proposal?.attempts?.find(
+    (attempt) => attempt.attemptNumber === proposal.currentAttempt,
+  )
+
   const resolved = resolveCardAction({
     queueStatus: queueEntry?.status ?? null,
     proposalStatus: proposal?.status ?? null,
     currentAttempt: proposal?.currentAttempt ?? null,
+    currentAttemptResponseType: currentAttemptData?.responseType ?? null,
   })
 
   const dialogMode: 'submit' | 'counter-offer' = resolved.actions.includes(

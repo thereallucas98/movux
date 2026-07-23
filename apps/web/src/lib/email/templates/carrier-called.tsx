@@ -1,4 +1,12 @@
-import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components'
 
 interface CarrierCalledProps {
   carrierName: string
@@ -19,10 +27,13 @@ export function CarrierCalled({ carrierName }: CarrierCalledProps) {
             padding: 32,
           }}
         >
-          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>Você foi chamado!</Heading>
+          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>
+            Você foi chamado!
+          </Heading>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
-            Olá, {carrierName}! Você foi chamado pra propor em um frete disponível na fila.
-            Acesse a Movux e envie sua proposta antes que a vaga expire.
+            Olá, {carrierName}! Você foi chamado pra propor em um frete
+            disponível na fila. Acesse a Movux e envie sua proposta antes que a
+            vaga expire.
           </Text>
         </Container>
       </Body>

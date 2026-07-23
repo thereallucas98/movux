@@ -1,5 +1,9 @@
 import { builder } from '../builder'
 
+export const EtaStageEnum = builder.enumType('EtaStage', {
+  values: ['COLLECTION', 'DELIVERY'] as const,
+})
+
 export const ShipmentStatusEnum = builder.enumType('ShipmentStatus', {
   values: [
     'DRAFT',
@@ -22,10 +26,6 @@ export const ShipmentTypeEnum = builder.enumType('ShipmentType', {
     'DELIVERY',
     'OTHER',
   ] as const,
-})
-
-export const VehicleTypeEnum = builder.enumType('VehicleType', {
-  values: ['ANY', 'MOTORCYCLE', 'VAN', 'TRUCK_SMALL', 'TRUCK_LARGE'] as const,
 })
 
 export const TimeWindowEnum = builder.enumType('TimeWindow', {

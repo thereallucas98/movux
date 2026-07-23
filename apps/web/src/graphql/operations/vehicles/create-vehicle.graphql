@@ -1,0 +1,22 @@
+mutation CreateVehicle($input: VehicleInput!) {
+  createVehicle(input: $input) {
+    id
+    plate
+    year
+    isActive
+    spec {
+      id
+      name
+      maxWeightKg
+      maxVolumeM3
+    }
+    model {
+      id
+      name
+      brand {
+        id
+        name
+      }
+    }
+  }
+}

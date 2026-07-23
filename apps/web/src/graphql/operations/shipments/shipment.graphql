@@ -6,13 +6,15 @@ query Shipment($id: ID!) {
     description
     estimatedWeightKg
     estimatedVolumeM3
-    vehicleTypeRequired
+    requiredCategoryId
     scheduledDate
     timeWindow
     specificTime
     customerSlaHours
     suggestedPriceInCents
     finalPriceInCents
+    collectionEtaMinutes
+    deliveryEtaMinutes
     createdAt
     addresses {
       id

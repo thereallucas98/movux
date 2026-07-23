@@ -1,8 +1,12 @@
-import type { CarrierDocument, CarrierDocumentType } from '~/generated/prisma/client'
-import { uploadFile } from '~/lib/storage/supabase'
+import type {
+  CarrierDocument,
+  CarrierDocumentType,
+} from '~/generated/prisma/client'
+import { getStorageAdapter } from '~/lib/storage'
 import type { CarrierDocumentRepository } from '../../repositories/carrier-document.repository'
 
-const STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET ?? 'carrier-documents'
+const STORAGE_BUCKET =
+  process.env.SUPABASE_STORAGE_BUCKET ?? 'carrier-documents'
 
 export interface UploadCarrierDocumentFile {
   buffer: Buffer
@@ -24,12 +28,19 @@ export async function uploadCarrierDocument(
   type: CarrierDocumentType,
   file: UploadCarrierDocumentFile,
 ): Promise<UploadCarrierDocumentResult> {
-  const safeName = file.originalFilename.replace(/[^a-zA-Z0-9._-]+/g, '-').slice(0, 80)
+  const safeName = file.originalFilename
+    .replace(/[^a-zA-Z0-9._-]+/g, '-')
+    .slice(0, 80)
   const path = `carrier-documents/${userId}/${Date.now()}-${safeName}`
 
   let uploaded
   try {
-    uploaded = await uploadFile(STORAGE_BUCKET, path, file.buffer, file.contentType)
+    uploaded = await getStorageAdapter().uploadFile(
+      STORAGE_BUCKET,
+      path,
+      file.buffer,
+      file.contentType,
+    )
   } catch {
     return { success: false, code: 'ATTACHMENT_UPLOAD_FAILED' }
   }

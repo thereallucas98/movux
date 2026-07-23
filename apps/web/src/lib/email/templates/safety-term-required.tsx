@@ -1,4 +1,12 @@
-import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components'
 
 interface SafetyTermRequiredProps {
   recipientName: string
@@ -23,10 +31,13 @@ export function SafetyTermRequired({
             padding: 32,
           }}
         >
-          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>Confirme o termo de segurança</Heading>
+          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>
+            Confirme o termo de segurança
+          </Heading>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
-            Olá, {recipientName}! O frete &ldquo;{shipmentDescription}&rdquo; já tem um
-            transportador selecionado. Antes da coleta, confirme o termo de segurança na Movux.
+            Olá, {recipientName}! O frete &ldquo;{shipmentDescription}&rdquo; já
+            tem um transportador selecionado. Antes da coleta, confirme o termo
+            de segurança na Movux.
           </Text>
         </Container>
       </Body>

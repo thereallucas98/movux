@@ -97,7 +97,7 @@ apps/web/src/
   lib/               # Utilities (auth, db, graphql-client, swagger, cookies)
   components/
     ui/              # Primitive/shared components (Button, Card, Input…)
-    features/        # Feature-specific (auth/, nav/, tenants/, workspaces/, shifts/, schedules/, requests/, time-tracking/, …)
+    features/        # Feature-specific (auth/, nav/, shipments/, proposals/, vehicles/, carrier-documents/, public-search/, admin/, dashboard/, splash/)
   providers/         # QueryProvider
 packages/
   auth/              # CASL RBAC definitions (@movux/auth)

@@ -187,8 +187,8 @@ function Hero() {
 
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base md:text-lg">
             Marketplace de fretes e mudanças com segurança progressiva — do
-            primeiro contato até a entrega, com transportador verificado e
-            preço justo.
+            primeiro contato até a entrega, com transportador verificado e preço
+            justo.
           </p>
 
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -214,8 +214,7 @@ function Hero() {
           </div>
 
           <p className="text-muted-foreground mt-5 text-xs">
-            Sem taxa de cadastro · Cotação em minutos · Segurança em cada
-            etapa
+            Sem taxa de cadastro · Cotação em minutos · Segurança em cada etapa
           </p>
         </div>
 
@@ -280,9 +279,9 @@ function ProblemSection() {
           </h2>
           <p className="text-muted-foreground mt-5 text-base leading-relaxed">
             Grupo de WhatsApp, indicação de vizinho, motorista sem nenhuma
-            verificação — quem contrata um frete ou mudança hoje corre o
-            risco de pagar preço arbitrário, sem rastreio do trajeto e sem
-            nenhuma prova em caso de problema.
+            verificação — quem contrata um frete ou mudança hoje corre o risco
+            de pagar preço arbitrário, sem rastreio do trajeto e sem nenhuma
+            prova em caso de problema.
           </p>
           <ul className="mt-6 space-y-3 text-sm">
             {[

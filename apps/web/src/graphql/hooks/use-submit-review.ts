@@ -43,6 +43,12 @@ export function useSubmitReview() {
       queryClient.invalidateQueries({
         queryKey: ['reviews-for-shipment', variables.shipmentId],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-counterpart-info', variables.shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-events', variables.shipmentId],
+      })
     },
     meta: { successMessage: 'Avaliação enviada' },
   })

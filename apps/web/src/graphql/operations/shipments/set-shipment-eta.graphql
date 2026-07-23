@@ -1,0 +1,3 @@
+mutation SetShipmentEta($shipmentId: ID!, $stage: EtaStage!, $etaMinutes: Int!) {
+  setShipmentEta(shipmentId: $shipmentId, stage: $stage, etaMinutes: $etaMinutes)
+}

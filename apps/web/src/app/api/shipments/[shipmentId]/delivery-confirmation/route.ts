@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import {
   customerProfileRepository,
   deliveryConfirmationRepository,
@@ -9,7 +12,10 @@ import {
 } from '~/server/repositories'
 import { DeliveryConfirmationBodySchema } from '~/server/schemas/delivery-confirmation.schema'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
-import { confirmDelivery, getDeliveryConfirmationStatus } from '~/server/use-cases'
+import {
+  confirmDelivery,
+  getDeliveryConfirmationStatus,
+} from '~/server/use-cases'
 
 type RouteContext = { params: Promise<{ shipmentId: string }> }
 

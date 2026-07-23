@@ -6,7 +6,11 @@ import type { ShipmentRepository } from '../../../repositories/shipment.reposito
 import { resolveSafetyParticipant } from './resolve-safety-participant'
 
 export type GetSafetyCheckInStatusResult =
-  | { success: true; customer: SafetyCheckIn | null; carrier: SafetyCheckIn | null }
+  | {
+      success: true
+      customer: SafetyCheckIn | null
+      carrier: SafetyCheckIn | null
+    }
   | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' }
 
 interface GetSafetyCheckInStatusRepos {
@@ -22,7 +26,12 @@ export async function getSafetyCheckInStatus(
   principalRole: 'CUSTOMER' | 'CARRIER',
   shipmentId: string,
 ): Promise<GetSafetyCheckInStatusResult> {
-  const participant = await resolveSafetyParticipant(repos, userId, principalRole, shipmentId)
+  const participant = await resolveSafetyParticipant(
+    repos,
+    userId,
+    principalRole,
+    shipmentId,
+  )
   if (!participant) {
     return { success: false, code: 'NOT_FOUND' }
   }

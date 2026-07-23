@@ -19,6 +19,7 @@ import {
 } from './carrier-document-labels'
 import { DocumentStatusBadge } from './document-status-badge'
 import { DocumentTypeIcon } from './document-type-icon'
+import { DocumentViewerDialog } from './document-viewer-dialog'
 import { ExternalValidationDialog } from './external-validation-dialog'
 import { RejectDocumentDialog } from './reject-document-dialog'
 
@@ -34,6 +35,7 @@ export function DocumentCard({ document }: { document: CarrierDocumentItem }) {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
   const [externalValidationDialogOpen, setExternalValidationDialogOpen] =
     useState(false)
+  const [viewerOpen, setViewerOpen] = useState(false)
 
   const documentId = document.id
   if (!documentId) return null
@@ -41,7 +43,7 @@ export function DocumentCard({ document }: { document: CarrierDocumentItem }) {
   const isPending = document.status === 'PENDING'
 
   return (
-    <Card>
+    <Card className="flex h-full flex-col">
       <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
         <div className="flex items-center gap-3">
           {document.type && <DocumentTypeIcon type={document.type} />}
@@ -51,17 +53,16 @@ export function DocumentCard({ document }: { document: CarrierDocumentItem }) {
         </div>
         {document.status && <DocumentStatusBadge status={document.status} />}
       </CardHeader>
-      <CardContent className="space-y-2 text-sm">
+      <CardContent className="flex-1 space-y-2 text-sm">
         <p className="font-medium">{document.carrierName ?? '—'}</p>
         <p className="text-muted-foreground">{document.carrierEmail ?? '—'}</p>
-        <a
-          href={document.fileUrl ?? '#'}
-          target="_blank"
-          rel="noreferrer"
+        <button
+          type="button"
+          onClick={() => setViewerOpen(true)}
           className="text-primary inline-block hover:underline"
         >
           Ver arquivo
-        </a>
+        </button>
         {document.status === 'REJECTED' && document.rejectionReason && (
           <p className="text-destructive">Motivo: {document.rejectionReason}</p>
         )}
@@ -129,6 +130,22 @@ export function DocumentCard({ document }: { document: CarrierDocumentItem }) {
           )
         }
         isPending={recordExternalValidation.isPending}
+      />
+
+      <DocumentViewerDialog
+        open={viewerOpen}
+        onOpenChange={setViewerOpen}
+        document={document}
+        isPending={approve.isPending || reject.isPending}
+        onApprove={() => approve.mutate(documentId)}
+        onReject={() => {
+          setViewerOpen(false)
+          setRejectDialogOpen(true)
+        }}
+        onExternalValidation={() => {
+          setViewerOpen(false)
+          setExternalValidationDialogOpen(true)
+        }}
       />
     </Card>
   )

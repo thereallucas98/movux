@@ -1,4 +1,8 @@
-import type { EventType, PrismaClient, ShipmentEvent } from '~/generated/prisma/client'
+import type {
+  EventType,
+  PrismaClient,
+  ShipmentEvent,
+} from '~/generated/prisma/client'
 
 export interface ShipmentEventRepository {
   create(
@@ -10,7 +14,9 @@ export interface ShipmentEventRepository {
   listByShipment(shipmentId: string): Promise<ShipmentEvent[]>
 }
 
-export function createShipmentEventRepository(prisma: PrismaClient): ShipmentEventRepository {
+export function createShipmentEventRepository(
+  prisma: PrismaClient,
+): ShipmentEventRepository {
   return {
     async create(shipmentId, eventType, triggeredBy, metadata) {
       await prisma.shipmentEvent.create({

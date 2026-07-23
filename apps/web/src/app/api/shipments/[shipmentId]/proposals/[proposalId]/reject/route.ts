@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import {
   customerProfileRepository,
   notificationLogRepository,
   proposalQueueRepository,
   proposalRepository,
+  shipmentEventRepository,
   shipmentRepository,
   userRepository,
 } from '~/server/repositories'
 import { ProposalIdParamSchema } from '~/server/schemas/proposal.schema'
 import { rejectProposal } from '~/server/use-cases'
 
-type RouteContext = { params: Promise<{ shipmentId: string; proposalId: string }> }
+type RouteContext = {
+  params: Promise<{ shipmentId: string; proposalId: string }>
+}
 
 export async function POST(req: Request, context: RouteContext) {
   const principal = await getPrincipal(req)
@@ -29,6 +35,7 @@ export async function POST(req: Request, context: RouteContext) {
       shipmentRepo: shipmentRepository,
       proposalRepo: proposalRepository,
       queueRepo: proposalQueueRepository,
+      shipmentEventRepo: shipmentEventRepository,
       userRepo: userRepository,
       notificationLogRepo: notificationLogRepository,
     },

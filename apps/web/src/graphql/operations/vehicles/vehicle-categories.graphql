@@ -1,0 +1,13 @@
+query VehicleCategories {
+  vehicleCategories {
+    id
+    name
+    description
+    specs {
+      id
+      name
+      maxWeightKg
+      maxVolumeM3
+    }
+  }
+}

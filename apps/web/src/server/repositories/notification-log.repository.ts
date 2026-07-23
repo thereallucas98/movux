@@ -69,7 +69,8 @@ export function createNotificationLogRepository(
         where: { id },
         select: { metadata: true },
       })
-      const metadata = (existing?.metadata as Record<string, unknown> | null) ?? {}
+      const metadata =
+        (existing?.metadata as Record<string, unknown> | null) ?? {}
       await prisma.notificationLog.update({
         where: { id },
         data: {
@@ -85,7 +86,8 @@ export function createNotificationLogRepository(
         where: { id },
         select: { metadata: true },
       })
-      const metadata = (existing?.metadata as Record<string, unknown> | null) ?? {}
+      const metadata =
+        (existing?.metadata as Record<string, unknown> | null) ?? {}
       await prisma.notificationLog.update({
         where: { id },
         data: { status: 'FAILED', metadata: { ...metadata, error } },

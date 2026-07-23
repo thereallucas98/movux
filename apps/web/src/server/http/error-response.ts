@@ -63,12 +63,19 @@ export type ErrorCode =
   | 'NOT_CALLED'
   | 'ALREADY_PROPOSED'
   | 'TOO_MANY_ATTEMPTS'
+  | 'ATTEMPT_STILL_PENDING'
+  | 'CARRIER_NOT_VERIFIED'
   // Safety check-in (S3-T1)
   | 'ALREADY_CONFIRMED'
   // Transit status (S3-T2)
   | 'SAFETY_NOT_CONFIRMED'
   // Reviews (S4-T1)
   | 'ALREADY_REVIEWED'
+  // Fleet taxonomy (S10-T1)
+  | 'INVALID_SPEC'
+  | 'INVALID_MODEL'
+  | 'DUPLICATE_PLATE'
+  | 'VEHICLE_LIMIT_REACHED'
 
 interface ErrorShape {
   status: number
@@ -178,7 +185,8 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   },
   NO_PRICING_AVAILABLE: {
     status: 422,
-    message: 'No pricing template available for this corridor and shipment type',
+    message:
+      'No pricing template available for this corridor and shipment type',
   },
   ALREADY_IN_QUEUE: {
     status: 409,
@@ -192,9 +200,17 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
     status: 409,
     message: 'Carrier already has a proposal for this shipment',
   },
+  CARRIER_NOT_VERIFIED: {
+    status: 403,
+    message: 'Carrier must be verified to submit a proposal',
+  },
   TOO_MANY_ATTEMPTS: {
     status: 409,
     message: 'Proposal already has the maximum of 5 attempts',
+  },
+  ATTEMPT_STILL_PENDING: {
+    status: 409,
+    message: 'Customer has not responded to the current attempt yet',
   },
   ALREADY_CONFIRMED: {
     status: 409,
@@ -207,6 +223,13 @@ const ERROR_MAP: Record<ErrorCode, ErrorShape> = {
   ALREADY_REVIEWED: {
     status: 409,
     message: 'This role has already reviewed this shipment',
+  },
+  INVALID_SPEC: { status: 400, message: 'Vehicle spec not found' },
+  INVALID_MODEL: { status: 400, message: 'Vehicle model not found' },
+  DUPLICATE_PLATE: { status: 409, message: 'Plate already registered' },
+  VEHICLE_LIMIT_REACHED: {
+    status: 409,
+    message: 'Carrier already has the maximum of 2 active vehicles',
   },
 }
 

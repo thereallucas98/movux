@@ -1,7 +1,7 @@
 # Movux — Roadmap
 
-**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1–S8-T7 — redesign visual + dashboard de métricas nos 3 fluxos) — Sprint 9 (Marca & Growth Público) ✅ concluído (S9-T1–S9-T3 — marca/splash, landing reescrita, busca pública de transportadores)
-**Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 9 (Marca & Growth Público) → Sprint 7 (Plans & Billing) — Sprint 9 entra antes de Billing pelo mesmo motivo que Billing ficou por último (não depende de conta externa ainda não configurada); pedido explícito do usuário em 2026-07-21
+**Status:** Sprint 6 ✅ concluído (S6-T2 pulada — sem conta Meta Business) — Sprint 8 (UI) ✅ concluído (S8-T1–S8-T7 — redesign visual + dashboard de métricas nos 3 fluxos) — Sprint 9 (Marca & Growth Público) ✅ concluído (S9-T1–S9-T3 — marca/splash, landing reescrita, busca pública de transportadores) — Sprint 10 (Frota & Match) ○ pendente (S10-T1/S10-T2)
+**Ordem combinada:** Sprint 6 → Sprint 8 (UI) → Sprint 9 (Marca & Growth Público) → Sprint 10 (Frota & Match) → Sprint 7 (Plans & Billing) — Sprint 10 entra antes de Billing por pedido explícito do usuário em 2026-07-22 (prioridade imediata sobre monetização); Sprint 9 entra antes de Billing pelo mesmo motivo que Billing ficou por último (não depende de conta externa ainda não configurada); pedido explícito do usuário em 2026-07-21
 **Approach:** API-first (Swagger + Insomnia) → UI por feature
 **QA:** local com Docker + Prisma Studio
 **Deploy:** Vercel (web) + Supabase (PostgreSQL)
@@ -151,6 +151,19 @@ S8-T4 é a primeira rodada do redesign visual (ver [`docs/design-references-note
 | S9-T3 | Busca pública de transportadores (sem conta) — perfil anonimizado, CTA prefila cadastro + criação de frete | ✅ | [→](tasks/s9-t3-public-driver-search/) |
 
 Pedido explícito do usuário em 2026-07-21: assets de marca fornecidos (`Downloads/Splash/*`); referências de design são os próprios repos irmãos (`copa-bolao-web-app`, `financial-driver-web-app`) + `docs/DESIGN-SYSTEM.md`/styleguide interno — ver levantamento completo em [`docs/design-references-notes.md`](design-references-notes.md). Decisões de escopo (Fast/Good/Ideal, batidas em chat): dados públicos do carrier = perfil anonimizado (sem foto/telefone/documento); token de continuidade = prefill simples via query param, sem persistir lead novo no banco.
+
+---
+
+## Sprint 10 — Frota & Match
+
+> Objetivo: substituir o `VehicleType` (enum achatado de 5 valores, sem capacidade) por uma taxonomia hierárquica de frota/capacidade real, e usar esses dados pra elegibilidade real no fluxo de fila/proposta — hoje `vehicleTypeRequired` do frete é gravado mas nunca lido em lugar nenhum, e a fila (`join-proposal-queue.use-case.ts` + `refill-called-group.ts`) é FIFO puro, sem checar veículo, distância ou nota.
+
+| ID | Task | Status | Doc |
+|---|---|---|---|
+| S10-T1 | Taxonomia de frota — categoria → especificação (capacidade real) + catálogo real de marca/modelo (FIPE), CRUD de veículo pro carrier | ✅ | [→](tasks/s10-t1-fleet-taxonomy/) |
+| S10-T2 | Algoritmo de match — elegibilidade por frota + outros filtros (distância/raio, nota, disponibilidade) no fluxo de fila/proposta | ○ | [→](tasks/s10-t2-matching-algorithm/) |
+
+Pedido explícito do usuário em 2026-07-22: aprofundar dados de veículo/frota e o algoritmo de match, usando `build-track-api` (repo irmão, marketplace bilateral de serviços domésticos) como referência estrutural — não de domínio (build-track não tem "veículo", tem `SpecialtyGroup → SpecialtyItem` como taxonomia de capacidade do prestador, e um dispatch automático `findBestAutonomous` que filtra por nota mínima + overlap de especialidade + raio geográfico, ordena por distância/nota e pega top-5). Decisões batidas em chat: S10-T1 antes de S10-T2 (match depende do modelo de dados existir primeiro); modelo de veículo = taxonomia hierárquica (não só enriquecer o enum, não só capacidade contínua sem categoria) — desenhada desde já pra suportar múltiplos filtros no match futuro (não só compatibilidade de veículo): distância/raio, nota, faixa de preço, disponibilidade, histórico.
 
 ---
 

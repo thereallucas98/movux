@@ -1,8 +1,4 @@
-import type {
-  ShipmentType,
-  TimeWindow,
-  VehicleType,
-} from '~/graphql/generated/types'
+import type { ShipmentType, TimeWindow } from '~/graphql/generated/types'
 
 export const SHIPMENT_TYPE_LABELS: Record<ShipmentType, string> = {
   RESIDENTIAL_MOVING: 'Mudança residencial',
@@ -11,13 +7,8 @@ export const SHIPMENT_TYPE_LABELS: Record<ShipmentType, string> = {
   OTHER: 'Outro',
 }
 
-export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
-  ANY: 'Qualquer veículo',
-  MOTORCYCLE: 'Moto',
-  VAN: 'Van',
-  TRUCK_SMALL: 'Caminhão pequeno',
-  TRUCK_LARGE: 'Caminhão grande',
-}
+// Categorias de veículo (S10-T1) agora vêm do banco via useVehicleTaxonomy —
+// sem mapa estático, o nome já é PT-BR direto na VehicleCategory.
 
 export const TIME_WINDOW_LABELS: Record<TimeWindow, string> = {
   MORNING: 'Manhã',

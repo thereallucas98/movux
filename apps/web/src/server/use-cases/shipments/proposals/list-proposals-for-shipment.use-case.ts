@@ -32,7 +32,10 @@ export async function listProposalsForShipment(
     return { success: false, code: 'NOT_FOUND' }
   }
 
-  const shipment = await repos.shipmentRepo.findStatusForOwner(shipmentId, customerProfile.id)
+  const shipment = await repos.shipmentRepo.findStatusForOwner(
+    shipmentId,
+    customerProfile.id,
+  )
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
   }

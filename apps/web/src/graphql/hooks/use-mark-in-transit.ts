@@ -11,7 +11,8 @@ import { getGraphQLErrorCode, graphqlClient } from '~/lib/graphql-client'
 
 const ERROR_MESSAGES: Record<string, string> = {
   NOT_FOUND: 'Frete não encontrado.',
-  INVALID_STATE_TRANSITION: 'Esse frete precisa estar coletado antes de seguir em trânsito.',
+  INVALID_STATE_TRANSITION:
+    'Esse frete precisa estar coletado antes de seguir em trânsito.',
 }
 
 export function markInTransitErrorMessage(error: unknown): string {
@@ -38,7 +39,15 @@ export function useMarkInTransit() {
       }
     },
     onSuccess: (_data, shipmentId) => {
-      queryClient.invalidateQueries({ queryKey: ['shipment-for-carrier', shipmentId] })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-for-carrier', shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-counterpart-info', shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-events', shipmentId],
+      })
     },
     meta: { successMessage: 'Frete marcado como em trânsito' },
   })

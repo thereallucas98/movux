@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import {
   carrierDocumentRepository,
   carrierProfileRepository,

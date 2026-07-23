@@ -53,7 +53,7 @@ export function RegisterForm() {
   const roleFromQuery =
     searchParams.get('role') === 'CARRIER' ? 'CARRIER' : 'CUSTOMER'
   const cityIdFromQuery = searchParams.get('cityId')
-  const vehicleTypeFromQuery = searchParams.get('vehicleType')
+  const requiredCategoryIdFromQuery = searchParams.get('requiredCategoryId')
 
   const {
     register,
@@ -106,8 +106,8 @@ export function RegisterForm() {
 
       if (cityIdFromQuery) {
         const params = new URLSearchParams({ cityId: cityIdFromQuery })
-        if (vehicleTypeFromQuery) {
-          params.set('vehicleTypeRequired', vehicleTypeFromQuery)
+        if (requiredCategoryIdFromQuery) {
+          params.set('requiredCategoryId', requiredCategoryIdFromQuery)
         }
         router.push(`/customer/shipments/new?${params.toString()}`)
         return

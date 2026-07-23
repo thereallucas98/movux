@@ -78,9 +78,9 @@ export function LandingPricing() {
           Toda a plataforma é gratuita, por enquanto.
         </h2>
         <p className="text-muted-foreground max-w-2xl text-base">
-          Cliente sempre paga só o frete combinado com o transportador —
-          nunca uma taxa de plataforma. Planos pagos por volume pra
-          transportador chegam numa próxima rodada.
+          Cliente sempre paga só o frete combinado com o transportador — nunca
+          uma taxa de plataforma. Planos pagos por volume pra transportador
+          chegam numa próxima rodada.
         </p>
       </header>
 

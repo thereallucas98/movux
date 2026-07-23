@@ -101,7 +101,10 @@ export function createUserRepository(prisma: PrismaClient): UserRepository {
     },
 
     async markEmailVerified(id) {
-      await prisma.user.update({ where: { id }, data: { emailVerifiedAt: new Date() } })
+      await prisma.user.update({
+        where: { id },
+        data: { emailVerifiedAt: new Date() },
+      })
     },
   }
 }

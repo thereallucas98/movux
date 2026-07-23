@@ -6,7 +6,10 @@ import { sweepAutoConfirmDelivery } from './sweep-auto-confirm-delivery'
 
 export type ConfirmDeliveryResult =
   | { success: true; confirmation: DeliveryConfirmation }
-  | { success: false; code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'ALREADY_CONFIRMED' }
+  | {
+      success: false
+      code: 'NOT_FOUND' | 'INVALID_STATE_TRANSITION' | 'ALREADY_CONFIRMED'
+    }
 
 interface ConfirmDeliveryRepos {
   customerProfileRepo: CustomerProfileRepository
@@ -26,7 +29,10 @@ export async function confirmDelivery(
     return { success: false, code: 'NOT_FOUND' }
   }
 
-  const shipment = await repos.shipmentRepo.findStatusForOwner(shipmentId, customerProfile.id)
+  const shipment = await repos.shipmentRepo.findStatusForOwner(
+    shipmentId,
+    customerProfile.id,
+  )
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -40,7 +46,8 @@ export async function confirmDelivery(
     customerId: customerProfile.id,
   })
 
-  const existing = await repos.deliveryConfirmationRepo.findByShipment(shipmentId)
+  const existing =
+    await repos.deliveryConfirmationRepo.findByShipment(shipmentId)
   if (existing) {
     return { success: false, code: 'ALREADY_CONFIRMED' }
   }

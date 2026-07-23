@@ -89,6 +89,26 @@ export function ShipmentDetailView({ shipmentId }: { shipmentId: string }) {
                   ` · ${TIME_WINDOW_LABELS[shipment.timeWindow]}`}
             </p>
           </div>
+          {shipment.status === 'CARRIER_SELECTED' &&
+            shipment.collectionEtaMinutes !== null &&
+            shipment.collectionEtaMinutes !== undefined && (
+              <div>
+                <p className="text-muted-foreground text-xs uppercase">
+                  Chegada prevista (coleta)
+                </p>
+                <p>{shipment.collectionEtaMinutes} min</p>
+              </div>
+            )}
+          {shipment.status === 'IN_TRANSIT' &&
+            shipment.deliveryEtaMinutes !== null &&
+            shipment.deliveryEtaMinutes !== undefined && (
+              <div>
+                <p className="text-muted-foreground text-xs uppercase">
+                  Chegada prevista (entrega)
+                </p>
+                <p>{shipment.deliveryEtaMinutes} min</p>
+              </div>
+            )}
         </CardContent>
       </Card>
 

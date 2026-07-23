@@ -2,6 +2,7 @@ import type { CustomerProfileRepository } from '../../../repositories/customer-p
 import type { NotificationLogRepository } from '../../../repositories/notification-log.repository'
 import type { ProposalQueueRepository } from '../../../repositories/proposal-queue.repository'
 import type { ProposalRepository } from '../../../repositories/proposal.repository'
+import type { ShipmentEventRepository } from '../../../repositories/shipment-event.repository'
 import type { ShipmentRepository } from '../../../repositories/shipment.repository'
 import type { UserRepository } from '../../../repositories/user.repository'
 import { refillCalledGroup } from '../queue/refill-called-group'
@@ -18,6 +19,7 @@ interface RejectProposalRepos {
   shipmentRepo: ShipmentRepository
   proposalRepo: ProposalRepository
   queueRepo: ProposalQueueRepository
+  shipmentEventRepo: ShipmentEventRepository
   userRepo: UserRepository
   notificationLogRepo: NotificationLogRepository
 }
@@ -33,7 +35,10 @@ export async function rejectProposal(
     return { success: false, code: 'NOT_FOUND' }
   }
 
-  const shipment = await repos.shipmentRepo.findStatusForOwner(shipmentId, customerProfile.id)
+  const shipment = await repos.shipmentRepo.findStatusForOwner(
+    shipmentId,
+    customerProfile.id,
+  )
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -49,7 +54,10 @@ export async function rejectProposal(
     shipmentId,
   )
 
-  const proposal = await repos.proposalRepo.findByIdForShipment(proposalId, shipmentId)
+  const proposal = await repos.proposalRepo.findByIdForShipment(
+    proposalId,
+    shipmentId,
+  )
   if (!proposal) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -57,12 +65,22 @@ export async function rejectProposal(
     return { success: false, code: 'INVALID_STATE_TRANSITION' }
   }
 
-  await repos.proposalRepo.respondToAttempt(proposal.id, proposal.currentAttempt, 'REJECTED')
+  await repos.proposalRepo.respondToAttempt(
+    proposal.id,
+    proposal.currentAttempt,
+    'REJECTED',
+  )
+  await repos.shipmentEventRepo.create(shipmentId, 'PROPOSAL_REJECTED', userId)
 
   if (proposal.currentAttempt >= MAX_ATTEMPTS) {
     await repos.proposalRepo.updateStatus(proposal.id, 'REJECTED')
     await repos.queueRepo.updateStatus(proposal.queueEntryId, 'EXHAUSTED')
-    await refillCalledGroup(repos.queueRepo, repos.userRepo, repos.notificationLogRepo, shipmentId)
+    await refillCalledGroup(
+      repos.queueRepo,
+      repos.userRepo,
+      repos.notificationLogRepo,
+      shipmentId,
+    )
   }
 
   return { success: true }

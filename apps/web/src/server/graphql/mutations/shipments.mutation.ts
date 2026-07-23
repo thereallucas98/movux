@@ -1,10 +1,6 @@
 import { createShipment, publishShipment } from '~/server/use-cases'
 import { builder } from '../builder'
-import {
-  ShipmentTypeEnum,
-  TimeWindowEnum,
-  VehicleTypeEnum,
-} from '../enums/shipment.enum'
+import { ShipmentTypeEnum, TimeWindowEnum } from '../enums/shipment.enum'
 import { gqlError, gqlErrorFromResult } from '../errors'
 import { ShipmentType, toGraphQLShipment } from '../types/shipment.type'
 
@@ -26,7 +22,7 @@ const CreateShipmentInput = builder.inputType('CreateShipmentInput', {
     description: t.string({ required: true }),
     estimatedWeightKg: t.float(),
     estimatedVolumeM3: t.float(),
-    vehicleTypeRequired: t.field({ type: VehicleTypeEnum, required: true }),
+    requiredCategoryId: t.id(),
     scheduledDate: t.string({ required: true }),
     timeWindow: t.field({ type: TimeWindowEnum, required: true }),
     specificTime: t.string(),
@@ -58,7 +54,9 @@ builder.mutationField('createShipment', (t) =>
           description: input.description,
           estimatedWeightKg: input.estimatedWeightKg ?? undefined,
           estimatedVolumeM3: input.estimatedVolumeM3 ?? undefined,
-          vehicleTypeRequired: input.vehicleTypeRequired,
+          requiredCategoryId: input.requiredCategoryId
+            ? String(input.requiredCategoryId)
+            : undefined,
           scheduledDate: input.scheduledDate,
           timeWindow: input.timeWindow,
           specificTime: input.specificTime ?? undefined,

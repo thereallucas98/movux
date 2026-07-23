@@ -1,4 +1,3 @@
-import type { VehicleType } from '~/generated/prisma/client'
 import type { CarrierProfileRepository } from '../../repositories/carrier-profile.repository'
 import type { ProposalRepository } from '../../repositories/proposal.repository'
 import type { ShipmentRepository } from '../../repositories/shipment.repository'
@@ -6,12 +5,13 @@ import type { VehicleRepository } from '../../repositories/vehicle.repository'
 
 export interface SearchPublicCarriersInput {
   cityId: string
-  vehicleType?: VehicleType
+  vehicleCategoryId?: string
 }
 
 export interface PublicCarrierResult {
+  userId: string
   firstName: string
-  vehicleType: VehicleType | null
+  vehicleCategoryName: string | null
   avgRating: number | null
   totalShipments: number
 }
@@ -24,16 +24,16 @@ interface SearchPublicCarriersRepos {
 }
 
 // Rota pública (S9-T3) — sem `principal` na assinatura porque não existe;
-// nenhum campo de PII sai daqui (só firstName/vehicleType/avgRating/
-// totalShipments, nunca o User/CarrierProfile inteiro).
+// nenhum campo de PII sai daqui (só firstName/categoria de veículo/avgRating/
+// totalShipments, nunca o User/CarrierProfile inteiro). `userId` também sai
+// (não é PII, já é a chave natural usada em toda consulta carrier-scoped) —
+// necessário pra linkar o card ao portfólio público (achado #15).
 export async function searchPublicCarriers(
   repos: SearchPublicCarriersRepos,
   input: SearchPublicCarriersInput,
 ): Promise<{ success: true; data: PublicCarrierResult[] }> {
   const acceptedCarrierIds =
-    await repos.proposalRepo.findDistinctCarrierIdsAcceptedInCity(
-      input.cityId,
-    )
+    await repos.proposalRepo.findDistinctCarrierIdsAcceptedInCity(input.cityId)
   if (acceptedCarrierIds.length === 0) return { success: true, data: [] }
 
   const eligibleProfiles =
@@ -43,22 +43,29 @@ export async function searchPublicCarriers(
 
   const results = await Promise.all(
     eligibleProfiles.map(async (profile) => {
-      const [totalShipments, vehicleType] = await Promise.all([
+      const [totalShipments, category] = await Promise.all([
         repos.shipmentRepo.countByCarrier(profile.userId),
-        repos.vehicleRepo.findActiveTypeByOwnerId(profile.userId),
+        repos.vehicleRepo.findActiveCategoryByOwnerId(profile.userId),
       ])
       return {
+        userId: profile.userId,
         firstName: profile.fullName.split(' ')[0],
-        vehicleType,
+        vehicleCategoryId: category?.id ?? null,
+        vehicleCategoryName: category?.name ?? null,
         avgRating: profile.avgRating,
         totalShipments,
       }
     }),
   )
 
-  const filtered = input.vehicleType
-    ? results.filter((r) => r.vehicleType === input.vehicleType)
+  const filtered = input.vehicleCategoryId
+    ? results.filter((r) => r.vehicleCategoryId === input.vehicleCategoryId)
     : results
 
-  return { success: true, data: filtered }
+  return {
+    success: true,
+    data: filtered.map(
+      ({ vehicleCategoryId: _vehicleCategoryId, ...rest }) => rest,
+    ),
+  }
 }

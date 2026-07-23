@@ -1,6 +1,7 @@
 import type {
   ProposalStatus,
   QueueEntryStatus,
+  ResponseType,
 } from '~/graphql/generated/types'
 
 export interface CardActionInput {
@@ -9,6 +10,8 @@ export interface CardActionInput {
   /** `null` = carrier ainda não enviou proposta */
   proposalStatus: ProposalStatus | null
   currentAttempt: number | null
+  /** `responseType` da tentativa atual (`attempts[currentAttempt]`) */
+  currentAttemptResponseType: ResponseType | null
 }
 
 export type CardActionKind =
@@ -35,6 +38,7 @@ export function resolveCardAction({
   queueStatus,
   proposalStatus,
   currentAttempt,
+  currentAttemptResponseType,
 }: CardActionInput): ResolvedCardAction {
   if (proposalStatus === 'ACCEPTED') {
     return { actions: [], readOnlyLabel: 'Proposta aceita' }
@@ -53,13 +57,12 @@ export function resolveCardAction({
     return { actions: [], readOnlyLabel: 'Vaga encerrada' }
   }
   if (queueStatus === 'WITHDRAWN') {
-    return {
-      actions: [],
-      readOnlyLabel:
-        proposalStatus === 'WITHDRAWN'
-          ? 'Você desistiu da proposta'
-          : 'Você saiu da fila',
+    if (proposalStatus === 'WITHDRAWN') {
+      return { actions: [], readOnlyLabel: 'Você desistiu da proposta' }
     }
+    // Achado #18: saiu da fila antes de propor — pode reentrar enquanto o
+    // frete continuar aberto (mesmo tratamento de quem nunca entrou).
+    return { actions: ['join'], readOnlyLabel: null }
   }
   if (queueStatus === 'WAITING') {
     return { actions: ['withdraw-queue'], readOnlyLabel: null }
@@ -72,6 +75,11 @@ export function resolveCardAction({
   }
   if (queueStatus === 'ACTIVE') {
     if ((currentAttempt ?? 1) >= MAX_ATTEMPTS) {
+      return { actions: ['withdraw-proposal'], readOnlyLabel: null }
+    }
+    // Achado #6: só libera nova tentativa depois que o cliente recusar a
+    // atual — enquanto `PENDING`, carrier só pode desistir, não reenviar.
+    if (currentAttemptResponseType === 'PENDING') {
       return { actions: ['withdraw-proposal'], readOnlyLabel: null }
     }
     return {

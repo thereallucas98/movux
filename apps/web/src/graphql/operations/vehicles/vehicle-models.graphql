@@ -1,0 +1,6 @@
+query VehicleModels($brandId: ID!) {
+  vehicleModels(brandId: $brandId) {
+    id
+    name
+  }
+}

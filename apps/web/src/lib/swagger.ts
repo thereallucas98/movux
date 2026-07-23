@@ -13,12 +13,14 @@ const options: swaggerJsdoc.Options = {
     tags: [
       {
         name: 'Auth',
-        description: 'Authentication — register (customer/carrier), login, logout, me',
+        description:
+          'Authentication — register (customer/carrier), login, logout, me',
       },
       { name: 'Me', description: 'Authenticated user — profile and password' },
       {
         name: 'Shipments',
-        description: 'Freight/moving shipments — create, publish, get, list (customer)',
+        description:
+          'Freight/moving shipments — create, publish, get, list (customer)',
       },
       {
         name: 'Proposal Queue',
@@ -26,15 +28,18 @@ const options: swaggerJsdoc.Options = {
       },
       {
         name: 'Proposals',
-        description: 'Carrier price proposals per shipment — submit, counter-offer, withdraw',
+        description:
+          'Carrier price proposals per shipment — submit, counter-offer, withdraw',
       },
       {
         name: 'Safety',
-        description: 'Safety term check-in — customer and selected carrier confirm before transit',
+        description:
+          'Safety term check-in — customer and selected carrier confirm before transit',
       },
       {
         name: 'Transit',
-        description: 'Carrier-driven lifecycle transitions — collect, in transit, deliver',
+        description:
+          'Carrier-driven lifecycle transitions — collect, in transit, deliver',
       },
       {
         name: 'Delivery Confirmation',
@@ -43,11 +48,13 @@ const options: swaggerJsdoc.Options = {
       },
       {
         name: 'Shipment Events',
-        description: 'Chronological audit log of a shipment lifecycle transitions',
+        description:
+          'Chronological audit log of a shipment lifecycle transitions',
       },
       {
         name: 'Reviews',
-        description: 'Mutual rating between customer and carrier after delivery',
+        description:
+          'Mutual rating between customer and carrier after delivery',
       },
       {
         name: 'Carrier Documents',
@@ -55,7 +62,8 @@ const options: swaggerJsdoc.Options = {
       },
       {
         name: 'Notifications',
-        description: 'Admin view of sent/failed notifications, with manual retry',
+        description:
+          'Admin view of sent/failed notifications, with manual retry',
       },
       {
         name: 'Tenants',
@@ -134,7 +142,14 @@ const options: swaggerJsdoc.Options = {
         },
         ShipmentAddressInput: {
           type: 'object',
-          required: ['street', 'number', 'neighborhoodId', 'cityId', 'state', 'zipCode'],
+          required: [
+            'street',
+            'number',
+            'neighborhoodId',
+            'cityId',
+            'state',
+            'zipCode',
+          ],
           properties: {
             street: { type: 'string' },
             number: { type: 'string' },

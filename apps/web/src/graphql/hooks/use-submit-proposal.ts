@@ -14,6 +14,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   ALREADY_PROPOSED: 'Você já enviou uma proposta para esse frete.',
   INVALID_STATE_TRANSITION: 'Esse frete não está mais aberto para propostas.',
   NOT_FOUND: 'Frete não encontrado.',
+  CARRIER_NOT_VERIFIED:
+    'Sua conta precisa estar verificada pra enviar propostas. Envie seus documentos em "Meus documentos".',
 }
 
 export function submitProposalErrorMessage(error: unknown): string {

@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import {
   customerProfileRepository,
   pricingRepository,
   shipmentRepository,
 } from '~/server/repositories'
-import { CreateShipmentSchema, ListShipmentsQuerySchema } from '~/server/schemas/shipment.schema'
+import {
+  CreateShipmentSchema,
+  ListShipmentsQuerySchema,
+} from '~/server/schemas/shipment.schema'
 import { createShipment, listShipmentsForCustomer } from '~/server/use-cases'
 
 export async function POST(req: Request) {
@@ -19,7 +25,11 @@ export async function POST(req: Request) {
   if (!parsed.success) return validationErrorResponse(parsed.error)
 
   const result = await createShipment(
-    { customerProfileRepo: customerProfileRepository, pricingRepo: pricingRepository, shipmentRepo: shipmentRepository },
+    {
+      customerProfileRepo: customerProfileRepository,
+      pricingRepo: pricingRepository,
+      shipmentRepo: shipmentRepository,
+    },
     principal.userId,
     parsed.data,
   )
@@ -42,11 +52,17 @@ export async function GET(req: Request) {
   if (!parsed.success) return validationErrorResponse(parsed.error)
 
   const result = await listShipmentsForCustomer(
-    { customerProfileRepo: customerProfileRepository, shipmentRepo: shipmentRepository },
+    {
+      customerProfileRepo: customerProfileRepository,
+      shipmentRepo: shipmentRepository,
+    },
     principal.userId,
     parsed.data,
   )
   if (!result.success) return errorResponse(result.code)
 
-  return NextResponse.json({ data: result.data, nextCursor: result.nextCursor }, { status: 200 })
+  return NextResponse.json(
+    { data: result.data, nextCursor: result.nextCursor },
+    { status: 200 },
+  )
 }

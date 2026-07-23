@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import { notificationLogRepository } from '~/server/repositories'
 import { ListNotificationsQuerySchema } from '~/server/schemas/notification-log.schema'
 import { listNotificationsForAdmin } from '~/server/use-cases'

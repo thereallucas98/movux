@@ -30,18 +30,30 @@ export async function sendEmailNotification(
       subject: input.subject,
       react: input.react,
     })
-    await notificationLogRepo.create(input.userId, 'EMAIL', input.templateCode, 'SENT', {
-      providerMessageId: result.id,
-      to: input.to,
-      subject: input.subject,
-      html,
-    })
+    await notificationLogRepo.create(
+      input.userId,
+      'EMAIL',
+      input.templateCode,
+      'SENT',
+      {
+        providerMessageId: result.id,
+        to: input.to,
+        subject: input.subject,
+        html,
+      },
+    )
   } catch (error) {
-    await notificationLogRepo.create(input.userId, 'EMAIL', input.templateCode, 'FAILED', {
-      error: error instanceof Error ? error.message : String(error),
-      to: input.to,
-      subject: input.subject,
-      html,
-    })
+    await notificationLogRepo.create(
+      input.userId,
+      'EMAIL',
+      input.templateCode,
+      'FAILED',
+      {
+        error: error instanceof Error ? error.message : String(error),
+        to: input.to,
+        subject: input.subject,
+        html,
+      },
+    )
   }
 }

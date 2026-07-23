@@ -122,6 +122,8 @@ export function CarrierShipmentDetailView({
         <CarrierShipmentTransitActions
           shipmentId={shipment.id}
           status={shipment.status}
+          collectionEtaMinutes={shipment.collectionEtaMinutes ?? null}
+          deliveryEtaMinutes={shipment.deliveryEtaMinutes ?? null}
         />
       )}
 

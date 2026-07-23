@@ -3,6 +3,7 @@ query ReviewsForShipment($shipmentId: ID!) {
     id
     reviewerRole
     rating
+    tags
     createdAt
   }
 }

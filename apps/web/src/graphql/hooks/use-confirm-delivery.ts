@@ -45,7 +45,21 @@ export function useConfirmDelivery() {
       queryClient.invalidateQueries({
         queryKey: ['shipments', variables.shipmentId],
       })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-counterpart-info', variables.shipmentId],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['shipment-events', variables.shipmentId],
+      })
     },
-    meta: { successMessage: 'Entrega confirmada' },
+    meta: {
+      successMessage: (
+        _data: unknown,
+        variables: ConfirmDeliveryMutationVariables,
+      ) =>
+        variables.input.issueDescription
+          ? 'Problema reportado'
+          : 'Entrega confirmada',
+    },
   })
 }

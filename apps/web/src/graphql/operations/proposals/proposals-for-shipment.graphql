@@ -4,8 +4,11 @@ query ProposalsForShipment($shipmentId: ID!) {
     status
     carrierId
     carrierName
+    carrierPhone
+    carrierAvgRating
     priceInCents
     currentAttempt
+    currentAttemptResponseType
     expiresAt
     createdAt
   }

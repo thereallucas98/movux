@@ -1,0 +1,7 @@
+query ReviewTagOptions($targetRole: ReviewerRole!) {
+  reviewTagOptions(targetRole: $targetRole) {
+    id
+    code
+    label
+  }
+}

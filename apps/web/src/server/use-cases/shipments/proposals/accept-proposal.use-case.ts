@@ -35,7 +35,10 @@ export async function acceptProposal(
     return { success: false, code: 'NOT_FOUND' }
   }
 
-  const shipment = await repos.shipmentRepo.findStatusForOwner(shipmentId, customerProfile.id)
+  const shipment = await repos.shipmentRepo.findStatusForOwner(
+    shipmentId,
+    customerProfile.id,
+  )
   if (!shipment) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -51,7 +54,10 @@ export async function acceptProposal(
     shipmentId,
   )
 
-  const proposal = await repos.proposalRepo.findByIdForShipment(proposalId, shipmentId)
+  const proposal = await repos.proposalRepo.findByIdForShipment(
+    proposalId,
+    shipmentId,
+  )
   if (!proposal) {
     return { success: false, code: 'NOT_FOUND' }
   }
@@ -66,14 +72,28 @@ export async function acceptProposal(
     return { success: false, code: 'NOT_FOUND' }
   }
 
-  await repos.proposalRepo.respondToAttempt(proposal.id, proposal.currentAttempt, 'ACCEPTED')
+  await repos.proposalRepo.respondToAttempt(
+    proposal.id,
+    proposal.currentAttempt,
+    'ACCEPTED',
+  )
   await repos.proposalRepo.updateStatus(proposal.id, 'ACCEPTED')
-  await repos.shipmentRepo.markCarrierSelected(shipmentId, acceptedAttempt.priceInCents)
+  await repos.shipmentRepo.markCarrierSelected(
+    shipmentId,
+    acceptedAttempt.priceInCents,
+  )
   await repos.shipmentEventRepo.create(shipmentId, 'CARRIER_SELECTED', userId)
 
-  const others = await repos.proposalRepo.findOtherActiveByShipment(shipmentId, proposal.id)
+  const others = await repos.proposalRepo.findOtherActiveByShipment(
+    shipmentId,
+    proposal.id,
+  )
   for (const other of others) {
-    await repos.proposalRepo.respondToAttempt(other.id, other.currentAttempt, 'REJECTED')
+    await repos.proposalRepo.respondToAttempt(
+      other.id,
+      other.currentAttempt,
+      'REJECTED',
+    )
     await repos.proposalRepo.updateStatus(other.id, 'REJECTED')
   }
 

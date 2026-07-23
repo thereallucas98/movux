@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
 import { shipmentRepository } from '~/server/repositories'
 import { BrowseShipmentsQuerySchema } from '~/server/schemas/shipment.schema'
 import { browseOpenShipments } from '~/server/use-cases'
@@ -21,5 +24,8 @@ export async function GET(req: Request) {
 
   const result = await browseOpenShipments(shipmentRepository, parsed.data)
 
-  return NextResponse.json({ data: result.data, nextCursor: result.nextCursor }, { status: 200 })
+  return NextResponse.json(
+    { data: result.data, nextCursor: result.nextCursor },
+    { status: 200 },
+  )
 }

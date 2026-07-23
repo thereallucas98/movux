@@ -1,9 +1,5 @@
 import { builder } from '../builder'
-import {
-  ShipmentTypeEnum,
-  TimeWindowEnum,
-  VehicleTypeEnum,
-} from '../enums/shipment.enum'
+import { ShipmentTypeEnum, TimeWindowEnum } from '../enums/shipment.enum'
 
 export const BrowseAddressType = builder.simpleObject('BrowseAddress', {
   fields: (t) => ({
@@ -21,7 +17,7 @@ export const BrowseShipmentType = builder.simpleObject('BrowseShipment', {
     description: t.string(),
     estimatedWeightKg: t.float({ nullable: true }),
     estimatedVolumeM3: t.float({ nullable: true }),
-    vehicleTypeRequired: t.field({ type: VehicleTypeEnum }),
+    requiredCategoryId: t.id({ nullable: true }),
     scheduledDate: t.field({ type: 'DateTime' }),
     timeWindow: t.field({ type: TimeWindowEnum }),
     specificTime: t.field({ type: 'DateTime', nullable: true }),

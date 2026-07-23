@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '~/lib/get-principal'
-import { errorResponse, validationErrorResponse } from '~/server/http/error-response'
-import { proposalRepository, shipmentEventRepository, shipmentRepository } from '~/server/repositories'
+import {
+  errorResponse,
+  validationErrorResponse,
+} from '~/server/http/error-response'
+import {
+  proposalRepository,
+  shipmentEventRepository,
+  shipmentRepository,
+} from '~/server/repositories'
 import { ShipmentIdParamSchema } from '~/server/schemas/shipment.schema'
 import { markInTransit } from '~/server/use-cases'
 

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
-import { notificationLogRepository, userRepository } from '~/server/repositories'
+import {
+  notificationLogRepository,
+  userRepository,
+} from '~/server/repositories'
 import { registerUser } from '~/server/use-cases'
 import { setAuthCookie } from '~/server/http/cookie'
 import { RegisterSchema } from '~/server/schemas/auth.schema'
@@ -16,7 +19,10 @@ export async function POST(req: Request) {
   }
 
   const result = await registerUser(
-    { userRepo: userRepository, notificationLogRepo: notificationLogRepository },
+    {
+      userRepo: userRepository,
+      notificationLogRepo: notificationLogRepository,
+    },
     parsed.data,
   )
 

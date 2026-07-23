@@ -13,15 +13,16 @@ interface CarrierFixture {
   fullName: string
   email: string
   avgRating: number | null
-  vehicleType: 'MOTORCYCLE' | 'VAN' | 'TRUCK_SMALL' | 'TRUCK_LARGE' | null
+  vehicleCategoryName: 'Moto' | 'Van' | 'Caminhão' | null
+  vehicleSpecName: string | null
 }
 
 const CARRIERS: CarrierFixture[] = [
-  { fullName: 'Marcos Vinícius Souza', email: 'marcos.souza.fixture@movux.dev', avgRating: 4.8, vehicleType: 'TRUCK_SMALL' },
-  { fullName: 'Juliana Ferreira Melo', email: 'juliana.melo.fixture@movux.dev', avgRating: 4.5, vehicleType: 'VAN' },
-  { fullName: 'Rodrigo Almeida Nunes', email: 'rodrigo.nunes.fixture@movux.dev', avgRating: null, vehicleType: 'MOTORCYCLE' },
-  { fullName: 'Patrícia Gomes Cardoso', email: 'patricia.cardoso.fixture@movux.dev', avgRating: 5.0, vehicleType: 'TRUCK_LARGE' },
-  { fullName: 'Anderson Luiz Ribeiro', email: 'anderson.ribeiro.fixture@movux.dev', avgRating: 4.2, vehicleType: null },
+  { fullName: 'Marcos Vinícius Souza', email: 'marcos.souza.fixture@movux.dev', avgRating: 4.8, vehicleCategoryName: 'Caminhão', vehicleSpecName: 'Caminhão 3/4' },
+  { fullName: 'Juliana Ferreira Melo', email: 'juliana.melo.fixture@movux.dev', avgRating: 4.5, vehicleCategoryName: 'Van', vehicleSpecName: 'Van' },
+  { fullName: 'Rodrigo Almeida Nunes', email: 'rodrigo.nunes.fixture@movux.dev', avgRating: null, vehicleCategoryName: 'Moto', vehicleSpecName: 'Moto' },
+  { fullName: 'Patrícia Gomes Cardoso', email: 'patricia.cardoso.fixture@movux.dev', avgRating: 5.0, vehicleCategoryName: 'Caminhão', vehicleSpecName: 'Caminhão Truck' },
+  { fullName: 'Anderson Luiz Ribeiro', email: 'anderson.ribeiro.fixture@movux.dev', avgRating: 4.2, vehicleCategoryName: null, vehicleSpecName: null },
 ]
 
 async function main() {
@@ -64,14 +65,38 @@ async function main() {
       },
     })
 
-    if (fixture.vehicleType) {
+    let requiredCategoryId: string | null = null
+    if (fixture.vehicleCategoryName && fixture.vehicleSpecName) {
+      const spec = await prisma.vehicleSpec.findFirstOrThrow({
+        where: { name: fixture.vehicleSpecName, category: { name: fixture.vehicleCategoryName } },
+        select: { id: true, categoryId: true, category: { select: { fipeVehicleType: true } } },
+      })
+      requiredCategoryId = spec.categoryId
+
+      // Marca/modelo fixture próprios — não depende do import da FIPE
+      // (prisma/seed/vehicle-brands-models.ts) ter rodado antes.
+      const fixtureBrand = await prisma.vehicleBrand.upsert({
+        where: {
+          fipeVehicleType_name: {
+            fipeVehicleType: spec.category.fipeVehicleType,
+            name: 'Fixture',
+          },
+        },
+        update: {},
+        create: { fipeVehicleType: spec.category.fipeVehicleType, name: 'Fixture' },
+      })
+      const fixtureModel = await prisma.vehicleModel.upsert({
+        where: { brandId_name: { brandId: fixtureBrand.id, name: 'Fixture' } },
+        update: {},
+        create: { brandId: fixtureBrand.id, name: 'Fixture' },
+      })
+
       await prisma.vehicle.create({
         data: {
           ownerId: carrierUser.id,
-          type: fixture.vehicleType,
-          plate: 'FIX-0000',
-          brand: 'Fixture',
-          model: 'Fixture',
+          specId: spec.id,
+          modelId: fixtureModel.id,
+          plate: `FIX-${Math.floor(Math.random() * 9000 + 1000)}`,
           year: 2020,
           isActive: true,
         },
@@ -84,7 +109,7 @@ async function main() {
         status: 'DELIVERED',
         type: 'RESIDENTIAL_MOVING',
         description: `Frete fixture para busca pública — ${fixture.fullName}`,
-        vehicleTypeRequired: fixture.vehicleType ?? 'ANY',
+        requiredCategoryId,
         scheduledDate: new Date(),
         timeWindow: 'MORNING',
         suggestedPriceInCents: 30000,

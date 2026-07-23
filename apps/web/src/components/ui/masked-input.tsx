@@ -171,6 +171,26 @@ export function PhoneInput({
   )
 }
 
+// ─── Year ─────────────────────────────────────────────────────────────────────
+// 4 dígitos, sem separador (ano não agrupa em milhar) — substitui
+// `type="number"` nativo, que traz spinner de scroll e aceita `e`/`+`/`-`.
+
+export interface YearInputProps extends Omit<
+  MaskedInputProps,
+  'mask' | 'maxDigits'
+> {}
+
+export function YearInput({ className, ...props }: YearInputProps) {
+  return (
+    <MaskedInput
+      {...props}
+      mask="0000"
+      placeholder="0000"
+      className={className}
+    />
+  )
+}
+
 // ─── Currency (BRL) ─────────────────────────────────────────────────────────
 // Digita só números; formata como moeda em tempo real (evita o problema de
 // `type="number"` descartar vírgula decimal — mesmo bug já corrigido no S8-T1).

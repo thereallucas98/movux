@@ -1,4 +1,12 @@
-import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components'
 
 interface ProposalReceivedProps {
   customerName: string
@@ -30,10 +38,12 @@ export function ProposalReceived({
             padding: 32,
           }}
         >
-          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>Nova proposta recebida</Heading>
+          <Heading style={{ color: '#1e1e1e', fontSize: 24 }}>
+            Nova proposta recebida
+          </Heading>
           <Text style={{ color: '#1e1e1e', fontSize: 14 }}>
-            Olá, {customerName}! Um transportador enviou uma proposta de {price} pro seu frete
-            &ldquo;{shipmentDescription}&rdquo;.
+            Olá, {customerName}! Um transportador enviou uma proposta de {price}{' '}
+            pro seu frete &ldquo;{shipmentDescription}&rdquo;.
           </Text>
           <Text style={{ color: '#718096', fontSize: 12 }}>
             Acesse a Movux pra ver os detalhes e decidir.

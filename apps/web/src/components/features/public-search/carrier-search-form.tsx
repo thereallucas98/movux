@@ -5,26 +5,19 @@ import { useState } from 'react'
 
 import { AdaptiveSelect } from '~/components/ui/adaptive-select'
 import { Button } from '~/components/ui/button'
-import { VEHICLE_TYPE_LABELS } from '~/components/features/shipments/shipment-labels'
 import { usePublicCities } from '~/graphql/hooks/use-public-cities'
-import type { VehicleType } from '~/graphql/generated/types'
-
-// 'ANY' é "qualquer veículo serve" (preferência de frete), não um tipo real
-// de veículo que um carrier possui — não faz sentido como opção de filtro aqui.
-const VEHICLE_TYPE_OPTIONS = (
-  Object.keys(VEHICLE_TYPE_LABELS) as VehicleType[]
-)
-  .filter((type) => type !== 'ANY')
-  .map((type) => ({ type, label: VEHICLE_TYPE_LABELS[type] }))
+import { useVehicleTaxonomy } from '~/graphql/hooks/use-vehicle-taxonomy'
 
 interface CarrierSearchFormProps {
-  onSearch: (filter: { cityId: string; vehicleType?: VehicleType }) => void
+  onSearch: (filter: { cityId: string; vehicleCategoryId?: string }) => void
 }
 
 export function CarrierSearchForm({ onSearch }: CarrierSearchFormProps) {
   const { data: cities = [], isLoading: isLoadingCities } = usePublicCities()
+  const { data: vehicleCategories = [], isLoading: isLoadingCategories } =
+    useVehicleTaxonomy()
   const [cityId, setCityId] = useState<string>()
-  const [vehicleType, setVehicleType] = useState<VehicleType>()
+  const [vehicleCategoryId, setVehicleCategoryId] = useState<string>()
 
   return (
     <form
@@ -32,7 +25,7 @@ export function CarrierSearchForm({ onSearch }: CarrierSearchFormProps) {
       onSubmit={(e) => {
         e.preventDefault()
         if (!cityId) return
-        onSearch({ cityId, vehicleType })
+        onSearch({ cityId, vehicleCategoryId })
       }}
     >
       <div className="flex-1">
@@ -43,19 +36,21 @@ export function CarrierSearchForm({ onSearch }: CarrierSearchFormProps) {
           getOptionLabel={(city) => `${city.name} — ${city.stateUf}`}
           value={cityId}
           onValueChange={setCityId}
-          placeholder={isLoadingCities ? 'Carregando cidades…' : 'Selecione a cidade'}
+          placeholder={
+            isLoadingCities ? 'Carregando cidades…' : 'Selecione a cidade'
+          }
         />
       </div>
 
       <div className="flex-1">
         <AdaptiveSelect
           label="Tipo de veículo (opcional)"
-          options={VEHICLE_TYPE_OPTIONS}
-          getOptionValue={(option) => option.type}
-          getOptionLabel={(option) => option.label}
-          value={vehicleType}
-          onValueChange={(value) => setVehicleType(value as VehicleType)}
-          placeholder="Qualquer tipo"
+          options={vehicleCategories}
+          getOptionValue={(category) => category?.id ?? ''}
+          getOptionLabel={(category) => category?.name ?? ''}
+          value={vehicleCategoryId}
+          onValueChange={setVehicleCategoryId}
+          placeholder={isLoadingCategories ? 'Carregando…' : 'Qualquer tipo'}
         />
       </div>
 

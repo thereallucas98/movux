@@ -1,4 +1,7 @@
-import type { DeliveryConfirmation, PrismaClient } from '~/generated/prisma/client'
+import type {
+  DeliveryConfirmation,
+  PrismaClient,
+} from '~/generated/prisma/client'
 
 export interface DeliveryConfirmationRepository {
   findByShipment(shipmentId: string): Promise<DeliveryConfirmation | null>

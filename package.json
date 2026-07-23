@@ -2,7 +2,7 @@
   "name": "movux",
   "version": "0.1.0",
   "private": true,
-  "description": "Movux — multi-tenant shift scheduling platform for hospitals, clinics, and gyms",
+  "description": "Movux — freight and moving marketplace connecting customers to independent carriers",
   "scripts": {
     "prepare": "husky",
     "dev": "turbo run dev --filter=web",
